@@ -30,7 +30,7 @@ public class NodeLocator implements Iface {
 
     public String findSuccessor(KeyId entryId) throws TException {
         LOGGER.info("Request for entity with id \"" + entryId.toString() + "\".");
-        Node next = node.closestPreceedingNode(entryId);
+        Node next = node.closestPrecedingNode(entryId);
         if (next == node) {
             // TODO(alevy): return the name of the successor
             return null;

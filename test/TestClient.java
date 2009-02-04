@@ -13,7 +13,7 @@ public class TestClient {
         try {
             KeyLocator.Client client = new KeyLocator.Client(new TBinaryProtocol(new TSocket(
                     new Socket("localhost", 8080))));
-            String result = client.findSuccessor(new KeyId(123));
+            String result = client.findSuccessor(new KeyId(2));
             System.out.println("Success! " + result);
         } catch (TTransportException e) {
             System.err.println(e.getMessage());

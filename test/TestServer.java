@@ -11,6 +11,7 @@ import edu.washington.edu.cs.cse490h.donut.service.KeyLocator;
 public class TestServer {
     public static void main(String[] args) throws Exception {
         Node node = new Node("localhost", new KeyId(1));
+        node.setFingers(new Node("localhost2", new KeyId(5)));
         TProcessor proc = new KeyLocator.Processor(new NodeLocator(node,
                 new RemoteLocatorClientFactory()));
         TSimpleServer server = new TSimpleServer(proc, new TServerSocket(8080));

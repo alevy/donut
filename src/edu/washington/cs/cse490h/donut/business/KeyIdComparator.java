@@ -9,20 +9,6 @@ import edu.washington.edu.cs.cse490h.donut.service.KeyId;
  */
 public class KeyIdComparator implements Comparator<KeyId> {
 
-    public static class NodeComparator implements Comparator<Node> {
-
-        private final KeyIdComparator keyIdComparator;
-
-        public NodeComparator(KeyIdComparator keyIdComparator) {
-            this.keyIdComparator = keyIdComparator;
-        }
-
-        public int compare(Node node1, Node node2) {
-            return keyIdComparator.compare(node1.getNodeId(), node2.getNodeId());
-        }
-
-    }
-
     private final KeyId baseId;
 
     /**
@@ -31,6 +17,10 @@ public class KeyIdComparator implements Comparator<KeyId> {
      */
     public KeyIdComparator(KeyId baseId) {
         this.baseId = baseId;
+    }
+    
+    public NodeComparator getNodeComparator() {
+        return new NodeComparator(this);
     }
 
     /*

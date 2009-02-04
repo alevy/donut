@@ -1,7 +1,10 @@
 package edu.washington.cs.cse490h.donut.business;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -15,9 +18,9 @@ public class Node {
 
     private final KeyId                          nodeId;
     private final String                         name;
-
+    
     private final KeyIdComparator                keyIdComparator;
-    private final List<Node>                     fingers = new ArrayList<Node>();
+    private final SortedSet<Node>                fingers;
     private Node                                 predecessor;
 
     @Inject
@@ -25,19 +28,25 @@ public class Node {
         this.name = name;
         this.nodeId = nodeId;
         this.keyIdComparator = new KeyIdComparator(nodeId);
+        this.fingers = new TreeSet<Node>(getKeyIdComparator().getNodeComparator());
     }
 
     /**
+     * Scans this Node's finger table for the closest preceding node to the given key.
+     * 
      * @param entryId
-     * @return the next {@link Node} in the search tree.
+     * 
+     * @return the {@link Node} from the finger table that is the closest and preceding the entryId
      */
-    public Node closestPreceedingNode(KeyId entryId) throws IllegalArgumentException {
-        for (int i = 0; i < getFingers().size() - 1; ++i) {
-            if (getKeyIdComparator().compare(entryId, getFingers().get(i).getNodeId()) <= 0) {
-                return getFingers().get(i);
+    public Node closestPrecedingNode(KeyId entryId) throws IllegalArgumentException {
+        List<Node> nodes = new ArrayList<Node>(getFingers());
+        
+        for (int i = getFingers().size() - 1; i >= 0; --i) {
+            if (getKeyIdComparator().compare(entryId, nodes.get(i).getNodeId()) >= 0) {
+                return nodes.get(i);
             }
         }
-        return getFingers().get(getFingers().size() - 1);
+        return this;
     }
 
     /**
@@ -76,11 +85,11 @@ public class Node {
         return keyIdComparator;
     }
 
-    public List<Node> getFingers() {
+    public SortedSet<Node> getFingers() {
         return fingers;
     }
 
-    public List<Node> setFingers(Node... nodes) {
+    public SortedSet<Node> setFingers(Node... nodes) {
         fingers.clear();
         for (Node node : nodes) {
             fingers.add(node);
