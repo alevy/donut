@@ -24,7 +24,6 @@ public class InMemoryLocatorClientFactory implements LocatorClientFactory {
         this.bufMap = bufMap;
     }
     
-    @Override
     public Iface get(String caller) throws ConnectionFailedException {
         TBinaryProtocol prot = new TBinaryProtocol(bufMap.get(caller));
         return new KeyLocator.Client(prot);

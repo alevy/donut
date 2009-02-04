@@ -17,7 +17,6 @@ public class KeyIdComparator implements Comparator<KeyId> {
             this.keyIdComparator = keyIdComparator;
         }
 
-        @Override
         public int compare(Node node1, Node node2) {
             return keyIdComparator.compare(node1.getNodeId(), node2.getNodeId());
         }
@@ -45,7 +44,6 @@ public class KeyIdComparator implements Comparator<KeyId> {
         return new KeyId(diff);
     }
 
-    @Override
     public int compare(KeyId key1, KeyId key2) {
         long diff = distance(key1, key2);
         if (diff == 0) {

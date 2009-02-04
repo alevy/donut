@@ -32,7 +32,6 @@ public class NodeLocator implements Iface {
         this.clientFactory = clientFactory;
     }
 
-    @Override
     public void lookup(KeyId id, String caller) throws TException {
         LOGGER
                 .info("Caller \"" + caller + "\" requested entity with id \"" + id.toString()

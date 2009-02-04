@@ -23,7 +23,6 @@ public class InMemoryCallbackFactory implements LocatorCallbackFactory {
         this.bufMap = bufMap;
     }
     
-    @Override
     public Iface get(String caller) throws ConnectionFailedException {
         TBinaryProtocol prot = new TBinaryProtocol(bufMap.get(caller));
         return new LocatorCallback.Client(prot);
