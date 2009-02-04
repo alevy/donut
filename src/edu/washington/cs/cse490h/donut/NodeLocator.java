@@ -44,7 +44,7 @@ public class NodeLocator implements Iface {
             }
         } else {
             try {
-                clientFactory.get(node.getNextHop(id).getName()).lookup(id, caller);
+                clientFactory.get(node.closestPrecedingNode(id).getName()).lookup(id, caller);
             } catch (ConnectionFailedException e) {
                 throw new TException(e);
             }
