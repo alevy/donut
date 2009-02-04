@@ -31,7 +31,7 @@ public class Node {
      * @param entryId
      * @return the next {@link Node} in the search tree.
      */
-    public Node getNextHop(KeyId entryId) throws IllegalArgumentException {
+    public Node closestPreceedingNode(KeyId entryId) throws IllegalArgumentException {
         for (int i = 0; i < getFingers().size() - 1; ++i) {
             if (getKeyIdComparator().compare(entryId, getFingers().get(i).getNodeId()) <= 0) {
                 return getFingers().get(i);

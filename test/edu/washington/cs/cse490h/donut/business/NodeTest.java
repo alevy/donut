@@ -21,7 +21,7 @@ public class NodeTest {
         initialNode.setFingers(finger1, finger2, finger3);
         
         KeyId entryId = new KeyId(125);
-        Node nextHop = initialNode.getNextHop(entryId);
+        Node nextHop = initialNode.closestPreceedingNode(entryId);
         assertEquals(finger2.getName(), nextHop.getName());
     }
     
@@ -35,7 +35,7 @@ public class NodeTest {
         initialNode.setFingers(finger1, finger2, finger3);
         
         KeyId entryId = new KeyId(201);
-        Node nextHop = initialNode.getNextHop(entryId);
+        Node nextHop = initialNode.closestPreceedingNode(entryId);
         assertEquals(finger3.getName(), nextHop.getName());
     }
     
@@ -49,7 +49,7 @@ public class NodeTest {
         initialNode.setFingers(finger1, finger2, finger3);
         
         KeyId entryId = new KeyId(125);
-        Node nextHop = initialNode.getNextHop(entryId);
+        Node nextHop = initialNode.closestPreceedingNode(entryId);
         assertEquals(finger2.getName(), nextHop.getName());
     }
 

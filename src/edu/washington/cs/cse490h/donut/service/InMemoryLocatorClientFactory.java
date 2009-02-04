@@ -7,7 +7,6 @@ import org.apache.thrift.transport.TTransport;
 
 import com.google.inject.Inject;
 
-import edu.washington.cs.cse490h.donut.callback.ConnectionFailedException;
 import edu.washington.edu.cs.cse490h.donut.service.KeyLocator;
 import edu.washington.edu.cs.cse490h.donut.service.KeyLocator.Iface;
 
