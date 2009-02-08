@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import edu.washington.cs.cse490h.donut.business.Node;
+import edu.washington.edu.cs.cse490h.donut.service.DonutData;
 import edu.washington.edu.cs.cse490h.donut.service.KeyId;
 import edu.washington.edu.cs.cse490h.donut.service.KeyLocator;
 import edu.washington.edu.cs.cse490h.donut.service.TNode;
@@ -56,5 +57,35 @@ public class NodeLocatorTest {
         replay(nextLocatorMock);
         
         assertEquals(resultNode, nodeLocator.findSuccessor(entryId));
+    }
+    
+    @Test
+    public void testGet_Dne() throws Exception {
+        NodeLocator nodeLocator = new NodeLocator(null, null);
+        nodeLocator.getDataMap().clear();
+        assertEquals(new DonutData(false, null), nodeLocator.get(new KeyId(1)));
+    }
+    
+    @Test
+    public void testGet_Exists() throws Exception {
+        NodeLocator nodeLocator = new NodeLocator(null, null);
+        String value = "Hello World";
+        nodeLocator.getDataMap().put(new KeyId(1), value.getBytes());
+        assertEquals(new DonutData(true, value.getBytes()), nodeLocator.get(new KeyId(1)));
+    }
+    
+    @Test
+    public void testPut() throws Exception {
+        NodeLocator nodeLocator = new NodeLocator(null, null);
+        String value = "Hello World";
+        nodeLocator.put(new KeyId(1), new DonutData(true, value.getBytes()));
+        assertArrayEquals(value.getBytes(), nodeLocator.getDataMap().get(new KeyId(1)));
+    }
+    
+    @Test
+    public void testPut_Null() throws Exception {
+        NodeLocator nodeLocator = new NodeLocator(null, null);
+        nodeLocator.put(new KeyId(1), new DonutData(false, null));
+        assertNull(nodeLocator.getDataMap().get(new KeyId(1)));
     }
 }

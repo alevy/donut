@@ -72,4 +72,8 @@ public class NodeLocator implements Iface {
         }
     }
 
+    public Map<KeyId, byte[]> getDataMap() {
+        return dataMap;
+    }
+
 }
