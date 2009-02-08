@@ -18,7 +18,7 @@ public class RemoteLocatorClientFactory extends AbstractRetriable<KeyLocator.Ifa
     @Override
     public KeyLocator.Iface tryOne(Node node) throws Exception {
         TBinaryProtocol protocol;
-        protocol = new TBinaryProtocol(new TSocket(new Socket(node.getName(), 8081)));
+        protocol = new TBinaryProtocol(new TSocket(new Socket(node.getName(), node.getPort())));
         return new KeyLocator.Client(protocol);
     }
 

@@ -9,6 +9,7 @@ import org.junit.Test;
 import edu.washington.cs.cse490h.donut.business.Node;
 import edu.washington.edu.cs.cse490h.donut.service.KeyId;
 import edu.washington.edu.cs.cse490h.donut.service.KeyLocator;
+import edu.washington.edu.cs.cse490h.donut.service.TNode;
 
 
 public class NodeLocatorTest {
@@ -25,23 +26,23 @@ public class NodeLocatorTest {
     
     @Test
     public void testFindSuccessor_ImmediateSuccessor() throws Exception {
-        Node node1 = new Node("node1", new KeyId(100));
-        Node node2 = new Node("node2", new KeyId(900));
+        Node node1 = new Node("node1", 8080, new KeyId(100));
+        Node node2 = new Node("node2", 8080, new KeyId(900));
         
         node1.setFingers(node2);
         NodeLocator nodeLocator = new NodeLocator(node1, null);
         
-        assertEquals(node2.getName(), nodeLocator.findSuccessor(new KeyId(456)));
+        assertEquals(node2.getTNode(), nodeLocator.findSuccessor(new KeyId(456)));
     }
     
     @Test
     public void testFindSuccessor_NotImmediateSuccessor() throws Exception {
         KeyId entryId = new KeyId(1024);
 
-        Node node1 = new Node("node1", new KeyId(100));
-        Node node2 = new Node("node2", new KeyId(900));
+        Node node1 = new Node("node1", 8080, new KeyId(100));
+        Node node2 = new Node("node2", 8080, new KeyId(900));
         
-        String resultNodeName = "resultNode";
+        TNode resultNode = new TNode("resultNode", 8080, null);
         
         node1.setFingers(node2);
         NodeLocator nodeLocator = new NodeLocator(node1, clientFactoryMock);
@@ -51,9 +52,9 @@ public class NodeLocatorTest {
         replay(clientFactoryMock);
         
         // NextLocatorMock Expectations:
-        expect(nextLocatorMock.findSuccessor(entryId)).andReturn(resultNodeName);
+        expect(nextLocatorMock.findSuccessor(entryId)).andReturn(resultNode);
         replay(nextLocatorMock);
         
-        assertEquals(resultNodeName, nodeLocator.findSuccessor(entryId));
+        assertEquals(resultNode, nodeLocator.findSuccessor(entryId));
     }
 }
