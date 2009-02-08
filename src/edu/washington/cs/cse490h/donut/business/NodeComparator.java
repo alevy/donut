@@ -8,7 +8,6 @@ public class NodeComparator implements Comparator<Node> {
 
     public NodeComparator(KeyIdComparator comparator) {
         this.comparator = comparator;
-        
     }
     
     public int compare(Node node1, Node node2) {

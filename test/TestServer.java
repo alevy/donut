@@ -10,11 +10,28 @@ import edu.washington.edu.cs.cse490h.donut.service.KeyLocator;
 
 public class TestServer {
     public static void main(String[] args) throws Exception {
-        Node node = new Node("localhost", new KeyId(1));
-        node.setFingers(new Node("localhost2", new KeyId(5)));
-        TProcessor proc = new KeyLocator.Processor(new NodeLocator(node,
+        Node node1 = new Node("localhost", 8080, new KeyId(100));
+        Node node2 = new Node("localhost", 8081, new KeyId(3000));
+        node1.setFingers(node2);
+        TProcessor proc1 = new KeyLocator.Processor(new NodeLocator(node1,
                 new RemoteLocatorClientFactory()));
-        TSimpleServer server = new TSimpleServer(proc, new TServerSocket(8080));
-        server.serve();
+        TProcessor proc2 = new KeyLocator.Processor(new NodeLocator(node1,
+                new RemoteLocatorClientFactory()));
+        final TSimpleServer server1 = new TSimpleServer(proc1, new TServerSocket(8080));
+        final TSimpleServer server2 = new TSimpleServer(proc2, new TServerSocket(8081));
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                server1.serve();
+            }
+        }.start();
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                server2.serve();
+            }
+        }.start();
     }
 }

@@ -6,11 +6,17 @@ struct KeyId {
 
 struct TNode {
 	1:string name
-	2:KeyId nodeId
+	2:i32 port
+	3:KeyId nodeId
 }
  
 struct MetaData {
  
+}
+
+struct DonutData {
+	1:bool exists = 1,
+	2:optional binary data
 }
  
 service KeyLocator {
@@ -20,4 +26,8 @@ service KeyLocator {
    *  		 or null if not found.
    */
   TNode findSuccessor(1:KeyId entryId),
+  
+  DonutData get(1:KeyId entryId),
+  
+  void put(1:KeyId entryId, DonutData data),
 }

@@ -32,11 +32,11 @@ public class Node {
         // Set the current successor to this
         this.fingers.add(0, this);
     }
-    
-    public Node(String name, KeyId id) {
-        this(new TNode(name, id));
+
+    public Node(String name, int port, KeyId id) {
+        this(new TNode(name, port, id));
     }
-    
+
     /**
      * Join a Chord ring containing node n
      * 
@@ -51,7 +51,6 @@ public class Node {
      * Scans this Node's finger table for the closest preceding node to the given key.
      * 
      * @param entryId
-     * 
      * @return the {@link Node} from the finger table that is the closest and preceding the entryId
      */
     public Node closestPrecedingNode(KeyId entryId) throws IllegalArgumentException {
@@ -71,7 +70,7 @@ public class Node {
         if (predecessor == null) {
             throw new IllegalStateException("All valid nodes must have predecessors");
         }
-        
+
         if (predecessor.getKeyIdComparator().compare(getNodeId(), id) >= 0) {
             return true;
         } else {
@@ -94,7 +93,7 @@ public class Node {
     public Node getPredecessor() {
         return predecessor;
     }
-    
+
     public Node getSuccessor() {
         return fingers.get(0);
     }
@@ -111,8 +110,21 @@ public class Node {
         fingers = Arrays.asList(nodes);
         return fingers;
     }
-    
+
+    @Override
+    public boolean equals(Object obj) {
+        if (Node.class.isInstance(obj)) {
+            Node other = (Node) obj;
+            return other.getTNode() == this.getTNode();
+        }
+        return false;
+    }
+
     public TNode getTNode() {
         return tNode;
+    }
+
+    public int getPort() {
+        return tNode.getPort();
     }
 }

@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import edu.washington.cs.cse490h.donut.business.Node;
+import edu.washington.edu.cs.cse490h.donut.service.DonutData;
 import edu.washington.edu.cs.cse490h.donut.service.KeyId;
 import edu.washington.edu.cs.cse490h.donut.service.KeyLocator;
 import edu.washington.edu.cs.cse490h.donut.service.TNode;
@@ -26,8 +27,8 @@ public class NodeLocatorTest {
     
     @Test
     public void testFindSuccessor_ImmediateSuccessor() throws Exception {
-        Node node1 = new Node("node1", new KeyId(100));
-        Node node2 = new Node("node2", new KeyId(900));
+        Node node1 = new Node("node1", 8080, new KeyId(100));
+        Node node2 = new Node("node2", 8080, new KeyId(900));
         
         node1.setFingers(node2);
         NodeLocator nodeLocator = new NodeLocator(node1, null);
@@ -39,16 +40,16 @@ public class NodeLocatorTest {
     public void testFindSuccessor_NotImmediateSuccessor() throws Exception {
         KeyId entryId = new KeyId(1024);
 
-        Node node1 = new Node("node1", new KeyId(100));
-        Node node2 = new Node("node2", new KeyId(900));
+        Node node1 = new Node("node1", 8080, new KeyId(100));
+        Node node2 = new Node("node2", 8080, new KeyId(900));
         
-        TNode resultNode = new TNode("resultNode", null);
+        TNode resultNode = new TNode("resultNode", 8080, null);
         
         node1.setFingers(node2);
         NodeLocator nodeLocator = new NodeLocator(node1, clientFactoryMock);
         
         // ClientFactory Expectations:
-        expect(clientFactoryMock.get(node2.getName())).andReturn(nextLocatorMock);
+        expect(clientFactoryMock.get(node2)).andReturn(nextLocatorMock);
         replay(clientFactoryMock);
         
         // NextLocatorMock Expectations:
@@ -56,5 +57,35 @@ public class NodeLocatorTest {
         replay(nextLocatorMock);
         
         assertEquals(resultNode, nodeLocator.findSuccessor(entryId));
+    }
+    
+    @Test
+    public void testGet_Dne() throws Exception {
+        NodeLocator nodeLocator = new NodeLocator(null, null);
+        nodeLocator.getDataMap().clear();
+        assertEquals(new DonutData(false, null), nodeLocator.get(new KeyId(1)));
+    }
+    
+    @Test
+    public void testGet_Exists() throws Exception {
+        NodeLocator nodeLocator = new NodeLocator(null, null);
+        String value = "Hello World";
+        nodeLocator.getDataMap().put(new KeyId(1), value.getBytes());
+        assertEquals(new DonutData(true, value.getBytes()), nodeLocator.get(new KeyId(1)));
+    }
+    
+    @Test
+    public void testPut() throws Exception {
+        NodeLocator nodeLocator = new NodeLocator(null, null);
+        String value = "Hello World";
+        nodeLocator.put(new KeyId(1), new DonutData(true, value.getBytes()));
+        assertArrayEquals(value.getBytes(), nodeLocator.getDataMap().get(new KeyId(1)));
+    }
+    
+    @Test
+    public void testPut_Null() throws Exception {
+        NodeLocator nodeLocator = new NodeLocator(null, null);
+        nodeLocator.put(new KeyId(1), new DonutData(false, null));
+        assertNull(nodeLocator.getDataMap().get(new KeyId(1)));
     }
 }
