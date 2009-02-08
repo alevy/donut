@@ -12,7 +12,7 @@ import edu.washington.edu.cs.cse490h.donut.service.KeyId;
 public class NodeTest {
 
     @Test
-    public void testGetNextHop_InList() throws Exception {
+    public void testClosestPrecedingNode_InList() throws Exception {
         Node initialNode = new Node("testNode0", new KeyId(54));
         Node finger1 = new Node("testNode1", new KeyId(100));
         Node finger2 = new Node("testNode2", new KeyId(150));
@@ -21,12 +21,12 @@ public class NodeTest {
         initialNode.setFingers(finger1, finger2, finger3);
         
         KeyId entryId = new KeyId(125);
-        Node nextHop = initialNode.getNextHop(entryId);
-        assertEquals(finger2.getName(), nextHop.getName());
+        Node nextHop = initialNode.closestPrecedingNode(entryId);
+        assertEquals(finger1.getName(), nextHop.getName());
     }
     
     @Test
-    public void testGetNextHop_NotInList() throws Exception {
+    public void testClosestPrecedingNode_EqualToNode() throws Exception {
         Node initialNode = new Node("testNode0", new KeyId(54));
         Node finger1 = new Node("testNode1", new KeyId(100));
         Node finger2 = new Node("testNode2", new KeyId(150));
@@ -34,13 +34,13 @@ public class NodeTest {
         
         initialNode.setFingers(finger1, finger2, finger3);
         
-        KeyId entryId = new KeyId(201);
-        Node nextHop = initialNode.getNextHop(entryId);
+        KeyId entryId = new KeyId(200);
+        Node nextHop = initialNode.closestPrecedingNode(entryId);
         assertEquals(finger3.getName(), nextHop.getName());
     }
     
     @Test
-    public void testGetNextHop_Circle() throws Exception {
+    public void testClosestPrecedingNode_Circle() throws Exception {
         Node initialNode = new Node("testNode0", new KeyId(175));
         Node finger1 = new Node("testNode1", new KeyId(100));
         Node finger2 = new Node("testNode2", new KeyId(150));
@@ -49,8 +49,22 @@ public class NodeTest {
         initialNode.setFingers(finger1, finger2, finger3);
         
         KeyId entryId = new KeyId(125);
-        Node nextHop = initialNode.getNextHop(entryId);
-        assertEquals(finger2.getName(), nextHop.getName());
+        Node nextHop = initialNode.closestPrecedingNode(entryId);
+        assertEquals(finger1.getName(), nextHop.getName());
+    }
+    
+    @Test
+    public void testClosestPrecedingNode_ItsYou() throws Exception {
+        Node initialNode = new Node("testNode0", new KeyId(75));
+        Node finger1 = new Node("testNode1", new KeyId(100));
+        Node finger2 = new Node("testNode2", new KeyId(150));
+        Node finger3 = new Node("testNode3", new KeyId(200));
+        
+        initialNode.setFingers(finger1, finger2, finger3);
+        
+        KeyId entryId = new KeyId(80);
+        Node nextHop = initialNode.closestPrecedingNode(entryId);
+        assertEquals(initialNode.getName(), nextHop.getName());
     }
 
     @Test(expected=IllegalStateException.class)
@@ -70,6 +84,12 @@ public class NodeTest {
         Node node = new Node("testNode4", new KeyId(14));
         node.setPredecessor(new Node("testNode0", new KeyId(0)));
         assertEquals(false, node.isResponsibleFor(new KeyId(16)));
+    }
+    
+    @Test
+    public void testGetSuccessor_NoFingers() throws Exception {
+        Node node = new Node(null, null);
+        assertSame(node, node.getSuccessor());
     }
 
 }
