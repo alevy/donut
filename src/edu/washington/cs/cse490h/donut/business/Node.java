@@ -102,4 +102,14 @@ public class Node {
         }
         return fingers;
     }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (Node.class.isInstance(obj)) {
+            Node other = (Node) obj;
+            return other.nodeId == this.nodeId;
+        }
+        
+        return false;
+    }
 }

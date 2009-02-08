@@ -2,7 +2,7 @@ package edu.washington.cs.cse490h.donut;
 
 import edu.washington.cs.cse490h.donut.service.ConnectionFailedException;
 
-public abstract class AbstractRetriable<T> {
+public abstract class AbstractRetriable<T, E> {
 
     private int retries = 3;
 
@@ -18,7 +18,7 @@ public abstract class AbstractRetriable<T> {
         return retries;
     }
     
-    public T get(String name) throws ConnectionFailedException {
+    public T get(E name) throws ConnectionFailedException {
         Exception exception = null;
 
         for (int i = 0; i < getRetries(); ++i) {
@@ -32,6 +32,6 @@ public abstract class AbstractRetriable<T> {
         throw new ConnectionFailedException(exception);  
     }
     
-    protected abstract T tryOne(String name) throws Exception;
+    protected abstract T tryOne(E name) throws Exception;
 
 }

@@ -47,7 +47,7 @@ public class NodeLocatorTest {
         NodeLocator nodeLocator = new NodeLocator(node1, clientFactoryMock);
         
         // ClientFactory Expectations:
-        expect(clientFactoryMock.get(node2.getName())).andReturn(nextLocatorMock);
+        expect(clientFactoryMock.get(node2)).andReturn(nextLocatorMock);
         replay(clientFactoryMock);
         
         // NextLocatorMock Expectations:

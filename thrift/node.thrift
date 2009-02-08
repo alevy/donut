@@ -7,6 +7,11 @@ struct KeyId {
 struct MetaData {
  
 }
+
+struct Data {
+	1:bool exists = 1,
+	2:optional binary data
+}
  
 service KeyLocator {
   
@@ -15,4 +20,8 @@ service KeyLocator {
    *  		 or null if not found.
    */
   string findSuccessor(1:KeyId entryId),
+  
+  Data get(1:KeyId entryId),
+  
+  void put(1:KeyId entryId, Data data),
 }

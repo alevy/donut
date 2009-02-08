@@ -6,18 +6,19 @@ import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.transport.TSocket;
 
 import edu.washington.cs.cse490h.donut.AbstractRetriable;
+import edu.washington.cs.cse490h.donut.business.Node;
 import edu.washington.edu.cs.cse490h.donut.service.KeyLocator;
 
 /**
  * @author alevy
  */
-public class RemoteLocatorClientFactory extends AbstractRetriable<KeyLocator.Iface> implements
+public class RemoteLocatorClientFactory extends AbstractRetriable<KeyLocator.Iface, Node> implements
         LocatorClientFactory {
 
     @Override
-    public KeyLocator.Iface tryOne(String node) throws Exception {
+    public KeyLocator.Iface tryOne(Node node) throws Exception {
         TBinaryProtocol protocol;
-        protocol = new TBinaryProtocol(new TSocket(new Socket(node, 8081)));
+        protocol = new TBinaryProtocol(new TSocket(new Socket(node.getName(), 8081)));
         return new KeyLocator.Client(protocol);
     }
 
