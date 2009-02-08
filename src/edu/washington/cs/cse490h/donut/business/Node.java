@@ -1,12 +1,8 @@
 package edu.washington.cs.cse490h.donut.business;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
 import edu.washington.edu.cs.cse490h.donut.service.KeyId;
 import edu.washington.edu.cs.cse490h.donut.service.TNode;
@@ -19,9 +15,8 @@ public class Node {
     private final TNode                          tNode;
     
     private final KeyIdComparator                keyIdComparator;
-    private final SortedSet<Node>                fingers;
+    private List<Node>                     fingers;
     private Node                                 predecessor;
-    private Node                                 successor;
 
     /**
      * Create a new Chord ring
@@ -31,9 +26,11 @@ public class Node {
     public Node(TNode tNode) {
         this.tNode = tNode;
         this.keyIdComparator = new KeyIdComparator(getNodeId());
-        this.fingers = new TreeSet<Node>(getKeyIdComparator().getNodeComparator());
+        // Todo (jprouty): Add a constant somewhere that specifies the current size of our keyspace.
+        this.fingers = new ArrayList<Node>(64);
         this.predecessor = null;
-        this.successor = this;
+        // Set the current successor to this
+        this.fingers.add(0, this);
     }
     
     public Node(String name, KeyId id) {
@@ -47,7 +44,7 @@ public class Node {
      */
     public void join(Node n) {
         this.predecessor = null;
-        this.successor = n;
+        this.fingers.set(0, n);
     }
 
     /**
@@ -58,11 +55,9 @@ public class Node {
      * @return the {@link Node} from the finger table that is the closest and preceding the entryId
      */
     public Node closestPrecedingNode(KeyId entryId) throws IllegalArgumentException {
-        List<Node> nodes = new ArrayList<Node>(getFingers());
-        
         for (int i = getFingers().size() - 1; i >= 0; --i) {
-            if (getKeyIdComparator().compare(entryId, nodes.get(i).getNodeId()) >= 0) {
-                return nodes.get(i);
+            if (getKeyIdComparator().compare(entryId, fingers.get(i).getNodeId()) >= 0) {
+                return fingers.get(i);
             }
         }
         return this;
@@ -101,22 +96,19 @@ public class Node {
     }
     
     public Node getSuccessor() {
-        return successor;
+        return fingers.get(0);
     }
 
     public KeyIdComparator getKeyIdComparator() {
         return keyIdComparator;
     }
 
-    public SortedSet<Node> getFingers() {
+    public List<Node> getFingers() {
         return fingers;
     }
 
-    public SortedSet<Node> setFingers(Node... nodes) {
-        fingers.clear();
-        for (Node node : nodes) {
-            fingers.add(node);
-        }
+    public List<Node> setFingers(Node... nodes) {
+        fingers = Arrays.asList(nodes);
         return fingers;
     }
     

@@ -32,7 +32,7 @@ public class NodeLocatorTest {
         node1.setFingers(node2);
         NodeLocator nodeLocator = new NodeLocator(node1, null);
         
-        assertEquals(node2.getName(), nodeLocator.findSuccessor(new KeyId(456)));
+        assertEquals(node2.getTNode(), nodeLocator.findSuccessor(new KeyId(456)));
     }
     
     @Test

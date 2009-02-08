@@ -48,5 +48,4 @@ public class NodeLocator implements Iface {
             throw new TException();
         }
     }
-
 }
