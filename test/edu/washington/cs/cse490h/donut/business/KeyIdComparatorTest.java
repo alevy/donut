@@ -17,9 +17,9 @@ public class KeyIdComparatorTest {
         KeyIdComparator keyIdComparator = new KeyIdComparator(baseId);
 
         assertEquals(0, keyIdComparator.distance(new KeyId(100), new KeyId(100)));
-        assertEquals(-10, keyIdComparator.distance(new KeyId(100), new KeyId(110)));
-        assertEquals(10, keyIdComparator.distance(new KeyId(100), new KeyId(90)));
-        assertEquals(-(Long.MAX_VALUE - 20),
+        assertEquals(10, keyIdComparator.distance(new KeyId(100), new KeyId(110)));
+        assertEquals(-10, keyIdComparator.distance(new KeyId(100), new KeyId(90)));
+        assertEquals(-20,
                 keyIdComparator.distance(new KeyId(60), new KeyId(40)));
     }
 

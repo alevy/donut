@@ -51,7 +51,6 @@ public class NodeLocator implements Iface {
             throw new TException();
         }
     }
-
     public DonutData get(KeyId entryId) throws TException {
         LOGGER.info("Get entity with id \"" + entryId.toString() + "\".");
         DonutData data = new DonutData();

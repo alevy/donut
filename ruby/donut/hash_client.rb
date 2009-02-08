@@ -32,8 +32,19 @@ module Donut
       socket = Thrift::Socket.new(node.name, 8080)
       client = KeyLocator::Client.new(Thrift::BinaryProtocol.new(socket))
       socket.open if not socket.open?
-      client.put(key_id, DonutData.new({:exists => true, :data => data}))
+      val = DonutData.new
+      if data
+        val.exists = true
+        val.data = data
+      else
+        val.exists = false
+      end
+      client.put(key_id, val)
       socket.close
+    end
+
+    def remove(key)
+      put(key, nil)
     end
  
     private
