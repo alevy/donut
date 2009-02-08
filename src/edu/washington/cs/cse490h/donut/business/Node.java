@@ -9,25 +9,45 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import edu.washington.edu.cs.cse490h.donut.service.KeyId;
+import edu.washington.edu.cs.cse490h.donut.service.TNode;
 
 /**
  * @author alevy
  */
 public class Node {
 
-    private final KeyId                          nodeId;
-    private final String                         name;
+    private final TNode                          tNode;
     
     private final KeyIdComparator                keyIdComparator;
     private final SortedSet<Node>                fingers;
     private Node                                 predecessor;
+    private Node                                 successor;
 
-    @Inject
-    public Node(@Named("NodeName") String name, @Named("NodeId") KeyId nodeId) {
-        this.name = name;
-        this.nodeId = nodeId;
-        this.keyIdComparator = new KeyIdComparator(nodeId);
+    /**
+     * Create a new Chord ring
+     * 
+     * @param tNode
+     */
+    public Node(TNode tNode) {
+        this.tNode = tNode;
+        this.keyIdComparator = new KeyIdComparator(getNodeId());
         this.fingers = new TreeSet<Node>(getKeyIdComparator().getNodeComparator());
+        this.predecessor = null;
+        this.successor = this;
+    }
+    
+    public Node(String name, KeyId id) {
+        this(new TNode(name, id));
+    }
+    
+    /**
+     * Join a Chord ring containing node n
+     * 
+     * @param toJoin
+     */
+    public void join(Node n) {
+        this.predecessor = null;
+        this.successor = n;
     }
 
     /**
@@ -57,7 +77,7 @@ public class Node {
             throw new IllegalStateException("All valid nodes must have predecessors");
         }
         
-        if (predecessor.getKeyIdComparator().compare(nodeId, id) >= 0) {
+        if (predecessor.getKeyIdComparator().compare(getNodeId(), id) >= 0) {
             return true;
         } else {
             return false;
@@ -65,11 +85,11 @@ public class Node {
     }
 
     public KeyId getNodeId() {
-        return nodeId;
+        return tNode.getNodeId();
     }
 
     public String getName() {
-        return name;
+        return tNode.getName();
     }
 
     public void setPredecessor(Node predecessor) {
@@ -81,10 +101,7 @@ public class Node {
     }
     
     public Node getSuccessor() {
-        if (fingers.isEmpty()) {
-            return this;
-        }
-        return fingers.first();
+        return successor;
     }
 
     public KeyIdComparator getKeyIdComparator() {
@@ -101,5 +118,9 @@ public class Node {
             fingers.add(node);
         }
         return fingers;
+    }
+    
+    public TNode getTNode() {
+        return tNode;
     }
 }

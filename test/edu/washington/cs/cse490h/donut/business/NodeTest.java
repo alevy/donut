@@ -88,7 +88,7 @@ public class NodeTest {
     
     @Test
     public void testGetSuccessor_NoFingers() throws Exception {
-        Node node = new Node(null, null);
+        Node node = new Node(null);
         assertSame(node, node.getSuccessor());
     }
 
