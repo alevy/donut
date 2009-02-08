@@ -85,5 +85,11 @@ public class NodeTest {
         node.setPredecessor(new Node("testNode0", new KeyId(0)));
         assertEquals(false, node.isResponsibleFor(new KeyId(16)));
     }
+    
+    @Test
+    public void testGetSuccessor_NoFingers() throws Exception {
+        Node node = new Node(null, null);
+        assertSame(node, node.getSuccessor());
+    }
 
 }

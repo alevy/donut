@@ -1,7 +1,6 @@
 package edu.washington.cs.cse490h.donut.business;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -79,6 +78,13 @@ public class Node {
 
     public Node getPredecessor() {
         return predecessor;
+    }
+    
+    public Node getSuccessor() {
+        if (fingers.isEmpty()) {
+            return this;
+        }
+        return fingers.first();
     }
 
     public KeyIdComparator getKeyIdComparator() {

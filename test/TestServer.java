@@ -2,8 +2,8 @@ import org.apache.thrift.TProcessor;
 import org.apache.thrift.server.TSimpleServer;
 import org.apache.thrift.transport.TServerSocket;
 
-import edu.washington.cs.cse490h.donut.NodeLocator;
 import edu.washington.cs.cse490h.donut.business.Node;
+import edu.washington.cs.cse490h.donut.service.NodeLocator;
 import edu.washington.cs.cse490h.donut.service.RemoteLocatorClientFactory;
 import edu.washington.edu.cs.cse490h.donut.service.KeyId;
 import edu.washington.edu.cs.cse490h.donut.service.KeyLocator;

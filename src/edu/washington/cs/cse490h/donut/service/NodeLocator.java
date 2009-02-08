@@ -1,4 +1,4 @@
-package edu.washington.cs.cse490h.donut;
+package edu.washington.cs.cse490h.donut.service;
 
 import java.util.logging.Logger;
 
@@ -7,8 +7,6 @@ import org.apache.thrift.TException;
 import com.google.inject.Inject;
 
 import edu.washington.cs.cse490h.donut.business.Node;
-import edu.washington.cs.cse490h.donut.service.ConnectionFailedException;
-import edu.washington.cs.cse490h.donut.service.LocatorClientFactory;
 import edu.washington.edu.cs.cse490h.donut.service.KeyId;
 import edu.washington.edu.cs.cse490h.donut.service.KeyLocator.Iface;
 
@@ -32,8 +30,7 @@ public class NodeLocator implements Iface {
         LOGGER.info("Request for entity with id \"" + entryId.toString() + "\".");
         Node next = node.closestPrecedingNode(entryId);
         if (next == node) {
-            // TODO(alevy): return the name of the successor
-            return null;
+            return node.getSuccessor().getName();
         }
         try {
             return clientFactory.get(next.getName()).findSuccessor(entryId);
