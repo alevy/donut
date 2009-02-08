@@ -50,7 +50,7 @@ public class NodeTest {
         
         KeyId entryId = new KeyId(125);
         Node nextHop = initialNode.closestPrecedingNode(entryId);
-        assertEquals(finger1.getName(), nextHop.getName());
+        assertEquals(finger1, nextHop);
     }
     
     @Test
@@ -87,9 +87,10 @@ public class NodeTest {
     }
     
     @Test
-    public void testGetSuccessor_NoFingers() throws Exception {
-        Node node = new Node(null, null);
-        assertSame(node, node.getSuccessor());
+    public void testJoin_SuccessorIsSet() throws Exception {
+        Node testNode0 = new Node("testNode0", new KeyId(100));
+        Node testNode1 = new Node("testNode1", new KeyId(1000));
+        testNode0.join(testNode1);
+        assertSame(testNode0.getSuccessor(), testNode1);
     }
-
 }

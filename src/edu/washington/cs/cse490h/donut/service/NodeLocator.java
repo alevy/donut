@@ -8,6 +8,7 @@ import com.google.inject.Inject;
 
 import edu.washington.cs.cse490h.donut.business.Node;
 import edu.washington.edu.cs.cse490h.donut.service.KeyId;
+import edu.washington.edu.cs.cse490h.donut.service.TNode;
 import edu.washington.edu.cs.cse490h.donut.service.KeyLocator.Iface;
 
 /**
@@ -26,14 +27,23 @@ public class NodeLocator implements Iface {
         this.clientFactory = clientFactory;
     }
 
-    public String findSuccessor(KeyId entryId) throws TException {
+    public TNode findSuccessor(KeyId entryId) throws TException {
         LOGGER.info("Request for entity with id \"" + entryId.toString() + "\".");
         Node next = node.closestPrecedingNode(entryId);
         if (next == node) {
-            return node.getSuccessor().getName();
+            return node.getSuccessor().getTNode();
         }
         try {
             return clientFactory.get(next.getName()).findSuccessor(entryId);
+        } catch (ConnectionFailedException e) {
+            throw new TException();
+        }
+    }
+    
+    public void join(Node n) throws TException {
+        try {
+            TNode found = clientFactory.get(n.getName()).findSuccessor(this.node.getNodeId());
+            this.node.join(new Node(found));
         } catch (ConnectionFailedException e) {
             throw new TException();
         }

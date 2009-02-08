@@ -1,33 +1,50 @@
 package edu.washington.cs.cse490h.donut.business;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
 import edu.washington.edu.cs.cse490h.donut.service.KeyId;
+import edu.washington.edu.cs.cse490h.donut.service.TNode;
 
 /**
  * @author alevy
  */
 public class Node {
 
-    private final KeyId                          nodeId;
-    private final String                         name;
+    private final TNode                          tNode;
     
     private final KeyIdComparator                keyIdComparator;
-    private final SortedSet<Node>                fingers;
+    private List<Node>                     fingers;
     private Node                                 predecessor;
 
-    @Inject
-    public Node(@Named("NodeName") String name, @Named("NodeId") KeyId nodeId) {
-        this.name = name;
-        this.nodeId = nodeId;
-        this.keyIdComparator = new KeyIdComparator(nodeId);
-        this.fingers = new TreeSet<Node>(getKeyIdComparator().getNodeComparator());
+    /**
+     * Create a new Chord ring
+     * 
+     * @param tNode
+     */
+    public Node(TNode tNode) {
+        this.tNode = tNode;
+        this.keyIdComparator = new KeyIdComparator(getNodeId());
+        // Todo (jprouty): Add a constant somewhere that specifies the current size of our keyspace.
+        this.fingers = new ArrayList<Node>(64);
+        this.predecessor = null;
+        // Set the current successor to this
+        this.fingers.add(0, this);
+    }
+    
+    public Node(String name, KeyId id) {
+        this(new TNode(name, id));
+    }
+    
+    /**
+     * Join a Chord ring containing node n
+     * 
+     * @param toJoin
+     */
+    public void join(Node n) {
+        this.predecessor = null;
+        this.fingers.set(0, n);
     }
 
     /**
@@ -38,11 +55,9 @@ public class Node {
      * @return the {@link Node} from the finger table that is the closest and preceding the entryId
      */
     public Node closestPrecedingNode(KeyId entryId) throws IllegalArgumentException {
-        List<Node> nodes = new ArrayList<Node>(getFingers());
-        
         for (int i = getFingers().size() - 1; i >= 0; --i) {
-            if (getKeyIdComparator().compare(entryId, nodes.get(i).getNodeId()) >= 0) {
-                return nodes.get(i);
+            if (getKeyIdComparator().compare(entryId, fingers.get(i).getNodeId()) >= 0) {
+                return fingers.get(i);
             }
         }
         return this;
@@ -57,7 +72,7 @@ public class Node {
             throw new IllegalStateException("All valid nodes must have predecessors");
         }
         
-        if (predecessor.getKeyIdComparator().compare(nodeId, id) >= 0) {
+        if (predecessor.getKeyIdComparator().compare(getNodeId(), id) >= 0) {
             return true;
         } else {
             return false;
@@ -65,11 +80,11 @@ public class Node {
     }
 
     public KeyId getNodeId() {
-        return nodeId;
+        return tNode.getNodeId();
     }
 
     public String getName() {
-        return name;
+        return tNode.getName();
     }
 
     public void setPredecessor(Node predecessor) {
@@ -81,25 +96,23 @@ public class Node {
     }
     
     public Node getSuccessor() {
-        if (fingers.isEmpty()) {
-            return this;
-        }
-        return fingers.first();
+        return fingers.get(0);
     }
 
     public KeyIdComparator getKeyIdComparator() {
         return keyIdComparator;
     }
 
-    public SortedSet<Node> getFingers() {
+    public List<Node> getFingers() {
         return fingers;
     }
 
-    public SortedSet<Node> setFingers(Node... nodes) {
-        fingers.clear();
-        for (Node node : nodes) {
-            fingers.add(node);
-        }
+    public List<Node> setFingers(Node... nodes) {
+        fingers = Arrays.asList(nodes);
         return fingers;
+    }
+    
+    public TNode getTNode() {
+        return tNode;
     }
 }
