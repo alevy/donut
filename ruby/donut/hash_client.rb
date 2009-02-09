@@ -1,6 +1,5 @@
-$:.unshift File.dirname(File.dirname(__FILE__))
-require '../../gen-rb/KeyLocator'
-require '../../gen-rb/node_types'
+require File.dirname(__FILE__) + '/../../gen-rb/KeyLocator'
+require File.dirname(__FILE__) + '/../../gen-rb/node_types'
 require 'digest/sha2'
 
 module Donut

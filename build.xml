@@ -1,0 +1,67 @@
+<project name="distributed-fs" default="build" basedir=".">
+
+    <description>Distributed FS</description>
+
+    <property name="src" value="src"/>
+    <property name="src.test" value="test"/>
+    <property name="build" value="bin"/>
+    <property name="lib" value="lib"/>
+    <property name="thrift-rb" value="gen-rb"/>
+    <property name="thrift-java" value="gen-javabean"/>
+	<property name="reports.test" value="test_reports"/>
+
+    <path id="project.class.path">
+    	<pathelement path="${build}"/>
+        <fileset dir="${lib}">
+            <filename name="*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="gen-thrift">
+        <echo message="Generating thrift sources"/> 
+        <exec executable="thrift" failonerror="true">
+            <arg line="-gen rb -gen java:beans,hashcode"/>
+            <arg file="thrift/node.thrift"/>
+        </exec>
+    </target>
+
+    <target name="init">
+        <tstamp />
+        <mkdir dir="${build}"/>
+    </target>
+
+    <target name="build" depends="gen-thrift,init">
+        <javac destdir="${build}" classpathref="project.class.path" source="1.5" failonerror="true">
+            <src path="${src}"/>
+            <src path="${thrift-java}"/>
+            <src path="${src.test}"/>
+        </javac>
+    </target>
+
+    <target name="clean">
+        <delete includeemptydirs="true" quiet="true">
+            <fileset dir="${thrift-java}"/>
+            <fileset dir="${thrift-rb}"/>
+            <fileset dir="${build}"/>
+        </delete>
+    </target>
+
+    <target name="test" depends="build">
+        <mkdir dir="${reports.test}"/>
+        <junit printsummary="yes" haltonfailure="yes">
+            <classpath refid="project.class.path"/>
+        	<formatter type="xml"/>
+            <batchtest todir="${reports.test}">
+                <fileset dir="${src.test}">
+                    <include name="**/*Test.java"/>
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+
+    <target name="TestServer" depends="build">
+        <java classname="TestServer" failonerror="true" fork="true">
+            <classpath refid="project.class.path"/>
+        </java>
+    </target>
+</project>
