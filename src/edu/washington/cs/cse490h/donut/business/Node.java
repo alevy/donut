@@ -8,39 +8,60 @@ import edu.washington.edu.cs.cse490h.donut.service.KeyId;
 import edu.washington.edu.cs.cse490h.donut.service.TNode;
 
 /**
- * @author alevy
+ * @author alevy, jprouty
  */
 public class Node {
 
-    private final TNode                          tNode;
-    
-    private final KeyIdComparator                keyIdComparator;
-    private List<Node>                     fingers;
-    private Node                                 predecessor;
+    public static final int       KEYSPACESIZE = 64;
+    private final TNode           tNode;
+
+    private final KeyIdComparator keyIdComparator;
+    private List<Node>            fingers;
+    private Node                  predecessor;
 
     /**
      * Create a new Chord ring
      * 
      * @param tNode
+     *            The Thrift Node object that describes the physical topology of the node.
      */
     public Node(TNode tNode) {
         this.tNode = tNode;
         this.keyIdComparator = new KeyIdComparator(getNodeId());
-        // Todo (jprouty): Add a constant somewhere that specifies the current size of our keyspace.
-        this.fingers = new ArrayList<Node>(64);
+
         this.predecessor = null;
-        // Set the current successor to this
-        this.fingers.add(0, this);
+        initFingers();
     }
 
+    /**
+     * Create a new Chord ring
+     * 
+     * @param name
+     *            The [host]name of the node (or IP)
+     * @param port
+     *            The port on which the node will reside
+     * @param id
+     *            The KeyId where this know will live in the Chord ring
+     */
     public Node(String name, int port, KeyId id) {
         this(new TNode(name, port, id));
+    }
+
+    /**
+     * Initializes the finger table. The successor and all fingers will become this, creating a
+     * complete chord ring.
+     */
+    private void initFingers() {
+        this.fingers = new ArrayList<Node>(KEYSPACESIZE);
+        for (int i = 0; i < KEYSPACESIZE; i++)
+            this.fingers.add(this);
     }
 
     /**
      * Join a Chord ring containing node n
      * 
      * @param toJoin
+     *            An existing Chord node that is already on the ring
      */
     public void join(Node n) {
         this.predecessor = null;
@@ -63,6 +84,9 @@ public class Node {
     }
 
     /**
+     * This method is unneeded because a node can never be positive of its predecessor at any given
+     * time. FindSuccesors will always find who's responsible for the given KeyId
+     * 
      * @param id
      * @return true if this node stores the value associated with {@code id}, false otherwise.
      */
@@ -102,10 +126,53 @@ public class Node {
         return keyIdComparator;
     }
 
+    /**
+     * Get a finger entry
+     * 
+     * @param i
+     *            The index to retrieve
+     * @return fingers[i]
+     */
+    public Node getFinger(int i) {
+        if (i < 0 && i >= fingers.size())
+            // Invalid range
+            throw new IndexOutOfBoundsException();
+
+        return fingers.get(i);
+    }
+
+    /**
+     * finger[i] = n
+     * 
+     * @param i
+     *            The index to set
+     * @param n
+     *            The node to set
+     */
+    public void setFinger(int i, Node n) {
+        if (i < 0 || i >= fingers.size())
+            // Invalid range
+            throw new IndexOutOfBoundsException();
+
+        fingers.set(i, n);
+    }
+
+    /**
+     * This method should only be used in testing!
+     * 
+     * @return The current list of fingers
+     */
     public List<Node> getFingers() {
         return fingers;
     }
 
+    /**
+     * This method should only be used in testing!
+     * 
+     * @param nodes
+     *            The nodes to make the new finger list
+     * @return The current list of fingers
+     */
     public List<Node> setFingers(Node... nodes) {
         fingers = Arrays.asList(nodes);
         return fingers;

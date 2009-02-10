@@ -27,6 +27,8 @@ service KeyLocator {
    */
   TNode findSuccessor(1:KeyId entryId),
   
+  void ping(),
+  
   DonutData get(1:KeyId entryId),
   
   void put(1:KeyId entryId, DonutData data),

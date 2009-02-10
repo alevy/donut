@@ -19,15 +19,22 @@ import edu.washington.edu.cs.cse490h.donut.service.KeyLocator.Iface;
  */
 public class NodeLocator implements Iface {
 
-    private static Logger              LOGGER  = Logger.getLogger(NodeLocator.class.getName());
+    private static Logger              LOGGER;
     private final Node                 node;
     private final LocatorClientFactory clientFactory;
-    private final Map<KeyId, byte[]>   dataMap = new HashMap<KeyId, byte[]>();
+    private final Map<KeyId, byte[]>   dataMap;
+    private int                        nextFingerToUpdate;
+
+    static {
+        LOGGER = Logger.getLogger(NodeLocator.class.getName());
+    }
 
     @Inject
     public NodeLocator(Node node, LocatorClientFactory clientFactory) {
         this.node = node;
         this.clientFactory = clientFactory;
+        this.dataMap = new HashMap<KeyId, byte[]>();
+        this.nextFingerToUpdate = 0;
     }
 
     public TNode findSuccessor(KeyId entryId) throws TException {
@@ -51,6 +58,7 @@ public class NodeLocator implements Iface {
             throw new TException();
         }
     }
+
     public DonutData get(KeyId entryId) throws TException {
         LOGGER.info("Get entity with id \"" + entryId.toString() + "\".");
         DonutData data = new DonutData();
@@ -76,4 +84,50 @@ public class NodeLocator implements Iface {
         return dataMap;
     }
 
+    // Should do nothing if connection completes.
+    // If the connection fails, then a TException is thrown.
+    public void ping() throws TException {
+
+    }
+
+    public boolean ping(Node n) {
+        try {
+            clientFactory.get(n).ping();
+            return true;
+        } catch (ConnectionFailedException e) {
+            return false;
+        } catch (TException e) {
+            // Thrift error. Take a look at the trace
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Called periodically. Checks whether the predecessor has failed.
+     */
+    public void checkPredecessor() {
+        if (this.node.getPredecessor() != null && !ping(this.node.getPredecessor())) {
+            // A predecessor is defined but could not be reached. Nullify the current predecessor
+            this.node.setPredecessor(null);
+        }
+    }
+
+    /**
+     * Called periodically. Refreshes the finger table entries. nextFingerToUpdate stores the index
+     * of the next finger to fix.
+     * 
+     * @throws TException
+     */
+    public void fixFingers() throws TException {
+        if (nextFingerToUpdate >= Node.KEYSPACESIZE)
+            nextFingerToUpdate = 0;
+
+        Node updatedFinger = new Node(findSuccessor(new KeyId(
+                this.node.getNodeId().getId() + 2 << nextFingerToUpdate - 1)));
+
+        this.node.setFinger(nextFingerToUpdate, updatedFinger);
+
+        nextFingerToUpdate = nextFingerToUpdate + 1;
+    }
 }
