@@ -1,6 +1,6 @@
 package edu.washington.cs.cse490h.donut.service;
 
-import edu.washington.cs.cse490h.donut.business.Node;
+import edu.washington.edu.cs.cse490h.donut.service.TNode;
 import edu.washington.edu.cs.cse490h.donut.service.KeyLocator.Iface;
 
 /**
@@ -9,6 +9,6 @@ import edu.washington.edu.cs.cse490h.donut.service.KeyLocator.Iface;
  */
 public interface LocatorClientFactory {
 
-    Iface get(Node node) throws ConnectionFailedException;
+    Iface get(TNode node) throws ConnectionFailedException;
     
 }

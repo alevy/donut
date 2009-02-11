@@ -38,13 +38,13 @@ public class NodeLocator implements Iface {
     }
 
     public TNode findSuccessor(KeyId entryId) throws TException {
-        LOGGER.info("Request for entity with id \"" + entryId.toString() + "\".");
+        LOGGER.info(this.node.getTNode() + ": Request for entity with id \"" + entryId.toString() + "\".");
         Node next = node.closestPrecedingNode(entryId);
-        if (next == node) {
+        if (next.equals(node)) {
             return node.getSuccessor().getTNode();
         }
         try {
-            return clientFactory.get(next).findSuccessor(entryId);
+            return clientFactory.get(next.getTNode()).findSuccessor(entryId);
         } catch (ConnectionFailedException e) {
             throw new TException(e);
         }
@@ -52,7 +52,7 @@ public class NodeLocator implements Iface {
 
     public void join(Node n) throws TException {
         try {
-            TNode found = clientFactory.get(n).findSuccessor(this.node.getNodeId());
+            TNode found = clientFactory.get(n.getTNode()).findSuccessor(this.node.getNodeId());
             this.node.join(new Node(found));
         } catch (ConnectionFailedException e) {
             throw new TException();
@@ -60,7 +60,7 @@ public class NodeLocator implements Iface {
     }
 
     public DonutData get(KeyId entryId) throws TException {
-        LOGGER.info("Get entity with id \"" + entryId.toString() + "\".");
+        LOGGER.info(this.node + ": Get entity with id \"" + entryId.toString() + "\".");
         DonutData data = new DonutData();
         data.setData(dataMap.get(entryId));
         if (data.getData() != null) {
@@ -92,7 +92,7 @@ public class NodeLocator implements Iface {
 
     public boolean ping(Node n) {
         try {
-            clientFactory.get(n).ping();
+            clientFactory.get(n.getTNode()).ping();
             return true;
         } catch (ConnectionFailedException e) {
             return false;

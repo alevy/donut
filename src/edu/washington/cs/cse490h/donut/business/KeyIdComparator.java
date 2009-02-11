@@ -28,17 +28,17 @@ public class KeyIdComparator implements Comparator<KeyId> {
      */
     private KeyId normalize(KeyId id) {
         long diff = id.getId() - baseId.getId();
-//        if (diff < 0) {
-//            return new KeyId(Long.MAX_VALUE + diff);
-//        }
+        if (diff < 0) {
+            return new KeyId(Long.MAX_VALUE + diff);
+        }
         return new KeyId(diff);
     }
 
     public int compare(KeyId key1, KeyId key2) {
-        long diff = -distance(key1, key2);
+        long diff = distance(key1, key2);
         if (diff == 0) {
             return 0;
-        } else if (diff < 0) {
+        } else if (diff > 0) {
             return -1;
         } else {
             return 1;

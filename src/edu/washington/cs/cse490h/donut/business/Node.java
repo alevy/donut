@@ -182,9 +182,14 @@ public class Node {
     public boolean equals(Object obj) {
         if (Node.class.isInstance(obj)) {
             Node other = (Node) obj;
-            return other.getTNode() == this.getTNode();
+            return other.getTNode().equals(this.getTNode());
         }
         return false;
+    }
+    
+    @Override
+    public String toString() {
+        return getTNode().toString();
     }
 
     public TNode getTNode() {
