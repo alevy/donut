@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import org.apache.thrift.TProcessor;
 import org.apache.thrift.server.TServer;
-import org.apache.thrift.server.TSimpleServer;
+import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
@@ -100,7 +100,7 @@ public class DonutModule implements Module {
         }
 
         public TServer get() {
-            return new TSimpleServer(proc, transport);
+            return new TThreadPoolServer(proc, transport);
         }
     }
 

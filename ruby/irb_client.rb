@@ -7,7 +7,7 @@ require 'donut/hash_client'
 
 ARGV.push("--simple-prompt")
 
-@_client = Donut::HashClient.new
+@_client = Donut::HashClient.new("localhost", 8081)
 
 def get(x)
   @_client.get(x)

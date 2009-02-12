@@ -108,15 +108,13 @@ public class DonutClient extends Thread {
         try {
             TNode x = null;
             if (!node.getTNode().equals(node.getSuccessor())) {
-                System.out.println(node.getSuccessor());
                 Iface successorClient = clientFactory.get(node.getSuccessor());
                 x = successorClient.getPredecessor();
-                System.out.println(x);
                 successorClient.notify(node.getTNode());
             } else {
                 x = node.getPredecessor();
             }
-            if (x != null && x.isNil()
+            if (x != null && !x.isNil()
                     || KeyIdUtil.isAfterXButBeforeY(x.getNodeId(), node.getNodeId(), node.getSuccessor()
                             .getNodeId())) {
                 node.setSuccessor(x);
