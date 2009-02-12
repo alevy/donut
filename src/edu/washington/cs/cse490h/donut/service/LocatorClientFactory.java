@@ -9,6 +9,6 @@ import edu.washington.edu.cs.cse490h.donut.service.KeyLocator.Iface;
  */
 public interface LocatorClientFactory {
 
-    Iface get(TNode node) throws ConnectionFailedException;
+    Iface get(TNode node) throws RetryFailedException;
     
 }

@@ -55,7 +55,7 @@ public class DonutModule implements Module {
         CmdLineParser parser = new CmdLineParser(this);
         try {
             parser.parseArgument(args);
-            System.out.println("Setup: " + hostname + " " + port + " " + key);
+            System.out.println("Setup: " + getHostname() + " " + getPort() + " " + getKey());
         } catch (CmdLineException e) {
             int start = e.getMessage().indexOf('"') + 1;
             int end = e.getMessage().lastIndexOf('"');
@@ -68,10 +68,10 @@ public class DonutModule implements Module {
     }
 
     public void configure(Binder binder) {
-        Node node = new Node(hostname, port, new KeyId(key));
+        Node node = new Node(getHostname(), getPort(), new KeyId(getKey()));
         TNode known = new TNode();
-        if (knownHostname != null) {
-            known = new TNode(knownHostname, knownPort, null, false);
+        if (getKnownHostname() != null) {
+            known = new TNode(getKnownHostname(), getKnownPort(), null, false);
             node.setSuccessor(known);
         }
 
@@ -80,13 +80,53 @@ public class DonutModule implements Module {
         binder.bind(LocatorClientFactory.class).to(RemoteLocatorClientFactory.class);
         binder.bind(KeyLocator.Iface.class).to(NodeLocator.class);
         try {
-            binder.bind(TServerTransport.class).toInstance(new TServerSocket(port));
+            binder.bind(TServerTransport.class).toInstance(new TServerSocket(getPort()));
         } catch (TTransportException e) {
-            System.err.println("Unable to listen on port " + port + ".");
+            System.err.println("Unable to listen on port " + getPort() + ".");
             System.exit(1);
         }
         binder.bind(TProcessor.class).toProvider(TProcessorProvider.class);
         binder.bind(TServer.class).toProvider(TServerProvider.class);
+    }
+
+    public void setHostname(String hostname) {
+        this.hostname = hostname;
+    }
+
+    public String getHostname() {
+        return hostname;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setKey(long key) {
+        this.key = key;
+    }
+
+    public long getKey() {
+        return key;
+    }
+
+    public void setKnownHostname(String knownHostname) {
+        this.knownHostname = knownHostname;
+    }
+
+    public String getKnownHostname() {
+        return knownHostname;
+    }
+
+    public void setKnownPort(int knownPort) {
+        this.knownPort = knownPort;
+    }
+
+    public int getKnownPort() {
+        return knownPort;
     }
 
     private class TServerProvider implements Provider<TServer> {

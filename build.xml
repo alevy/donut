@@ -60,8 +60,8 @@
         </junit>
     </target>
 
-    <target name="Server" depends="build">
-        <java classname="edu.washington.cs.cse490h.donut.Donut" failonerror="true" fork="true">
+    <target name="TestDonut" depends="build">
+        <java classname="edu.washington.cs.cse490h.donut.TestDonut" failonerror="true" fork="true">
             <classpath refid="project.class.path"/>
         </java>
     </target>

@@ -11,9 +11,8 @@ module Donut
     end
 
     def get(key)
-      key_id = KeyId.new({:id => key })#Digest::SHA512.hexdigest(key).hex % 2**64})
+      key_id = KeyId.new({:id => gen_key(key)})
       node = get_node(key_id)
-      puts node.port
       socket = Thrift::Socket.new(node.name, node.port)
       client = KeyLocator::Client.new(Thrift::BinaryProtocol.new(socket))
       socket.open if not socket.open?
@@ -27,7 +26,7 @@ module Donut
     end
 
     def put(key, data)
-      key_id = KeyId.new({:id => key })#Digest::SHA512.hexdigest(key).hex % 2**64})
+      key_id = KeyId.new({:id => gen_key(key)})
       node = get_node(key_id)
       socket = Thrift::Socket.new(node.name, node.port)
       client = KeyLocator::Client.new(Thrift::BinaryProtocol.new(socket))
@@ -46,7 +45,11 @@ module Donut
     def remove(key)
       put(key, nil)
     end
- 
+
+    def gen_key(key)
+      Digest::SHA512.hexdigest(key).hex % 2**64
+    end
+
     def get_node(key)
       @socket.open if not @socket.open?
       result = @client.findSuccessor(key)

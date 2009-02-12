@@ -5,9 +5,12 @@ require 'irb'
 require 'irb/completion'
 require 'donut/hash_client'
 
+port = ARGV.pop || 8080 # Last argument
+hostname = ARGV.pop || "localhost" # Second to last argument
+
 ARGV.push("--simple-prompt")
 
-@_client = Donut::HashClient.new("localhost", 8081)
+@_client = Donut::HashClient.new(hostname, port)
 
 def get(x)
   @_client.get(x)

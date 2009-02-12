@@ -25,6 +25,9 @@ public class Node {
      *            The Thrift Node object that describes the physical topology of the node.
      */
     public Node(TNode tNode) {
+        if (tNode.isNil()) {
+            throw new IllegalArgumentException();
+        }
         this.tNode = tNode;
         this.predecessor = null;
         initFingers();
@@ -49,8 +52,8 @@ public class Node {
      * complete chord ring.
      */
     private void initFingers() {
-        this.fingers = new ArrayList<TNode>(KEYSPACESIZE);
-        for (int i = 0; i < KEYSPACESIZE; i++)
+        this.fingers = new ArrayList<TNode>(KEYSPACESIZE - 1);
+        for (int i = 0; i < KEYSPACESIZE - 1; i++)
             this.fingers.add(tNode);
     }
 

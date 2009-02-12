@@ -37,24 +37,21 @@ public class NodeLocator implements Iface {
     }
 
     public TNode findSuccessor(KeyId entryId) throws TException {
-        LOGGER
-                .info(node.getPort() + ": Request for entity with id \"" + entryId.toString()
-                        + "\".");
+        LOGGER.info("Request for entity with id \"" + entryId.toString() + "\"");
         TNode next = node.closestPrecedingNode(entryId);
         if (next.equals(node.getTNode())) {
-            LOGGER.info("Found");
+            LOGGER.info("I am the predecessor for \"" + entryId.toString() + "\"");
             return node.getSuccessor();
         }
         try {
-            LOGGER.info("Asking " + next);
             return clientFactory.get(next).findSuccessor(entryId);
-        } catch (ConnectionFailedException e) {
+        } catch (RetryFailedException e) {
             throw new TException(e);
         }
     }
 
     public DonutData get(KeyId entryId) throws TException {
-        LOGGER.info(this.node + ": Get entity with id \"" + entryId.toString() + "\".");
+        LOGGER.info("Get entity with id \"" + entryId.toString() + "\".");
         DonutData data = new DonutData();
         data.setData(dataMap.get(entryId));
         if (data.getData() != null) {
@@ -78,8 +75,10 @@ public class NodeLocator implements Iface {
         return dataMap;
     }
 
-    // Should do nothing if connection completes.
-    // If the connection fails, then a TException is thrown.
+    /* 
+     * Should do nothing if connection completes.
+     * If the connection fails, then a TException is thrown.
+     */
     public void ping() throws TException {
 
     }

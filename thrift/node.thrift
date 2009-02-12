@@ -22,7 +22,8 @@ struct DonutData {
  
 service KeyLocator {
   
-  /** @param entryId the id we are looking for
+  /** 
+   * @param entryId the id we are looking for
    * @return the name of the node that holds the entryId
    *  		 or null if not found.
    */

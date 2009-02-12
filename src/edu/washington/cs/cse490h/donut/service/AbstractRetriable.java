@@ -17,7 +17,7 @@ public abstract class AbstractRetriable<T, E> {
         return retries;
     }
     
-    public T get(E name) throws ConnectionFailedException {
+    public T get(E name) throws RetryFailedException {
         Exception exception = null;
 
         for (int i = 0; i < getRetries(); ++i) {
@@ -28,7 +28,7 @@ public abstract class AbstractRetriable<T, E> {
             }
         }
 
-        throw new ConnectionFailedException(exception);  
+        throw new RetryFailedException(exception);  
     }
     
     protected abstract T tryOne(E name) throws Exception;
