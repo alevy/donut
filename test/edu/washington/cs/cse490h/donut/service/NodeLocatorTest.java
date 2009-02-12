@@ -28,12 +28,12 @@ public class NodeLocatorTest {
     @Test
     public void testFindSuccessor_ImmediateSuccessor() throws Exception {
         Node node1 = new Node("node1", 8080, new KeyId(100));
-        Node node2 = new Node("node2", 8080, new KeyId(900));
+        TNode node2 = new TNode("node2", 8080, new KeyId(900), false);
         
-        node1.setFingers(node2);
+        node1.setSuccessor(node2);
         NodeLocator nodeLocator = new NodeLocator(node1, null);
         
-        assertEquals(node2.getTNode(), nodeLocator.findSuccessor(new KeyId(456)));
+        assertEquals(node2, nodeLocator.findSuccessor(new KeyId(456)));
     }
     
     @Test
@@ -41,15 +41,15 @@ public class NodeLocatorTest {
         KeyId entryId = new KeyId(1024);
 
         Node node1 = new Node("node1", 8080, new KeyId(100));
-        Node node2 = new Node("node2", 8080, new KeyId(900));
+        TNode node2 = new TNode("node2", 8080, new KeyId(900), false);
         
-        TNode resultNode = new TNode("resultNode", 8080, null);
+        TNode resultNode = new TNode("resultNode", 8080, null, false);
         
-        node1.setFingers(node2);
+        node1.setSuccessor(node2);
         NodeLocator nodeLocator = new NodeLocator(node1, clientFactoryMock);
         
         // ClientFactory Expectations:
-        expect(clientFactoryMock.get(node2.getTNode())).andReturn(nextLocatorMock);
+        expect(clientFactoryMock.get(node2)).andReturn(nextLocatorMock);
         replay(clientFactoryMock);
         
         // NextLocatorMock Expectations:

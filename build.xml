@@ -8,7 +8,8 @@
     <property name="lib" value="lib"/>
     <property name="thrift-rb" value="gen-rb"/>
     <property name="thrift-java" value="gen-javabean"/>
-	<property name="reports.test" value="test_reports"/>
+    <property name="reports.test" value="test_reports"/>
+    <property environment="env"/>
 
     <path id="project.class.path">
     	<pathelement path="${build}"/>
@@ -59,8 +60,8 @@
         </junit>
     </target>
 
-    <target name="TestServer" depends="build">
-        <java classname="TestServer" failonerror="true" fork="true">
+    <target name="Server" depends="build">
+        <java classname="edu.washington.cs.cse490h.donut.Donut" failonerror="true" fork="true">
             <classpath refid="project.class.path"/>
         </java>
     </target>

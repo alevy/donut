@@ -6,6 +6,8 @@ package edu.washington.cs.cse490h.donut.service;
  */
 public class ConnectionFailedException extends Exception {
     
+    private static final long serialVersionUID = 1813350771785633251L;
+
     public ConnectionFailedException() {
         super();
     }

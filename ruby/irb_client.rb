@@ -21,6 +21,10 @@ def remove(x)
   @_client.remove(x)
 end
 
+def get_node(x)
+  @_client.get_node(KeyId.new({ :id => x }))
+end
+
 puts "======================================================="
 puts "Donut/HashTable Interactive Client"
 puts "======================================================="

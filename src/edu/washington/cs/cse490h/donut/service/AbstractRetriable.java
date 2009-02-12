@@ -1,6 +1,5 @@
-package edu.washington.cs.cse490h.donut;
+package edu.washington.cs.cse490h.donut.service;
 
-import edu.washington.cs.cse490h.donut.service.ConnectionFailedException;
 
 public abstract class AbstractRetriable<T, E> {
 

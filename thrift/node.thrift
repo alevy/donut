@@ -8,6 +8,7 @@ struct TNode {
 	1:string name
 	2:i32 port
 	3:KeyId nodeId
+	4:optional bool nil = 0;
 }
  
 struct MetaData {
@@ -27,9 +28,13 @@ service KeyLocator {
    */
   TNode findSuccessor(1:KeyId entryId),
   
+  TNode getPredecessor(),
+  
   void ping(),
   
   DonutData get(1:KeyId entryId),
   
   void put(1:KeyId entryId, DonutData data),
+  
+  void notify(1:TNode n)
 }

@@ -1,9 +1,9 @@
 package edu.washington.cs.cse490h.donut.business;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import edu.washington.cs.cse490h.donut.util.KeyIdUtil;
 import edu.washington.edu.cs.cse490h.donut.service.KeyId;
 import edu.washington.edu.cs.cse490h.donut.service.TNode;
 
@@ -15,9 +15,8 @@ public class Node {
     public static final int       KEYSPACESIZE = 64;
     private final TNode           tNode;
 
-    private final KeyIdComparator keyIdComparator;
-    private List<Node>            fingers;
-    private Node                  predecessor;
+    private List<TNode>            fingers;
+    private TNode                  predecessor;
 
     /**
      * Create a new Chord ring
@@ -27,8 +26,6 @@ public class Node {
      */
     public Node(TNode tNode) {
         this.tNode = tNode;
-        this.keyIdComparator = new KeyIdComparator(getNodeId());
-
         this.predecessor = null;
         initFingers();
     }
@@ -44,7 +41,7 @@ public class Node {
      *            The KeyId where this know will live in the Chord ring
      */
     public Node(String name, int port, KeyId id) {
-        this(new TNode(name, port, id));
+        this(new TNode(name, port, id, false));
     }
 
     /**
@@ -52,9 +49,9 @@ public class Node {
      * complete chord ring.
      */
     private void initFingers() {
-        this.fingers = new ArrayList<Node>(KEYSPACESIZE);
+        this.fingers = new ArrayList<TNode>(KEYSPACESIZE);
         for (int i = 0; i < KEYSPACESIZE; i++)
-            this.fingers.add(this);
+            this.fingers.add(tNode);
     }
 
     /**
@@ -63,7 +60,7 @@ public class Node {
      * @param toJoin
      *            An existing Chord node that is already on the ring
      */
-    public void join(Node n) {
+    public void join(TNode n) {
         this.predecessor = null;
         this.fingers.set(0, n);
     }
@@ -74,32 +71,18 @@ public class Node {
      * @param entryId
      * @return the {@link Node} from the finger table that is the closest and preceding the entryId
      */
-    public Node closestPrecedingNode(KeyId entryId) throws IllegalArgumentException {
-        for (int i = getFingers().size() - 1; i >= 0; --i) {
-            if (getKeyIdComparator().compare(entryId, fingers.get(i).getNodeId()) >= 0) {
+    public TNode closestPrecedingNode(KeyId entryId) throws IllegalArgumentException {
+        long id = entryId.getId();
+
+        long prevId = getNodeId().getId();
+        for (int i = fingers.size() - 1; i >= 0; --i) {
+            long currentId = fingers.get(i).getNodeId().getId();
+            if (KeyIdUtil.isAfterXButBeforeY(id, currentId, prevId)) {
                 return fingers.get(i);
             }
+            prevId = currentId;
         }
-        return this;
-    }
-
-    /**
-     * This method is unneeded because a node can never be positive of its predecessor at any given
-     * time. FindSuccesors will always find who's responsible for the given KeyId
-     * 
-     * @param id
-     * @return true if this node stores the value associated with {@code id}, false otherwise.
-     */
-    public boolean isResponsibleFor(KeyId id) {
-        if (predecessor == null) {
-            throw new IllegalStateException("All valid nodes must have predecessors");
-        }
-
-        if (predecessor.getKeyIdComparator().compare(getNodeId(), id) >= 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return getTNode();
     }
 
     public KeyId getNodeId() {
@@ -110,20 +93,16 @@ public class Node {
         return tNode.getName();
     }
 
-    public void setPredecessor(Node predecessor) {
+    public void setPredecessor(TNode predecessor) {
         this.predecessor = predecessor;
     }
 
-    public Node getPredecessor() {
+    public TNode getPredecessor() {
         return predecessor;
     }
 
-    public Node getSuccessor() {
+    public TNode getSuccessor() {
         return fingers.get(0);
-    }
-
-    public KeyIdComparator getKeyIdComparator() {
-        return keyIdComparator;
     }
 
     /**
@@ -133,7 +112,7 @@ public class Node {
      *            The index to retrieve
      * @return fingers[i]
      */
-    public Node getFinger(int i) {
+    public TNode getFinger(int i) {
         if (i < 0 && i >= fingers.size())
             // Invalid range
             throw new IndexOutOfBoundsException();
@@ -149,33 +128,12 @@ public class Node {
      * @param n
      *            The node to set
      */
-    public void setFinger(int i, Node n) {
+    public void setFinger(int i, TNode n) {
         if (i < 0 || i >= fingers.size())
             // Invalid range
             throw new IndexOutOfBoundsException();
 
         fingers.set(i, n);
-    }
-
-    /**
-     * This method should only be used in testing!
-     * 
-     * @return The current list of fingers
-     */
-    public List<Node> getFingers() {
-        return fingers;
-    }
-
-    /**
-     * This method should only be used in testing!
-     * 
-     * @param nodes
-     *            The nodes to make the new finger list
-     * @return The current list of fingers
-     */
-    public List<Node> setFingers(Node... nodes) {
-        fingers = Arrays.asList(nodes);
-        return fingers;
     }
 
     @Override
@@ -189,7 +147,7 @@ public class Node {
     
     @Override
     public String toString() {
-        return getTNode().toString();
+        return tNode.toString();
     }
 
     public TNode getTNode() {
@@ -198,5 +156,10 @@ public class Node {
 
     public int getPort() {
         return tNode.getPort();
+    }
+
+    public void setSuccessor(TNode node) {
+        this.fingers.set(0, node);
+        
     }
 }
