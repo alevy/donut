@@ -8,16 +8,15 @@ struct TNode {
 	1:string name
 	2:i32 port
 	3:KeyId nodeId
-	4:optional bool nil = 0;
 }
  
-struct MetaData {
- 
-}
-
 struct DonutData {
 	1:bool exists = 1,
 	2:optional binary data
+}
+
+exception NodeNotFoundException {
+
 }
  
 service KeyLocator {
@@ -29,7 +28,7 @@ service KeyLocator {
    */
   TNode findSuccessor(1:KeyId entryId),
   
-  TNode getPredecessor(),
+  TNode getPredecessor() throws (1:NodeNotFoundException e),
   
   void ping(),
   

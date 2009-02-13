@@ -11,13 +11,12 @@ import edu.washington.cs.cse490h.donut.service.RetryFailedException;
 import edu.washington.cs.cse490h.donut.service.LocatorClientFactory;
 import edu.washington.cs.cse490h.donut.util.KeyIdUtil;
 import edu.washington.edu.cs.cse490h.donut.service.KeyId;
+import edu.washington.edu.cs.cse490h.donut.service.NodeNotFoundException;
 import edu.washington.edu.cs.cse490h.donut.service.TNode;
 import edu.washington.edu.cs.cse490h.donut.service.KeyLocator.Iface;
 
 /**
- * 
  * @author alevy
- *
  */
 public class DonutClient extends Thread {
     private static final Logger        LOGGER;
@@ -83,15 +82,11 @@ public class DonutClient extends Thread {
      * of the next finger to fix.
      */
     public void fixFingers() {
-        if (!node.getSuccessor().equals(node)) {
-            return;
-        }
-
         TNode updatedFinger = null;
         try {
             Iface iface;
             try {
-                iface = clientFactory.get(node.getSuccessor());
+                iface = clientFactory.get(node.getTNode());
             } catch (RetryFailedException e) {
                 return;
             }
@@ -110,17 +105,21 @@ public class DonutClient extends Thread {
     /**
      * Called periodically. Verify's immediate successor, and tell's successor about us.
      */
-    public void stabalize() {
+    public void stabilize() {
 
         TNode x = null;
         if (!node.getTNode().equals(node.getSuccessor())) {
             try {
                 Iface successorClient = clientFactory.get(node.getSuccessor());
-                x = successorClient.getPredecessor();
+                try {
+                    x = successorClient.getPredecessor();
+                } catch (NodeNotFoundException e) {
+                    // Successor's predecessor is null
+                    x = null;
+                }
                 successorClient.notify(node.getTNode());
-                if (!x.isNil()
-                        && KeyIdUtil.isAfterXButBeforeY(x.getNodeId(), node.getNodeId(), node
-                                .getSuccessor().getNodeId())) {
+                if (KeyIdUtil.isAfterXButBeforeY(x.getNodeId(), node.getNodeId(), node
+                        .getSuccessor().getNodeId())) {
                     node.setSuccessor(x);
                 }
             } catch (TException e) {
@@ -146,7 +145,7 @@ public class DonutClient extends Thread {
         super.run();
         while (true) {
             try {
-                stabalize();
+                stabilize();
                 checkPredecessor();
                 fixFingers();
                 sleep(100);

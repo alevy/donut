@@ -25,9 +25,6 @@ public class Node {
      *            The Thrift Node object that describes the physical topology of the node.
      */
     public Node(TNode tNode) {
-        if (tNode.isNil()) {
-            throw new IllegalArgumentException();
-        }
         this.tNode = tNode;
         this.predecessor = null;
         initFingers();
@@ -44,7 +41,7 @@ public class Node {
      *            The KeyId where this know will live in the Chord ring
      */
     public Node(String name, int port, KeyId id) {
-        this(new TNode(name, port, id, false));
+        this(new TNode(name, port, id));
     }
 
     /**

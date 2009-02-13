@@ -12,6 +12,7 @@ import edu.washington.cs.cse490h.donut.business.Node;
 import edu.washington.cs.cse490h.donut.util.KeyIdUtil;
 import edu.washington.edu.cs.cse490h.donut.service.DonutData;
 import edu.washington.edu.cs.cse490h.donut.service.KeyId;
+import edu.washington.edu.cs.cse490h.donut.service.NodeNotFoundException;
 import edu.washington.edu.cs.cse490h.donut.service.TNode;
 import edu.washington.edu.cs.cse490h.donut.service.KeyLocator.Iface;
 
@@ -83,11 +84,10 @@ public class NodeLocator implements Iface {
 
     }
 
-    public TNode getPredecessor() throws TException {
+    public TNode getPredecessor() throws TException, NodeNotFoundException {
         TNode predecessor = node.getPredecessor();
         if (predecessor == null) {
-            predecessor = new TNode();
-            predecessor.setNil(true);
+            throw new NodeNotFoundException();
         }
         return predecessor;
     }

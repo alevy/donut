@@ -28,7 +28,7 @@ public class NodeLocatorTest {
     @Test
     public void testFindSuccessor_ImmediateSuccessor() throws Exception {
         Node node1 = new Node("node1", 8080, new KeyId(100));
-        TNode node2 = new TNode("node2", 8080, new KeyId(900), false);
+        TNode node2 = new TNode("node2", 8080, new KeyId(900));
         
         node1.setSuccessor(node2);
         NodeLocator nodeLocator = new NodeLocator(node1, null);
@@ -41,9 +41,9 @@ public class NodeLocatorTest {
         KeyId entryId = new KeyId(1024);
 
         Node node1 = new Node("node1", 8080, new KeyId(100));
-        TNode node2 = new TNode("node2", 8080, new KeyId(900), false);
+        TNode node2 = new TNode("node2", 8080, new KeyId(900));
         
-        TNode resultNode = new TNode("resultNode", 8080, null, false);
+        TNode resultNode = new TNode("resultNode", 8080, null);
         
         node1.setSuccessor(node2);
         NodeLocator nodeLocator = new NodeLocator(node1, clientFactoryMock);

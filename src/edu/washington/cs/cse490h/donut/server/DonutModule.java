@@ -71,7 +71,7 @@ public class DonutModule implements Module {
         Node node = new Node(getHostname(), getPort(), new KeyId(getKey()));
         TNode known = new TNode();
         if (getKnownHostname() != null) {
-            known = new TNode(getKnownHostname(), getKnownPort(), null, false);
+            known = new TNode(getKnownHostname(), getKnownPort(), null);
             node.setSuccessor(known);
         }
 
