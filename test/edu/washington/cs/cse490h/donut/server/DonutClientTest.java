@@ -49,6 +49,7 @@ public class DonutClientTest {
         DonutClient donutClient = new DonutClient(testNode, clientLocatorMock);
 
         expect(clientLocatorMock.get(knownNode)).andReturn(keyLocator);
+        clientLocatorMock.release(knownNode);
         expect(keyLocator.findSuccessor(testNode.getNodeId())).andReturn(successorNode);
         replay(clientLocatorMock, keyLocator);
 
@@ -64,6 +65,7 @@ public class DonutClientTest {
         TNode node = new TNode();
 
         expect(clientLocatorMock.get(node)).andReturn(keyLocator);
+        clientLocatorMock.release(node);
         keyLocator.ping();
         replay(clientLocatorMock);
         replay(keyLocator);
@@ -78,6 +80,7 @@ public class DonutClientTest {
         TNode node = new TNode();
 
         expect(clientLocatorMock.get(node)).andReturn(keyLocator);
+        clientLocatorMock.release(node);
         keyLocator.ping();
         EasyMock.expectLastCall().andThrow(new TException());
         replay(clientLocatorMock, keyLocator);
@@ -93,6 +96,7 @@ public class DonutClientTest {
         DonutClient donutClient = new DonutClient(node, clientLocatorMock);
 
         expect(clientLocatorMock.get(predecessor)).andReturn(keyLocator);
+        clientLocatorMock.release(predecessor);
         keyLocator.ping();
         replay(clientLocatorMock, keyLocator);
 
@@ -108,6 +112,7 @@ public class DonutClientTest {
         DonutClient donutClient = new DonutClient(node, clientLocatorMock);
 
         expect(clientLocatorMock.get(predecessor)).andReturn(keyLocator);
+        clientLocatorMock.release(predecessor);
         keyLocator.ping();
         expectLastCall().andThrow(new TException());
         replay(clientLocatorMock, keyLocator);
@@ -149,6 +154,7 @@ public class DonutClientTest {
         DonutClient donutClient = new DonutClient(node, clientLocatorMock);
 
         expect(clientLocatorMock.get(successor)).andReturn(keyLocator);
+        clientLocatorMock.release(successor);
         expect(keyLocator.getPredecessor()).andThrow(new NodeNotFoundException());
         keyLocator.notify(node.getTNode());
         replay(clientLocatorMock, keyLocator);
@@ -167,6 +173,7 @@ public class DonutClientTest {
         DonutClient donutClient = new DonutClient(node, clientLocatorMock);
 
         expect(clientLocatorMock.get(successor)).andReturn(keyLocator);
+        clientLocatorMock.release(successor);
         expect(keyLocator.getPredecessor()).andReturn(between);
         keyLocator.notify(node.getTNode());
         replay(clientLocatorMock, keyLocator);
@@ -185,6 +192,7 @@ public class DonutClientTest {
         DonutClient donutClient = new DonutClient(node, clientLocatorMock);
 
         expect(clientLocatorMock.get(successor)).andReturn(keyLocator);
+        clientLocatorMock.release(successor);
         expect(keyLocator.getPredecessor()).andReturn(between);
         keyLocator.notify(node.getTNode());
         replay(clientLocatorMock, keyLocator);
@@ -202,6 +210,7 @@ public class DonutClientTest {
         DonutClient donutClient = new DonutClient(node, clientLocatorMock);
         
         expect(clientLocatorMock.get(successor)).andThrow(new RetryFailedException());
+        clientLocatorMock.release(successor);
         replay(clientLocatorMock, keyLocator);
         
         donutClient.stabilize();
@@ -217,6 +226,7 @@ public class DonutClientTest {
         DonutClient donutClient = new DonutClient(node, clientLocatorMock);
 
         expect(clientLocatorMock.get(successor)).andReturn(keyLocator);
+        clientLocatorMock.release(successor);
         expect(keyLocator.getPredecessor()).andThrow(new TException());
         replay(clientLocatorMock, keyLocator);
 
@@ -229,19 +239,34 @@ public class DonutClientTest {
     public void testFixFingers() throws Exception {
         Node node = new Node(null, 0, new KeyId(0));
         TNode finger1 = new TNode();
-        TNode finger10 = new TNode();
+        node.setSuccessor(new TNode("hello", 0, null));
         DonutClient donutClient = new DonutClient(node, clientLocatorMock);
         
         expect(clientLocatorMock.get(node.getTNode())).andReturn(keyLocator);
-        expectLastCall().anyTimes();
+        clientLocatorMock.release(node.getTNode());
         expect(keyLocator.findSuccessor(new KeyId(1))).andReturn(finger1);
-        expect(keyLocator.findSuccessor(new KeyId(1024))).andReturn(finger10);
         replay(clientLocatorMock, keyLocator);
         
         donutClient.fixFinger(0);
-        donutClient.fixFinger(10);
         
         assertSame(finger1, node.getFinger(0));
+    }
+    
+    @Test
+    public void testFixFingers_Far() throws Exception {
+        Node node = new Node(null, 0, new KeyId(0));
+        TNode finger10 = new TNode();
+        node.setSuccessor(new TNode("hello", 0, null));
+        DonutClient donutClient = new DonutClient(node, clientLocatorMock);
+        
+        expect(clientLocatorMock.get(node.getTNode())).andReturn(keyLocator);
+        clientLocatorMock.release(node.getTNode());
+        expect(keyLocator.findSuccessor(new KeyId(1024))).andReturn(finger10);
+        replay(clientLocatorMock, keyLocator);
+        
+        donutClient.fixFinger(10);
+        
+        assertSame(finger10, node.getFinger(10));
     }
 
 }

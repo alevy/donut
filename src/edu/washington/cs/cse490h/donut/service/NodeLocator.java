@@ -2,6 +2,7 @@ package edu.washington.cs.cse490h.donut.service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.thrift.TException;
@@ -28,6 +29,7 @@ public class NodeLocator implements Iface {
 
     static {
         LOGGER = Logger.getLogger(NodeLocator.class.getName());
+        LOGGER.setLevel(Level.WARNING);
     }
 
     @Inject
@@ -45,7 +47,9 @@ public class NodeLocator implements Iface {
             return node.getSuccessor();
         }
         try {
-            return clientFactory.get(next).findSuccessor(entryId);
+            TNode successor = clientFactory.get(next).findSuccessor(entryId);
+            clientFactory.release(next);
+            return successor;
         } catch (RetryFailedException e) {
             throw new TException(e);
         }

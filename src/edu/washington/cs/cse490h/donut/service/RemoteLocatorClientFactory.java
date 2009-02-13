@@ -1,5 +1,6 @@
 package edu.washington.cs.cse490h.donut.service;
 
+import java.io.IOException;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,21 +15,31 @@ import edu.washington.edu.cs.cse490h.donut.service.TNode;
 /**
  * @author alevy
  */
-public class RemoteLocatorClientFactory extends AbstractRetriable<KeyLocator.Iface, TNode> implements
-        LocatorClientFactory {
+public class RemoteLocatorClientFactory extends AbstractRetriable<KeyLocator.Iface, TNode>
+        implements LocatorClientFactory {
 
     private Map<TNode, Socket> socketMap = new HashMap<TNode, Socket>();
-    
+
     @Override
-    public KeyLocator.Iface tryOne(TNode node) throws Exception {
+    public synchronized KeyLocator.Iface tryOne(TNode node) throws Exception {
         TProtocol protocol;
-        Socket socket = socketMap.get(node);
-        if (socket == null) {
-            socket = new Socket(node.getName(), node.getPort());
-            socketMap.put(node, socket);
+        while (socketMap.containsKey(node)) {
+            wait();
         }
+        Socket socket = new Socket(node.getName(), node.getPort());
+        socketMap.put(node, socket);
         protocol = new TBinaryProtocol(new TSocket(socket));
         return new KeyLocator.Client(protocol);
+    }
+
+    public synchronized void release(TNode node) {
+        Socket socket = socketMap.remove(node);
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        notifyAll();
     }
 
 }

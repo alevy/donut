@@ -50,6 +50,7 @@ public class NodeLocatorTest {
         
         // ClientFactory Expectations:
         expect(clientFactoryMock.get(node2)).andReturn(nextLocatorMock);
+        clientFactoryMock.release(node2);
         replay(clientFactoryMock);
         
         // NextLocatorMock Expectations:

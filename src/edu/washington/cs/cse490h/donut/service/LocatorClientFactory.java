@@ -11,4 +11,6 @@ public interface LocatorClientFactory {
 
     Iface get(TNode node) throws RetryFailedException;
     
+    void release(TNode node);
+    
 }

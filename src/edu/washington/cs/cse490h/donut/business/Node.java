@@ -151,4 +151,8 @@ public class Node {
         this.fingers.set(0, node);
         
     }
+
+    public int getFingersSize() {
+        return fingers.size();
+    }
 }

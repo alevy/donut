@@ -43,6 +43,7 @@ public class DonutClient extends Thread {
             if (!n.equals(node.getTNode())) {
                 TNode found = clientFactory.get(n).findSuccessor(node.getNodeId());
                 node.setSuccessor(found);
+                clientFactory.release(n);
             }
         } catch (RetryFailedException e) {
             throw new TException(e);
@@ -53,11 +54,13 @@ public class DonutClient extends Thread {
     public boolean ping(TNode n) {
         try {
             clientFactory.get(n).ping();
+            clientFactory.release(n);
             return true;
         } catch (RetryFailedException e) {
             return false;
         } catch (TException e) {
             // Thrift error. Take a look at the trace
+            clientFactory.release(n);
             e.printStackTrace();
             return false;
         }
@@ -81,27 +84,31 @@ public class DonutClient extends Thread {
     public void fixFingers() {
         fixFinger(nextFingerToUpdate);
 
-        nextFingerToUpdate = (nextFingerToUpdate + 1) % Node.KEYSPACESIZE;
+        nextFingerToUpdate = (nextFingerToUpdate + 1) % node.getFingersSize();
     }
 
     public void fixFinger(int finger) {
+        if (node.getSuccessor().equals(node.getTNode())) {
+            return;
+        }
         TNode updatedFinger;
         try {
             Iface iface;
             try {
                 iface = clientFactory.get(node.getTNode());
             } catch (RetryFailedException e) {
+                e.printStackTrace();
                 return;
             }
             long id = node.getNodeId().getId() + 1 << finger;
             KeyId keyId = new KeyId(id);
             updatedFinger = iface.findSuccessor(keyId);
+            this.node.setFinger(finger, updatedFinger);
         } catch (TException e) {
             e.printStackTrace();
-            return;
+        } finally {
+            clientFactory.release(node.getTNode());
         }
-
-        this.node.setFinger(finger, updatedFinger);
     }
 
     /**
@@ -110,13 +117,13 @@ public class DonutClient extends Thread {
     public void stabilize() {
 
         TNode x = null;
-        if (!node.getTNode().equals(node.getSuccessor())) {
+        TNode successor = node.getSuccessor();
+        if (!node.getTNode().equals(successor)) {
             try {
-                Iface successorClient = clientFactory.get(node.getSuccessor());
+                Iface successorClient = clientFactory.get(successor);
                 try {
                     x = successorClient.getPredecessor();
-                    if (KeyIdUtil.isAfterXButBeforeEqualY(x.getNodeId(), node.getNodeId(), node
-                            .getSuccessor().getNodeId())) {
+                    if (KeyIdUtil.isAfterXButBeforeEqualY(x.getNodeId(), node.getNodeId(), successor.getNodeId())) {
                         node.setSuccessor(x);
                     }
                 } catch (NodeNotFoundException e) {
@@ -132,6 +139,8 @@ public class DonutClient extends Thread {
                 e.printStackTrace();
                 node.setSuccessor(node.getTNode());
                 return;
+            } finally {
+                clientFactory.release(successor);
             }
         } else {
             x = node.getPredecessor();
@@ -148,8 +157,8 @@ public class DonutClient extends Thread {
         while (true) {
             try {
                 stabilize();
-                checkPredecessor();
                 fixFingers();
+                checkPredecessor();
                 sleep(100);
             } catch (InterruptedException e) {
                 //
