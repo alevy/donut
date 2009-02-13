@@ -55,17 +55,6 @@ public class Node {
     }
 
     /**
-     * Join a Chord ring containing node n
-     * 
-     * @param toJoin
-     *            An existing Chord node that is already on the ring
-     */
-    public void join(TNode n) {
-        this.predecessor = null;
-        this.fingers.set(0, n);
-    }
-
-    /**
      * Scans this Node's finger table for the closest preceding node to the given key.
      * 
      * @param entryId
@@ -77,7 +66,7 @@ public class Node {
         long prevId = getNodeId().getId();
         for (int i = fingers.size() - 1; i >= 0; --i) {
             long currentId = fingers.get(i).getNodeId().getId();
-            if (KeyIdUtil.isAfterXButBeforeY(id, currentId, prevId)) {
+            if (KeyIdUtil.isAfterXButBeforeOrEqualY(id, currentId, prevId)) {
                 return fingers.get(i);
             }
             prevId = currentId;

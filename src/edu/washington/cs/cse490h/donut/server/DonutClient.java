@@ -38,14 +38,11 @@ public class DonutClient extends Thread {
     }
 
     public void join(TNode n) throws TException {
-        if (n == null || n.getName() == null) {
-            return;
-        }
         LOGGER.info("Joining Donut...");
         try {
-            if (!n.equals(this.node.getTNode())) {
-                TNode found = clientFactory.get(n).findSuccessor(this.node.getNodeId());
-                this.node.join(found);
+            if (!n.equals(node.getTNode())) {
+                TNode found = clientFactory.get(n).findSuccessor(node.getNodeId());
+                node.setSuccessor(found);
             }
         } catch (RetryFailedException e) {
             throw new TException(e);
@@ -82,7 +79,13 @@ public class DonutClient extends Thread {
      * of the next finger to fix.
      */
     public void fixFingers() {
-        TNode updatedFinger = null;
+        fixFinger(nextFingerToUpdate);
+
+        nextFingerToUpdate = (nextFingerToUpdate + 1) % Node.KEYSPACESIZE;
+    }
+
+    public void fixFinger(int finger) {
+        TNode updatedFinger;
         try {
             Iface iface;
             try {
@@ -90,16 +93,15 @@ public class DonutClient extends Thread {
             } catch (RetryFailedException e) {
                 return;
             }
-            updatedFinger = iface.findSuccessor(new KeyId(this.node.getNodeId().getId()
-                    + (long) Math.pow(2, nextFingerToUpdate)));
+            long id = node.getNodeId().getId() + 1 << finger;
+            KeyId keyId = new KeyId(id);
+            updatedFinger = iface.findSuccessor(keyId);
         } catch (TException e) {
             e.printStackTrace();
             return;
         }
 
-        this.node.setFinger(nextFingerToUpdate, updatedFinger);
-
-        nextFingerToUpdate = (nextFingerToUpdate + 1) % Node.KEYSPACESIZE;
+        this.node.setFinger(finger, updatedFinger);
     }
 
     /**
@@ -113,15 +115,15 @@ public class DonutClient extends Thread {
                 Iface successorClient = clientFactory.get(node.getSuccessor());
                 try {
                     x = successorClient.getPredecessor();
+                    if (KeyIdUtil.isAfterXButBeforeEqualY(x.getNodeId(), node.getNodeId(), node
+                            .getSuccessor().getNodeId())) {
+                        node.setSuccessor(x);
+                    }
                 } catch (NodeNotFoundException e) {
                     // Successor's predecessor is null
                     x = null;
                 }
                 successorClient.notify(node.getTNode());
-                if (KeyIdUtil.isAfterXButBeforeY(x.getNodeId(), node.getNodeId(), node
-                        .getSuccessor().getNodeId())) {
-                    node.setSuccessor(x);
-                }
             } catch (TException e) {
                 e.printStackTrace();
                 node.setSuccessor(node.getTNode());
@@ -149,7 +151,7 @@ public class DonutClient extends Thread {
                 checkPredecessor();
                 fixFingers();
                 sleep(100);
-            } catch (Exception e) {
+            } catch (InterruptedException e) {
                 //
             }
         }

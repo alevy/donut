@@ -69,7 +69,7 @@ public class DonutModule implements Module {
 
     public void configure(Binder binder) {
         Node node = new Node(getHostname(), getPort(), new KeyId(getKey()));
-        TNode known = new TNode();
+        TNode known = node.getSuccessor();
         if (getKnownHostname() != null) {
             known = new TNode(getKnownHostname(), getKnownPort(), null);
             node.setSuccessor(known);

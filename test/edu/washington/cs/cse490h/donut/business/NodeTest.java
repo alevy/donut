@@ -92,11 +92,4 @@ public class NodeTest {
         assertEquals(initialNode.getName(), nextHop.getName());
     }
 
-    @Test
-    public void testJoin_SuccessorIsSet() throws Exception {
-        Node testNode0 = new Node("testNode0", 8080, new KeyId(100));
-        Node testNode1 = new Node("testNode1", 8080, new KeyId(1000));
-        testNode0.join(testNode1.getTNode());
-        assertSame(testNode0.getSuccessor(), testNode1.getTNode());
-    }
 }

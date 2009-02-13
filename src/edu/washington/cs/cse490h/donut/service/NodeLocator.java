@@ -94,7 +94,7 @@ public class NodeLocator implements Iface {
 
     public void notify(TNode n) throws TException {
         if (node.getPredecessor() == null
-                || KeyIdUtil.isAfterXButBeforeY(n.getNodeId(), node.getPredecessor().getNodeId(),
+                || KeyIdUtil.isAfterXButBeforeEqualY(n.getNodeId(), node.getPredecessor().getNodeId(),
                         node.getNodeId())) {
             node.setPredecessor(n);
         }
