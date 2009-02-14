@@ -49,8 +49,8 @@ public class Node {
      * complete chord ring.
      */
     private void initFingers() {
-        this.fingers = new ArrayList<TNode>(KEYSPACESIZE - 1);
-        for (int i = 0; i < KEYSPACESIZE - 1; i++)
+        this.fingers = new ArrayList<TNode>(KEYSPACESIZE);
+        for (int i = 0; i < KEYSPACESIZE; i++)
             this.fingers.add(tNode);
     }
 
@@ -152,7 +152,7 @@ public class Node {
         
     }
 
-    public int getFingersSize() {
-        return fingers.size();
+    public List<TNode> getFingers() {
+        return new ArrayList<TNode>(fingers);
     }
 }

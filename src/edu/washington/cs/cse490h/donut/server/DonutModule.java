@@ -39,8 +39,11 @@ public class DonutModule implements Module {
     @Option(name = "--port", usage = "the port on which to bind this Node's Server (default: 8080)")
     private int    port          = 8080;
 
-    @Option(name = "--key", usage = "the 64-bit key for this Node (default: random)")
     private long   key           = UUID.randomUUID().getMostSignificantBits();
+    @Option(name = "--key", usage = "the 64-bit key for this Node (default: random)")
+    void setKey(String key) {
+        this.key = Long.decode(key);
+    }
 
     @Option(name = "--known-host", usage = "the hostname of a known node (default: none)")
     private String knownHostname = null;

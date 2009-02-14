@@ -10,6 +10,13 @@ module Donut
       @client = KeyLocator::Client.new(Thrift::BinaryProtocol.new(@socket))
     end
 
+    def get_fingers
+      @socket.open
+      fingers = @client.getFingers
+      @socket.close
+      return fingers
+    end
+
     def get(key)
       key_id = KeyId.new({:id => gen_key(key)})
       node = get_node(key_id)

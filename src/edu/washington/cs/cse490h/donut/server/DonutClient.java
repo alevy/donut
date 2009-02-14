@@ -61,7 +61,7 @@ public class DonutClient extends Thread {
         } catch (TException e) {
             // Thrift error. Take a look at the trace
             clientFactory.release(n);
-            e.printStackTrace();
+            LOGGER.warning(e.toString());
             return false;
         }
     }
@@ -84,28 +84,32 @@ public class DonutClient extends Thread {
     public void fixFingers() {
         fixFinger(nextFingerToUpdate);
 
-        nextFingerToUpdate = (nextFingerToUpdate + 1) % node.getFingersSize();
+        nextFingerToUpdate = (nextFingerToUpdate + 1) % node.getFingers().size();
     }
 
     public void fixFinger(int finger) {
-        if (node.getSuccessor().equals(node.getTNode())) {
-            return;
-        }
+        // Even if the successor is self, we still might need to fix other fingers.
+        // Do NOT, therefore include this code (left in until we're sure of this statement)
+        //if (node.getSuccessor().equals(node.getTNode())) {
+        //    return;
+        //}
         TNode updatedFinger;
         try {
             Iface iface;
             try {
                 iface = clientFactory.get(node.getTNode());
             } catch (RetryFailedException e) {
-                e.printStackTrace();
+                LOGGER.warning(e.toString());
                 return;
             }
-            long id = node.getNodeId().getId() + 1 << finger;
+            //TODO: there is some weirdness with overflowing positive longs to negative longs,
+            //      The minus-minus seems to solve it but this needs to be verified.
+            long id = node.getNodeId().getId() - (-(long)1 << finger);
             KeyId keyId = new KeyId(id);
             updatedFinger = iface.findSuccessor(keyId);
             this.node.setFinger(finger, updatedFinger);
         } catch (TException e) {
-            e.printStackTrace();
+            LOGGER.warning(e.toString());
         } finally {
             clientFactory.release(node.getTNode());
         }
@@ -136,7 +140,7 @@ public class DonutClient extends Thread {
                 node.setSuccessor(node.getTNode());
                 return;
             } catch (RetryFailedException e) {
-                e.printStackTrace();
+                LOGGER.warning(e.toString());
                 node.setSuccessor(node.getTNode());
                 return;
             } finally {
@@ -159,7 +163,7 @@ public class DonutClient extends Thread {
                 stabilize();
                 fixFingers();
                 checkPredecessor();
-                sleep(100);
+                sleep(10);
             } catch (InterruptedException e) {
                 //
             }

@@ -1,6 +1,7 @@
 package edu.washington.cs.cse490h.donut.service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -103,6 +104,10 @@ public class NodeLocator implements Iface {
             node.setPredecessor(n);
         }
 
+    }
+
+    public List<TNode> getFingers() throws TException {
+        return node.getFingers();
     }
 
 }
