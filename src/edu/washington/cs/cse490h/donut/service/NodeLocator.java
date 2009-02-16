@@ -81,9 +81,9 @@ public class NodeLocator implements Iface {
         return dataMap;
     }
 
-    /* 
-     * Should do nothing if connection completes.
-     * If the connection fails, then a TException is thrown.
+    /*
+     * Should do nothing if connection completes. If the connection fails, then a TException is
+     * thrown.
      */
     public void ping() throws TException {
 
@@ -98,9 +98,9 @@ public class NodeLocator implements Iface {
     }
 
     public void notify(TNode n) throws TException {
-        if (node.getPredecessor() == null
-                || KeyIdUtil.isAfterXButBeforeEqualY(n.getNodeId(), node.getPredecessor().getNodeId(),
-                        node.getNodeId())) {
+        if (!n.equals(node.getTNode())
+                && (node.getPredecessor() == null || KeyIdUtil.isAfterXButBeforeEqualY(n
+                        .getNodeId(), node.getPredecessor().getNodeId(), node.getNodeId()))) {
             node.setPredecessor(n);
         }
 

@@ -17,6 +17,14 @@ module Donut
       return fingers
     end
 
+    def get_predecessor
+      @socket.open
+      predecessor = @client.getPredecessor
+      @socket.close
+      return predecessor
+    end
+
+
     def get(key)
       key_id = KeyId.new({:id => gen_key(key)})
       node = get_node(key_id)

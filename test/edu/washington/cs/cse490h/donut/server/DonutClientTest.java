@@ -124,7 +124,13 @@ public class DonutClientTest {
     @Test
     public void testStabilize_Alone() throws Exception {
         Node node = new Node(null, 0, null);
-        DonutClient donutClient = new DonutClient(node, null);
+        DonutClient donutClient = new DonutClient(node, clientLocatorMock);
+        
+        expect(clientLocatorMock.get(node.getTNode())).andReturn(keyLocator);
+        clientLocatorMock.release(node.getTNode());
+        keyLocator.getPredecessor();
+        expectLastCall().andThrow(new NodeNotFoundException());
+        keyLocator.notify(node.getTNode());
 
         replay(clientLocatorMock, keyLocator);
 
@@ -134,11 +140,17 @@ public class DonutClientTest {
     
     @Test
     public void testStabilize_HasPredecessor() throws Exception {
-        Node node = new Node(null, 0, null);
-        TNode predecessor = new TNode();
+        Node node = new Node("testNode0", 0, null);
+        TNode predecessor = new TNode("testNode1", 0, null);
         node.setPredecessor(predecessor);
         DonutClient donutClient = new DonutClient(node, null);
 
+        expect(clientLocatorMock.get(node.getTNode())).andReturn(keyLocator);
+        clientLocatorMock.release(node.getTNode());
+        keyLocator.getPredecessor();
+        expectLastCall().andThrow(new NodeNotFoundException());
+        keyLocator.notify(node.getTNode());
+        
         replay(clientLocatorMock, keyLocator);
 
         donutClient.stabilize();

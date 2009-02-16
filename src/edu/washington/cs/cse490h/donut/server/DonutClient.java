@@ -90,9 +90,9 @@ public class DonutClient extends Thread {
     public void fixFinger(int finger) {
         // Even if the successor is self, we still might need to fix other fingers.
         // Do NOT, therefore include this code (left in until we're sure of this statement)
-        //if (node.getSuccessor().equals(node.getTNode())) {
-        //    return;
-        //}
+        // if (node.getSuccessor().equals(node.getTNode())) {
+        // return;
+        // }
         TNode updatedFinger;
         try {
             Iface iface;
@@ -102,9 +102,9 @@ public class DonutClient extends Thread {
                 LOGGER.warning(e.toString());
                 return;
             }
-            //TODO: there is some weirdness with overflowing positive longs to negative longs,
-            //      The minus-minus seems to solve it but this needs to be verified.
-            long id = node.getNodeId().getId() - (-(long)1 << finger);
+            // TODO: there is some weirdness with overflowing positive longs to negative longs,
+            // The minus-minus seems to solve it but this needs to be verified.
+            long id = node.getNodeId().getId() - (-(long) 1 << finger);
             KeyId keyId = new KeyId(id);
             updatedFinger = iface.findSuccessor(keyId);
             this.node.setFinger(finger, updatedFinger);
@@ -122,35 +122,31 @@ public class DonutClient extends Thread {
 
         TNode x = null;
         TNode successor = node.getSuccessor();
-        if (!node.getTNode().equals(successor)) {
+        try {
+            Iface successorClient = clientFactory.get(successor);
             try {
-                Iface successorClient = clientFactory.get(successor);
-                try {
-                    x = successorClient.getPredecessor();
-                    if (KeyIdUtil.isAfterXButBeforeEqualY(x.getNodeId(), node.getNodeId(), successor.getNodeId())) {
-                        node.setSuccessor(x);
-                    }
-                } catch (NodeNotFoundException e) {
-                    // Successor's predecessor is null
-                    x = null;
+                x = successorClient.getPredecessor();
+                if (node.getTNode().equals(successor) || KeyIdUtil.isAfterXButBeforeEqualY(x.getNodeId(), node.getNodeId(), successor
+                        .getNodeId())) {
+                    clientFactory.release(successor);
+                    successor = x;
+                    successorClient = clientFactory.get(successor);
                 }
-                successorClient.notify(node.getTNode());
-            } catch (TException e) {
-                e.printStackTrace();
-                node.setSuccessor(node.getTNode());
-                return;
-            } catch (RetryFailedException e) {
-                LOGGER.warning(e.toString());
-                node.setSuccessor(node.getTNode());
-                return;
-            } finally {
-                clientFactory.release(successor);
+            } catch (NodeNotFoundException e) {
+                // Successor's predecessor is null
             }
-        } else {
-            x = node.getPredecessor();
-            if (x != null) {
-                node.setSuccessor(x);
-            }
+            node.setSuccessor(successor);
+            successorClient.notify(node.getTNode());
+        } catch (TException e) {
+            e.printStackTrace();
+            node.setSuccessor(node.getTNode());
+            return;
+        } catch (RetryFailedException e) {
+            LOGGER.warning(e.toString());
+            node.setSuccessor(node.getTNode());
+            return;
+        } finally {
+            clientFactory.release(successor);
         }
 
     }
