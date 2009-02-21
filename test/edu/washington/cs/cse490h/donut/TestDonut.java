@@ -15,7 +15,7 @@ public class TestDonut {
     public static void main(String[] args) throws Exception {
         DonutModule donutModule1 = new DonutModule();
         donutModule1.setPort(8080);
-        donutModule1.setKey(0);
+        donutModule1.setKey(0x0000000000000000L);
         Injector injector1 = Guice.createInjector(donutModule1);
 
         DonutModule donutModule2 = new DonutModule();
