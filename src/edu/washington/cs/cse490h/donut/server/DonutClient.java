@@ -1,5 +1,6 @@
 package edu.washington.cs.cse490h.donut.server;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.apache.thrift.TException;
@@ -38,7 +39,7 @@ public class DonutClient extends Thread {
     }
 
     public void join(TNode n) throws TException {
-        LOGGER.info("Joining Donut...");
+        LOGGER.info(this.node.getPort() + " - Joining Donut by node: " + n.getPort());
         try {
             if (!n.equals(node.getTNode())) {
                 TNode found = clientFactory.get(n).findSuccessor(node.getNodeId());
@@ -48,7 +49,7 @@ public class DonutClient extends Thread {
         } catch (RetryFailedException e) {
             throw new TException(e);
         }
-        LOGGER.info("Joined Donut!");
+        LOGGER.info(this.node.getPort() + " - Joined Donut!");
     }
 
     public boolean ping(TNode n) {
@@ -93,26 +94,33 @@ public class DonutClient extends Thread {
         // if (node.getSuccessor().equals(node.getTNode())) {
         // return;
         // }
-        TNode updatedFinger;
-        try {
-            Iface iface;
-            try {
-                iface = clientFactory.get(node.getTNode());
-            } catch (RetryFailedException e) {
-                LOGGER.warning(e.toString());
-                return;
-            }
-            // TODO: there is some weirdness with overflowing positive longs to negative longs,
-            // The minus-minus seems to solve it but this needs to be verified.
-            long id = node.getNodeId().getId() - (-(long) 1 << finger);
-            KeyId keyId = new KeyId(id);
-            updatedFinger = iface.findSuccessor(keyId);
-            this.node.setFinger(finger, updatedFinger);
-        } catch (TException e) {
-            LOGGER.warning(e.toString());
-        } finally {
-            clientFactory.release(node.getTNode());
+        if (node.getPort() == 8081 && finger > 1) {
+            @SuppressWarnings("unused")
+            int j = 0;
         }
+        
+        Iface iface;
+        try {
+            iface = clientFactory.get(node.getTNode());
+        } catch (RetryFailedException e1) {
+            LOGGER.warning("Something funny in the sockets is going down");
+            return;
+        }
+        
+        // Keep as seperate variable: Be careful of some weirdass java background shit with ints
+        long base = node.getNodeId().getId();
+        long pow = 0x0000000000000001L << finger;
+        long id = base + pow;
+
+        KeyId keyId = new KeyId(id);
+        try {
+            TNode updatedFinger = iface.findSuccessor(keyId);
+            this.node.setFinger(finger, updatedFinger);
+        } catch (TException e1) {
+            LOGGER.warning("Thrift exception on findSuccessor in fixFingers");
+        }
+        
+        clientFactory.release(node.getTNode());
     }
 
     /**
@@ -126,8 +134,9 @@ public class DonutClient extends Thread {
             Iface successorClient = clientFactory.get(successor);
             try {
                 x = successorClient.getPredecessor();
-                if (node.getTNode().equals(successor) || KeyIdUtil.isAfterXButBeforeEqualY(x.getNodeId(), node.getNodeId(), successor
-                        .getNodeId())) {
+                if (node.getTNode().equals(successor)
+                        || KeyIdUtil.isAfterXButBeforeEqualY(x.getNodeId(), node.getNodeId(),
+                                successor.getNodeId())) {
                     clientFactory.release(successor);
                     successor = x;
                     successorClient = clientFactory.get(successor);
@@ -151,11 +160,34 @@ public class DonutClient extends Thread {
 
     }
 
+    public String printNode(TNode n) {
+        if (n == null)
+            return "NULL";
+        else
+            return "" + n.getPort();
+    }
+
+    public String printNodeList(List<TNode> l) {
+        StringBuilder result = new StringBuilder("[");
+
+        for (TNode n : l) {
+            result.append(printNode(n) + ", ");
+        }
+
+        result.append("]");
+
+        return result.toString();
+    }
+
     @Override
     public void run() {
         super.run();
         while (true) {
             try {
+                LOGGER.info(printNode(node.getTNode()) + ": Pred - "
+                        + printNode(node.getPredecessor()) + "\t Succ - "
+                        + printNode(node.getSuccessor()) + "\t FingerList - "
+                        + printNodeList(node.getFingers()));
                 stabilize();
                 fixFingers();
                 checkPredecessor();

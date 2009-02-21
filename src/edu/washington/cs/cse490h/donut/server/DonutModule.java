@@ -72,14 +72,8 @@ public class DonutModule implements Module {
 
     public void configure(Binder binder) {
         Node node = new Node(getHostname(), getPort(), new KeyId(getKey()));
-        TNode known = node.getSuccessor();
-        if (getKnownHostname() != null) {
-            known = new TNode(getKnownHostname(), getKnownPort(), null);
-            node.setSuccessor(known);
-        }
 
         binder.bind(Node.class).toInstance(node);
-        binder.bind(TNode.class).toInstance(known);
         binder.bind(LocatorClientFactory.class).to(RemoteLocatorClientFactory.class);
         binder.bind(KeyLocator.Iface.class).to(NodeLocator.class);
         try {

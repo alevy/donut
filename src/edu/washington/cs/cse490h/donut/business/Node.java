@@ -12,11 +12,11 @@ import edu.washington.edu.cs.cse490h.donut.service.TNode;
  */
 public class Node {
 
-    public static final int       KEYSPACESIZE = 64;
-    private final TNode           tNode;
+    public static final int KEYSPACESIZE = 64;
+    private final TNode     tNode;
 
-    private List<TNode>            fingers;
-    private TNode                  predecessor;
+    private List<TNode>     fingers;
+    private TNode           predecessor;
 
     /**
      * Create a new Chord ring
@@ -61,15 +61,14 @@ public class Node {
      * @return the {@link Node} from the finger table that is the closest and preceding the entryId
      */
     public TNode closestPrecedingNode(KeyId entryId) throws IllegalArgumentException {
-        long id = entryId.getId();
-
-        long prevId = getNodeId().getId();
         for (int i = fingers.size() - 1; i >= 0; --i) {
-            long currentId = fingers.get(i).getNodeId().getId();
-            if (KeyIdUtil.isAfterXButBeforeOrEqualY(id, currentId, prevId)) {
+            KeyId currentFinger = fingers.get(i).getNodeId();
+            // (id, finger, us)
+            // (finger, us, id)
+            if (!currentFinger.equals(getNodeId())
+                    && KeyIdUtil.isAfterXButBeforeEqualY(entryId, currentFinger, getNodeId())) {
                 return fingers.get(i);
             }
-            prevId = currentId;
         }
         return getTNode();
     }
@@ -133,7 +132,7 @@ public class Node {
         }
         return false;
     }
-    
+
     @Override
     public String toString() {
         return tNode.toString();
@@ -149,7 +148,7 @@ public class Node {
 
     public void setSuccessor(TNode node) {
         this.fingers.set(0, node);
-        
+
     }
 
     public List<TNode> getFingers() {

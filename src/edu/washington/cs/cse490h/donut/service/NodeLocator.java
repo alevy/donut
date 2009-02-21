@@ -41,13 +41,15 @@ public class NodeLocator implements Iface {
     }
 
     public TNode findSuccessor(KeyId entryId) throws TException {
-        LOGGER.info("Request for entity with id \"" + entryId.toString() + "\"");
+        LOGGER.info(this.node.getPort() + " - Request for entity with id \"" + entryId.toString() + "\"");
         TNode next = node.closestPrecedingNode(entryId);
         if (next.equals(node.getTNode())) {
-            LOGGER.info("I am the predecessor for \"" + entryId.toString() + "\"");
+            LOGGER.info("I (" + this.node.getPort() + ") am the predecessor for \"" + entryId.toString() + "\"");
             return node.getSuccessor();
         }
         try {
+            LOGGER.info("I (" + this.node.getPort() + ") am NOT the predecessor for \"" + entryId.toString() + "\" \n" +
+            		"Connecting to " + next.getPort());
             TNode successor = clientFactory.get(next).findSuccessor(entryId);
             clientFactory.release(next);
             return successor;
@@ -98,9 +100,8 @@ public class NodeLocator implements Iface {
     }
 
     public void notify(TNode n) throws TException {
-        if (!n.equals(node.getTNode())
-                && (node.getPredecessor() == null || KeyIdUtil.isAfterXButBeforeEqualY(n
-                        .getNodeId(), node.getPredecessor().getNodeId(), node.getNodeId()))) {
+        if (node.getPredecessor() == null || KeyIdUtil.isAfterXButBeforeEqualY(n
+                        .getNodeId(), node.getPredecessor().getNodeId(), node.getNodeId())) {
             node.setPredecessor(n);
         }
 

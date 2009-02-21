@@ -39,7 +39,6 @@ public class RemoteLocatorClientFactory extends AbstractRetriable<KeyLocator.Ifa
         } catch (IOException e) {
             e.printStackTrace();
         }
-        notifyAll();
+        notify();
     }
-
 }
