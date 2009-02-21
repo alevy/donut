@@ -28,6 +28,10 @@ def get_node(x)
   @_client.get_node(KeyId.new({ :id => x }))
 end
 
+def get_fingers()
+  @_client.get_fingers()
+end
+
 puts "======================================================="
 puts "Donut/HashTable Interactive Client"
 puts "======================================================="
@@ -35,6 +39,7 @@ puts "Usage:"
 puts "\tget(key)"
 puts "\tput(key, value)"
 puts "\tremove(key)"
+puts "\tget_fingers()"
 puts "All arguments are strings.\n"
 puts "=====================Happy Hashing====================="
 
