@@ -36,7 +36,7 @@ service KeyLocator {
   
   void put(1:KeyId entryId, DonutData data),
   
-  void notify(1:TNode n)
+  list<TNode> notify(1:TNode n)
   
   list<TNode> getFingers()
 }

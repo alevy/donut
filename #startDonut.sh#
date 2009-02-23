@@ -1,0 +1,1 @@
+java -classpath bin:lib/guice-1.0.jar:lib/libthrift.jar:lib/args4j-2.0.11.jar:lib/commons-lang-2.4.jar edu.washington.cs.cse490h.donut.Donut

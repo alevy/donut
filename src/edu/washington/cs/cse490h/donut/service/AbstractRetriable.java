@@ -25,6 +25,7 @@ public abstract class AbstractRetriable<T, E> {
                 return tryOne(name);
             } catch (Exception e) {
                 exception = e;
+                e.printStackTrace();
             }
         }
 

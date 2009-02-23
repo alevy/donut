@@ -99,12 +99,12 @@ public class NodeLocator implements Iface {
         return predecessor;
     }
 
-    public void notify(TNode n) throws TException {
+    public List<TNode> notify(TNode n) throws TException {
         if (node.getPredecessor() == null || KeyIdUtil.isAfterXButBeforeEqualY(n
                         .getNodeId(), node.getPredecessor().getNodeId(), node.getNodeId())) {
             node.setPredecessor(n);
         }
-
+        return node.getSuccessorList();
     }
 
     public List<TNode> getFingers() throws TException {

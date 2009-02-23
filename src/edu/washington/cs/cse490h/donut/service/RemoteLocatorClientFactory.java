@@ -26,6 +26,7 @@ public class RemoteLocatorClientFactory extends AbstractRetriable<KeyLocator.Ifa
         while (socketMap.containsKey(node)) {
             wait();
         }
+        
         Socket socket = new Socket(node.getName(), node.getPort());
         socketMap.put(node, socket);
         protocol = new TBinaryProtocol(new TSocket(socket));

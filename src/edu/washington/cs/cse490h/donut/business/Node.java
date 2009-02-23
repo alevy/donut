@@ -13,9 +13,11 @@ import edu.washington.edu.cs.cse490h.donut.service.TNode;
 public class Node {
 
     public static final int KEYSPACESIZE = 64;
+    public static final int SUCCESSORLISTSIZE = 3;
     private final TNode     tNode;
 
     private List<TNode>     fingers;
+    private List<TNode>     successorList;
     private TNode           predecessor;
 
     /**
@@ -28,6 +30,7 @@ public class Node {
         this.tNode = tNode;
         this.predecessor = null;
         initFingers();
+        initSuccessorList();
     }
 
     /**
@@ -44,6 +47,16 @@ public class Node {
         this(new TNode(name, port, id));
     }
 
+    /**
+     * Initializes the successor list.
+     */
+    private void initSuccessorList() {
+        this.successorList = new ArrayList<TNode>(SUCCESSORLISTSIZE);
+
+        // Adds the initial successor
+        this.successorList.add(tNode);
+    }
+    
     /**
      * Initializes the finger table. The successor and all fingers will become this, creating a
      * complete chord ring.
@@ -90,7 +103,7 @@ public class Node {
     }
 
     public TNode getSuccessor() {
-        return fingers.get(0);
+        return successorList.get(0);
     }
 
     /**
@@ -147,11 +160,28 @@ public class Node {
     }
 
     public void setSuccessor(TNode node) {
-        this.fingers.set(0, node);
+        this.successorList.set(0, node);
 
     }
 
     public List<TNode> getFingers() {
         return new ArrayList<TNode>(fingers);
     }
+    
+    public List<TNode> getSuccessorList() {
+        return new ArrayList<TNode>(successorList);
+    }
+    
+    public void setSuccessor(int i, TNode node) throws IndexOutOfBoundsException{
+        this.successorList.set(i, node);
+    }
+    
+    public void addSuccessor(TNode node){
+        this.successorList.add(node);
+    }
+    
+    public void removeSuccessor(){
+        this.successorList.remove(0);
+    }
+    
 }

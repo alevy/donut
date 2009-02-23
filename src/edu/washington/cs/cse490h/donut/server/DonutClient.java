@@ -98,15 +98,16 @@ public class DonutClient extends Thread {
             @SuppressWarnings("unused")
             int j = 0;
         }
-        
+
         Iface iface;
         try {
             iface = clientFactory.get(node.getTNode());
         } catch (RetryFailedException e1) {
             LOGGER.warning("Something funny in the sockets is going down");
+            e1.printStackTrace();
             return;
         }
-        
+
         // Keep as seperate variable: Be careful of some weirdass java background shit with ints
         long base = node.getNodeId().getId();
         long pow = 0x0000000000000001L << finger;
@@ -119,7 +120,7 @@ public class DonutClient extends Thread {
         } catch (TException e1) {
             LOGGER.warning("Thrift exception on findSuccessor in fixFingers");
         }
-        
+
         clientFactory.release(node.getTNode());
     }
 
@@ -130,34 +131,83 @@ public class DonutClient extends Thread {
 
         TNode x = null;
         TNode successor = node.getSuccessor();
+        Iface successorClient;
+
         try {
-            Iface successorClient = clientFactory.get(successor);
-            try {
-                x = successorClient.getPredecessor();
-                if (node.getTNode().equals(successor)
-                        || KeyIdUtil.isAfterXButBeforeEqualY(x.getNodeId(), node.getNodeId(),
-                                successor.getNodeId())) {
-                    clientFactory.release(successor);
-                    successor = x;
-                    successorClient = clientFactory.get(successor);
-                }
-            } catch (NodeNotFoundException e) {
-                // Successor's predecessor is null
-            }
-            node.setSuccessor(successor);
-            successorClient.notify(node.getTNode());
-        } catch (TException e) {
-            e.printStackTrace();
-            node.setSuccessor(node.getTNode());
-            return;
+            successorClient = clientFactory.get(successor);
+
         } catch (RetryFailedException e) {
-            LOGGER.warning(e.toString());
-            node.setSuccessor(node.getTNode());
+
+            LOGGER.warning("Something funny in the sockets is going down");
+            e.printStackTrace();
             return;
-        } finally {
-            clientFactory.release(successor);
+
         }
 
+        try {
+
+            x = successorClient.getPredecessor();
+
+        } catch (NodeNotFoundException e) {
+            // Successor's predecessor is null
+
+        } catch (TException e) {
+            LOGGER.warning("Successor went down");
+            e.printStackTrace();
+            //node.setSuccessor(node.getTNode());
+            node.removeSuccessor();
+            clientFactory.release(successor);
+            return;
+
+        }
+
+        if (x != null
+                && (node.getTNode().equals(successor) || KeyIdUtil.isAfterXButBeforeEqualY(x
+                        .getNodeId(), node.getNodeId(), successor.getNodeId()))) {
+            clientFactory.release(successor);
+            successor = x;
+
+            try {
+                successorClient = clientFactory.get(successor);
+
+            } catch (RetryFailedException e) {
+
+                LOGGER.warning("Something funny in the sockets is going down");
+                e.printStackTrace();
+                return;
+            }
+        }
+
+        node.setSuccessor(successor);
+
+        try {
+
+            List<TNode> successorList = successorClient.notify(node.getTNode());
+            updateSuccessorList(successorList);
+
+        } catch (TException e) {
+
+            e.printStackTrace();
+            //node.setSuccessor(node.getTNode());
+            node.removeSuccessor();
+            return;
+
+        } finally {
+
+            clientFactory.release(successor);
+
+        }
+
+    }
+
+    public void updateSuccessorList(List<TNode> list) {
+        for (int i = 0; ( i < this.node.SUCCESSORLISTSIZE - 1 ) && ( i < list.size()); i++) {
+            try {
+                this.node.setSuccessor(i + 1, list.get(i));
+            } catch (IndexOutOfBoundsException e) {
+                this.node.addSuccessor(list.get(i));
+            }
+        }
     }
 
     public String printNode(TNode n) {
@@ -187,7 +237,9 @@ public class DonutClient extends Thread {
                 LOGGER.info(printNode(node.getTNode()) + ": Pred - "
                         + printNode(node.getPredecessor()) + "\t Succ - "
                         + printNode(node.getSuccessor()) + "\t FingerList - "
-                        + printNodeList(node.getFingers()));
+                        + printNodeList(node.getFingers())
+                        + "\t SuccessorList - "
+                        + printNodeList(node.getSuccessorList()));
                 stabilize();
                 fixFingers();
                 checkPredecessor();
