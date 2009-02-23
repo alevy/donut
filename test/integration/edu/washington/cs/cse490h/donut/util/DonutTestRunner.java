@@ -18,7 +18,7 @@ public class DonutTestRunner {
     private final List<Node>                nodeList;
     private final LocalLocatorClientFactory clientFactory;
     private final List<DonutClient>         clientList;
-    private final PriorityQueue<DonutEvent>          eventList;
+    private final PriorityQueue<DonutEvent> eventList;
 
     public DonutTestRunner(long... ids) {
         nodeList = new ArrayList<Node>();
@@ -34,8 +34,8 @@ public class DonutTestRunner {
         }
     }
 
-    public DonutEvent addEvent(int seconds) {
-        DonutEvent donutEvent = new DonutEvent(seconds, this);
+    public DonutEvent addEvent(int milliseconds) {
+        DonutEvent donutEvent = new DonutEvent(milliseconds, this);
         getEventList().add(donutEvent);
         return donutEvent;
     }
@@ -60,7 +60,7 @@ public class DonutTestRunner {
     public void run() {
         long start = System.currentTimeMillis();
         while (!eventList.isEmpty()) {
-            if (eventList.peek().getSeconds() <= (System.currentTimeMillis() - start) / 1000) {
+            if (eventList.peek().getSeconds() <= (System.currentTimeMillis() - start)) {
                 eventList.poll().run();
             }
         }
