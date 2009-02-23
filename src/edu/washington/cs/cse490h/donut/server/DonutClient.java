@@ -184,10 +184,6 @@ public class DonutClient extends Thread {
         super.run();
         while (true) {
             try {
-                LOGGER.info(printNode(node.getTNode()) + ": Pred - "
-                        + printNode(node.getPredecessor()) + "\t Succ - "
-                        + printNode(node.getSuccessor()) + "\t FingerList - "
-                        + printNodeList(node.getFingers()));
                 stabilize();
                 fixFingers();
                 checkPredecessor();
