@@ -1,5 +1,16 @@
 package edu.washington.cs.cse490h.donut.util;
 
-public abstract class DonutClosure {
-    public abstract void run();
+/**
+ * Base class for event closures used in {@link DonutEvent}.
+ * 
+ * @author alevy
+ */
+public class DonutClosure {
+    
+    /**
+     * Defines the functionality of the closure when it is run.
+     */
+    public void run() {
+        // Do nothing by default
+    }
 }

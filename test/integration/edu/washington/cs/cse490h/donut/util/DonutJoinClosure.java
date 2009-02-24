@@ -5,11 +5,20 @@ import org.apache.thrift.TException;
 import edu.washington.cs.cse490h.donut.server.DonutClient;
 import edu.washington.edu.cs.cse490h.donut.service.TNode;
 
+/**
+ * Donut closure for joining nodes
+ * @author alevy
+ *
+ */
 public class DonutJoinClosure extends DonutClosure {
 
     private final DonutClient donutClient;
-    private final TNode       knownNode;
-
+    private final TNode knownNode;
+    
+    /**
+     * @param donutClient
+     * @param knownNode {@link TNode} on which to join.
+     */
     public DonutJoinClosure(DonutClient donutClient, TNode knownNode) {
         this.donutClient = donutClient;
         this.knownNode = knownNode;
