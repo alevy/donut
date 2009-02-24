@@ -74,6 +74,7 @@ public class DonutTestRunner {
      *            which this event will be triggered.
      * @return a {@link DonutEvent} which is used to add functionality to the event by calls to
      *         {@link DonutEvent#join}, {@link DonutEvent#leave}, {@link DonutEvent#test}, etc'.
+     */
     public DonutEvent addEvent(int milliseconds) {
         DonutEvent donutEvent = new DonutEvent(milliseconds, this);
         getEventList().add(donutEvent);
