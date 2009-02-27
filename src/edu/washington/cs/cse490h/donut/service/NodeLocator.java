@@ -100,6 +100,7 @@ public class NodeLocator implements Iface {
     }
 
     public List<TNode> notify(TNode n) throws TException {
+        LOGGER.warning("Notification received: Node - " + node.getName() + " By -" + n.getName());
         if (node.getPredecessor() == null || KeyIdUtil.isAfterXButBeforeEqualY(n
                         .getNodeId(), node.getPredecessor().getNodeId(), node.getNodeId())) {
             node.setPredecessor(n);

@@ -39,7 +39,7 @@ public class DonutClient extends Thread {
     }
 
     public void join(TNode n) throws TException {
-        LOGGER.info(this.node.getPort() + " - Joining Donut by node: " + n.getPort());
+        LOGGER.info(printNode(this.node.getTNode()) + " - Joining Donut by node: " + printNode(n));
         try {
             if (!n.equals(node.getTNode())) {
                 TNode found = clientFactory.get(n).findSuccessor(node.getNodeId());
@@ -49,7 +49,7 @@ public class DonutClient extends Thread {
         } catch (RetryFailedException e) {
             throw new TException(e);
         }
-        LOGGER.info(this.node.getPort() + " - Joined Donut!");
+        LOGGER.info(printNode(this.node.getTNode()) + " - Joined Donut!");
     }
 
     public boolean ping(TNode n) {
@@ -138,8 +138,13 @@ public class DonutClient extends Thread {
 
         } catch (RetryFailedException e) {
 
-            LOGGER.warning("Something funny in the sockets is going down");
+            LOGGER
+                    .warning("Something funny in the sockets is going down for successor"
+                            + successor);
             e.printStackTrace();
+            clientFactory.release(successor);
+            LOGGER.info("Lost successor: Node-" + printNode(node.getTNode()) + "Successor" + printNode(node.getSuccessor()));
+            node.removeSuccessor();
             return;
 
         }
@@ -154,7 +159,7 @@ public class DonutClient extends Thread {
         } catch (TException e) {
             LOGGER.warning("Successor went down");
             e.printStackTrace();
-            //node.setSuccessor(node.getTNode());
+            // node.setSuccessor(node.getTNode());
             node.removeSuccessor();
             clientFactory.release(successor);
             return;
@@ -162,8 +167,8 @@ public class DonutClient extends Thread {
         }
 
         if (x != null
-                && (node.getTNode().equals(successor) || KeyIdUtil.isAfterXButBeforeEqualY(x
-                        .getNodeId(), node.getNodeId(), successor.getNodeId()))) {
+                && KeyIdUtil.isAfterXButBeforeEqualY(x.getNodeId(), node.getNodeId(), successor
+                        .getNodeId())) {
             clientFactory.release(successor);
             successor = x;
 
@@ -174,6 +179,7 @@ public class DonutClient extends Thread {
 
                 LOGGER.warning("Something funny in the sockets is going down");
                 e.printStackTrace();
+                clientFactory.release(successor);
                 return;
             }
         }
@@ -181,14 +187,15 @@ public class DonutClient extends Thread {
         node.setSuccessor(successor);
 
         try {
-
+            LOGGER.info(printNode(node.getTNode()) + " Notifying: " + printNode(node.getSuccessor()));
             List<TNode> successorList = successorClient.notify(node.getTNode());
             updateSuccessorList(successorList);
 
         } catch (TException e) {
 
             e.printStackTrace();
-            //node.setSuccessor(node.getTNode());
+            // node.setSuccessor(node.getTNode());
+            LOGGER.info("Lost successor: Node-" + printNode(node.getTNode()) + "Successor" + printNode(node.getSuccessor()));
             node.removeSuccessor();
             return;
 
@@ -201,7 +208,7 @@ public class DonutClient extends Thread {
     }
 
     public void updateSuccessorList(List<TNode> list) {
-        for (int i = 0; ( i < this.node.SUCCESSORLISTSIZE - 1 ) && ( i < list.size()); i++) {
+        for (int i = 0; (i < this.node.SUCCESSORLISTSIZE - 1) && (i < list.size()); i++) {
             try {
                 this.node.setSuccessor(i + 1, list.get(i));
             } catch (IndexOutOfBoundsException e) {
@@ -214,7 +221,7 @@ public class DonutClient extends Thread {
         if (n == null)
             return "NULL";
         else
-            return "" + n.getPort();
+            return "" + n.getName();
     }
 
     public String printNodeList(List<TNode> l) {
@@ -237,8 +244,7 @@ public class DonutClient extends Thread {
                 LOGGER.info(printNode(node.getTNode()) + ": Pred - "
                         + printNode(node.getPredecessor()) + "\t Succ - "
                         + printNode(node.getSuccessor()) + "\t FingerList - "
-                        + printNodeList(node.getFingers())
-                        + "\t SuccessorList - "
+                        + printNodeList(node.getFingers()) + "\t SuccessorList - "
                         + printNodeList(node.getSuccessorList()));
                 stabilize();
                 fixFingers();

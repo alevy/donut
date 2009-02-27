@@ -30,6 +30,7 @@ public class DonutTestRunner {
             nodeList.add(node);
             NodeLocator nodeLocator = new NodeLocator(node, getClientFactory());
             clientFactory.add(node.getTNode(), nodeLocator);
+            clientFactory.printKeySet();
             clientList.add(new DonutClient(node, getClientFactory()));
         }
     }

@@ -36,7 +36,9 @@ public class RemoteLocatorClientFactory extends AbstractRetriable<KeyLocator.Ifa
     public synchronized void release(TNode node) {
         Socket socket = socketMap.remove(node);
         try {
-            socket.close();
+            if(socket != null){
+                socket.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
