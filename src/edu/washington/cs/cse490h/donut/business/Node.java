@@ -54,7 +54,8 @@ public class Node {
         this.successorList = new ArrayList<TNode>(SUCCESSORLISTSIZE);
 
         // Adds the initial successor
-        this.successorList.add(tNode);
+        for (int i = 0; i < SUCCESSORLISTSIZE; i++)
+            this.successorList.add(tNode);
     }
     
     /**
@@ -75,12 +76,12 @@ public class Node {
      */
     public TNode closestPrecedingNode(KeyId entryId) throws IllegalArgumentException {
         for (int i = fingers.size() - 1; i >= 0; --i) {
-            KeyId currentFinger = fingers.get(i).getNodeId();
+            KeyId currentFinger = getFinger(i).getNodeId();
             // (id, finger, us)
             // (finger, us, id)
             if (!currentFinger.equals(getNodeId())
                     && KeyIdUtil.isAfterXButBeforeEqualY(entryId, currentFinger, getNodeId())) {
-                return fingers.get(i);
+                return getFinger(i);
             }
         }
         return getTNode();
@@ -117,6 +118,8 @@ public class Node {
         if (i < 0 && i >= fingers.size())
             // Invalid range
             throw new IndexOutOfBoundsException();
+        if(i == 0) 
+            return getSuccessor();
 
         return fingers.get(i);
     }
@@ -133,6 +136,11 @@ public class Node {
         if (i < 0 || i >= fingers.size())
             // Invalid range
             throw new IndexOutOfBoundsException();
+        
+        if(i == 0) {
+            setSuccessor(n);
+            return;
+        }
 
         fingers.set(i, n);
     }

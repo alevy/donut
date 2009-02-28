@@ -4,7 +4,14 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.thrift.TException;
 import org.easymock.EasyMock;
@@ -130,18 +137,21 @@ public class DonutClientTest {
         clientLocatorMock.release(node.getTNode());
         keyLocator.getPredecessor();
         expectLastCall().andThrow(new NodeNotFoundException());
-        keyLocator.notify(node.getTNode());
+        List<TNode> list = new ArrayList<TNode>(2);
+        list.add(node.getTNode());
+        expect(keyLocator.notify(node.getTNode())).andReturn(list);
 
-        replay(clientLocatorMock, keyLocator);
+        replay(clientLocatorMock, keyLocator); 
 
         donutClient.stabilize();
         assertSame(node.getTNode(), node.getSuccessor());
+        assertSame(node.getSuccessorList().get(1), node.getTNode());
     }
     
     @Test
     public void testStabilize_HasPredecessor() throws Exception {
-        Node node = new Node("testNode0", 8080, null);
-        TNode predecessor = new TNode("testNode1", 0, null);
+        Node node = new Node("testNode0", 8080, new KeyId(100));
+        TNode predecessor = new TNode("testNode1", 0, new KeyId(200));
         node.setPredecessor(predecessor);
         DonutClient donutClient = new DonutClient(node, clientLocatorMock);
         
@@ -150,17 +160,24 @@ public class DonutClientTest {
         expect(clientLocatorMock.get(predecessor)).andReturn(keyLocator);
         clientLocatorMock.release(predecessor);
         expect(keyLocator.getPredecessor()).andReturn(predecessor);
-        keyLocator.notify(node.getTNode());
+        
+        List<TNode> list = new ArrayList<TNode>(Node.SUCCESSORLISTSIZE);
+        list.add(node.getTNode());
+        list.add(predecessor);
+        
+        expect(keyLocator.notify(node.getTNode())).andReturn(list);
         replay(clientLocatorMock, keyLocator);
 
         donutClient.stabilize();
         assertSame(node.getPredecessor(), node.getSuccessor());
+        assertSame(node.getSuccessorList().get(1), node.getTNode());
+        assertSame(node.getSuccessorList().get(2), predecessor);
     }
     
     @Test
     public void testStabilize_JustNotifyBecauseNoPredecessor() throws Exception {
-        Node node = new Node("self", 0, null);
-        TNode successor = new TNode("other", 0, null);
+        Node node = new Node("self", 0, new KeyId(100));
+        TNode successor = new TNode("other", 0, new KeyId(200));
         node.setSuccessor(successor);
         
         DonutClient donutClient = new DonutClient(node, clientLocatorMock);
@@ -168,11 +185,18 @@ public class DonutClientTest {
         expect(clientLocatorMock.get(successor)).andReturn(keyLocator);
         clientLocatorMock.release(successor);
         expect(keyLocator.getPredecessor()).andThrow(new NodeNotFoundException());
-        keyLocator.notify(node.getTNode());
+        
+        List<TNode> list = new ArrayList<TNode>(Node.SUCCESSORLISTSIZE);
+        list.add(node.getTNode());
+        list.add(successor);
+        
+        expect(keyLocator.notify(node.getTNode())).andReturn(list);
         replay(clientLocatorMock, keyLocator);
 
         donutClient.stabilize();
         assertSame(successor, node.getSuccessor());
+        assertSame(node.getSuccessorList().get(1), node.getTNode());
+        assertSame(node.getSuccessorList().get(2), successor);
     }
     
     @Test
@@ -187,7 +211,10 @@ public class DonutClientTest {
         expect(clientLocatorMock.get(successor)).andReturn(keyLocator);
         clientLocatorMock.release(successor);
         expect(keyLocator.getPredecessor()).andReturn(between);
-        keyLocator.notify(node.getTNode());
+        
+        List<TNode> list = new ArrayList<TNode>(Node.SUCCESSORLISTSIZE);
+        
+        expect(keyLocator.notify(node.getTNode())).andReturn(list);
         replay(clientLocatorMock, keyLocator);
 
         donutClient.stabilize();
@@ -208,11 +235,18 @@ public class DonutClientTest {
         expect(clientLocatorMock.get(between)).andReturn(keyLocator);
         clientLocatorMock.release(between);
         expect(keyLocator.getPredecessor()).andReturn(between);
-        keyLocator.notify(node.getTNode());
+        
+        List<TNode> list = new ArrayList<TNode>(Node.SUCCESSORLISTSIZE);
+        list.add(successor);
+        list.add(node.getTNode());
+        
+        expect(keyLocator.notify(node.getTNode())).andReturn(list);
         replay(clientLocatorMock, keyLocator);
 
         donutClient.stabilize();
         assertSame(between, node.getSuccessor());
+        assertSame(node.getSuccessorList().get(2), node.getTNode());
+        assertSame(node.getSuccessorList().get(1), successor);
     }
     
     @Test

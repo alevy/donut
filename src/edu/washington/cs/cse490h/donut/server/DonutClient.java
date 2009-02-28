@@ -139,7 +139,7 @@ public class DonutClient extends Thread {
         } catch (RetryFailedException e) {
 
             LOGGER
-                    .warning("Something funny in the sockets is going down for successor"
+                    .warning("Something funny in the sockets is going down for successor :"
                             + successor);
             e.printStackTrace();
             clientFactory.release(successor);
