@@ -218,9 +218,9 @@ public class DonutJoinLeaveTest {
         donutTestRunner.addEvent(1000).join(1, 0);
         donutTestRunner.addEvent(2000).join(2, 0);
         donutTestRunner.addEvent(3000).join(3, 0);
-        donutTestRunner.addEvent(4000).leave(2);
-        donutTestRunner.addEvent(4000).leave(1);
-        donutTestRunner.addEvent(6000).test(new DonutTestCase() {
+        donutTestRunner.addEvent(5000).leave(2);
+        donutTestRunner.addEvent(5000).leave(1);
+        donutTestRunner.addEvent(7000).test(new DonutTestCase() {
             public void test() {
                 Node node0 = donutTestRunner.node(0);
                 Node node3 = donutTestRunner.node(3);
