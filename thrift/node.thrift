@@ -8,21 +8,24 @@ const i32 STABILIZE_INTERVAL = 100;
 const i32 CHECK_PREDECESSOR_INTERVAL = 150;
 
 struct KeyId {
-  1:i64 id
+  i64 id
 }
 
 struct TNode {
-	1:string name
-	2:i32 port
-	3:KeyId nodeId
+  string name
+  i32 port
+  KeyId nodeId
 }
  
 struct DonutData {
-	1:bool exists = 1,
-	2:optional binary data
+  binary data
 }
 
 exception NodeNotFoundException {
+
+}
+
+exception DataNotFoundException {
 
 }
 
@@ -35,15 +38,17 @@ service KeyLocator {
    */
   TNode findSuccessor(1:KeyId entryId),
   
-  TNode getPredecessor() throws (1:NodeNotFoundException e),
+  TNode getPredecessor() throws (NodeNotFoundException e),
   
   void ping(),
   
-  DonutData get(1:KeyId entryId),
+  DonutData get(KeyId entryId) throws (DataNotFoundException e),
   
-  void put(1:KeyId entryId, DonutData data),
+  void put(KeyId entryId, DonutData data, i32 numReplicas),
   
-  list<TNode> notify(1:TNode n)
+  void remove(KeyId entryId, i32 numReplicas),
+  
+  void notify(TNode n)
   
   list<TNode> getFingers()
 }

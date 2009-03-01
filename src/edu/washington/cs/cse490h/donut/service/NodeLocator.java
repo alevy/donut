@@ -1,8 +1,6 @@
 package edu.washington.cs.cse490h.donut.service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,7 +9,9 @@ import org.apache.thrift.TException;
 import com.google.inject.Inject;
 
 import edu.washington.cs.cse490h.donut.business.Node;
+import edu.washington.cs.cse490h.donut.service.application.DonutHashTableService;
 import edu.washington.cs.cse490h.donut.util.KeyIdUtil;
+import edu.washington.edu.cs.cse490h.donut.service.DataNotFoundException;
 import edu.washington.edu.cs.cse490h.donut.service.DonutData;
 import edu.washington.edu.cs.cse490h.donut.service.KeyId;
 import edu.washington.edu.cs.cse490h.donut.service.NodeNotFoundException;
@@ -26,7 +26,7 @@ public class NodeLocator implements Iface {
     private static Logger              LOGGER;
     private final Node                 node;
     private final LocatorClientFactory clientFactory;
-    private final Map<KeyId, byte[]>   dataMap;
+    private final DonutHashTableService service;
 
     static {
         LOGGER = Logger.getLogger(NodeLocator.class.getName());
@@ -34,10 +34,10 @@ public class NodeLocator implements Iface {
     }
 
     @Inject
-    public NodeLocator(Node node, LocatorClientFactory clientFactory) {
+    public NodeLocator(Node node, DonutHashTableService service, LocatorClientFactory clientFactory) {
         this.node = node;
+        this.service = service;
         this.clientFactory = clientFactory;
-        this.dataMap = new HashMap<KeyId, byte[]>();
     }
 
     public TNode findSuccessor(KeyId entryId) throws TException {
@@ -60,30 +60,46 @@ public class NodeLocator implements Iface {
         }
     }
 
-    public DonutData get(KeyId entryId) throws TException {
-        LOGGER.info("Get [" + printNode(this.node.getTNode()) + "]: Id - \"" + entryId + "\"");
+    public DonutData get(KeyId entryId) throws TException, DataNotFoundException {
+        LOGGER.info("Get entity with id \"" + entryId.toString() + "\".");
         DonutData data = new DonutData();
-        data.setData(dataMap.get(entryId));
-        if (data.getData() != null) {
-            data.setExists(true);
-        } else {
-            data.setExists(false);
+        data.setData(service.get(entryId));
+        if (data.getData() == null) {
+            throw new DataNotFoundException();
         }
         return data;
     }
 
-    public void put(KeyId entryId, DonutData data) throws TException {
-        LOGGER.info("Put [" + printNode(this.node.getTNode()) + "]: Data - \"" + data + "\" Id: \""
-                + entryId.toString() + "\"");
-        if (data.isExists()) {
-            dataMap.put(entryId, data.getData());
-        } else {
-            dataMap.remove(entryId);
+    public void put(KeyId entryId, DonutData data, int numReplicas) throws TException {
+        LOGGER.info("Put \"" + data + "\" into entity with id \"" + entryId.toString() + "\".");
+        service.put(entryId, data.getData());
+        if (numReplicas > 0) {
+            TNode successor = node.getSuccessor();
+            try {
+                clientFactory.get(successor).put(entryId, data, numReplicas - 1);
+                clientFactory.release(successor);
+            } catch (RetryFailedException e) {
+                throw new TException(e);
+            }
+        }
+    }
+    
+    public void remove(KeyId entryId, int numReplicas) throws TException {
+        LOGGER.info("Remove entity with id \"" + entryId.toString() + "\".");
+        service.remove(entryId);
+        if (numReplicas > 0) {
+            TNode successor = node.getSuccessor();
+            try {
+                clientFactory.get(successor).remove(entryId, numReplicas - 1);
+                clientFactory.release(successor);
+            } catch (RetryFailedException e) {
+                throw new TException(e);
+            }
         }
     }
 
-    public Map<KeyId, byte[]> getDataMap() {
-        return dataMap;
+    public DonutHashTableService getService() {
+        return service;
     }
 
     /*
