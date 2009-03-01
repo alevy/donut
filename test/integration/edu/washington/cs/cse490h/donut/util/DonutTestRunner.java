@@ -26,13 +26,18 @@ public class DonutTestRunner {
         clientList = new ArrayList<DonutClient>();
         clientFactory = new LocalLocatorClientFactory();
         for (int i = 0; i < ids.length; ++i) {
-            Node node = new Node("node" + i, 8080, new KeyId(ids[i]));
-            nodeList.add(node);
-            NodeLocator nodeLocator = new NodeLocator(node, getClientFactory());
-            clientFactory.add(node.getTNode(), nodeLocator);
-            clientFactory.printKeySet();
-            clientList.add(new DonutClient(node, getClientFactory()));
+            createAndAddNode("node" + i, ids[i]);
         }
+    }
+    
+    public int createAndAddNode(String name, long id) {
+        Node node = new Node(name, 8080, new KeyId(id));
+        nodeList.add(node);
+        NodeLocator nodeLocator = new NodeLocator(node, getClientFactory());
+        clientFactory.add(node.getTNode(), nodeLocator);
+        clientList.add(new DonutClient(node, getClientFactory()));
+        System.out.println("Added" + nodeList.get(nodeList.size() - 1).getName());
+        return clientList.size() - 1;
     }
 
     public DonutEvent addEvent(int milliseconds) {

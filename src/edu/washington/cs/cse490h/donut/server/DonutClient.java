@@ -187,7 +187,7 @@ public class DonutClient extends Thread {
         node.setSuccessor(successor);
 
         try {
-            LOGGER.info(printNode(node.getTNode()) + " Notifying: " + printNode(node.getSuccessor()));
+            LOGGER.info("Notification Sent: FROM: " + printNode(node.getTNode()) + " TO: " + printNode(node.getSuccessor()));
             List<TNode> successorList = successorClient.notify(node.getTNode());
             updateSuccessorList(successorList);
 

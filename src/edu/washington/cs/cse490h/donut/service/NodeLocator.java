@@ -100,7 +100,7 @@ public class NodeLocator implements Iface {
     }
 
     public List<TNode> notify(TNode n) throws TException {
-        LOGGER.warning("Notification received: Node - " + node.getName() + " By -" + n.getName());
+        LOGGER.warning("Notification Received: AT: " + printNode(this.node.getTNode()) + " FROM: " + printNode(n));
         if (node.getPredecessor() == null || KeyIdUtil.isAfterXButBeforeEqualY(n
                         .getNodeId(), node.getPredecessor().getNodeId(), node.getNodeId())) {
             node.setPredecessor(n);
@@ -110,6 +110,13 @@ public class NodeLocator implements Iface {
 
     public List<TNode> getFingers() throws TException {
         return node.getFingers();
+    }
+    
+    public String printNode(TNode n) {
+        if (n == null)
+            return "NULL";
+        else
+            return "" + n.getName();
     }
 
 }

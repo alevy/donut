@@ -7,6 +7,7 @@ import org.junit.Test;
 import edu.washington.cs.cse490h.donut.business.Node;
 import edu.washington.cs.cse490h.donut.util.DonutTestCase;
 import edu.washington.cs.cse490h.donut.util.DonutTestRunner;
+import edu.washington.edu.cs.cse490h.donut.service.KeyId;
 
 /**
  * @author alevy
@@ -244,13 +245,13 @@ public class DonutJoinLeaveTest {
     @Test
     public void testJoinFourLeaveOneThenRejoin() throws Exception {
         final DonutTestRunner donutTestRunner = new DonutTestRunner(0x0L, 0x4000000000000000L,
-                0x8000000000000000L, 0xC000000000000000L, 0x0L);
+                0x8000000000000000L, 0xC000000000000000L);
         donutTestRunner.addEvent(0).join(2, 2);
         donutTestRunner.addEvent(1000).join(0, 2);
         donutTestRunner.addEvent(2000).join(3, 0);
         donutTestRunner.addEvent(3000).join(1, 2);
         donutTestRunner.addEvent(6000).leave(0);
-        donutTestRunner.addEvent(9000).join(4, 2);
+        donutTestRunner.addEvent(9000).joinNewNode(2, "node4", 0x0L);
         donutTestRunner.addEvent(12000).test(new DonutTestCase() {
             public void test() {
                 Node node0 = donutTestRunner.node(4);
