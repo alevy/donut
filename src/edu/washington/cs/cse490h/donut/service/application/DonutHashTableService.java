@@ -1,5 +1,6 @@
 package edu.washington.cs.cse490h.donut.service.application;
 
+import edu.washington.cs.cse490h.donut.business.Pair;
 import edu.washington.edu.cs.cse490h.donut.service.KeyId;
 
 /**
@@ -9,9 +10,9 @@ import edu.washington.edu.cs.cse490h.donut.service.KeyId;
  */
 public interface DonutHashTableService {
 
-    byte[] get(KeyId entryId);
+    Pair<byte[], Integer> get(KeyId entryId);
 
-    void put(KeyId entryId, byte[] data);
+    void put(KeyId entryId, byte[] data, int replicas);
 
     void remove(KeyId entryId);
 

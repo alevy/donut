@@ -9,10 +9,10 @@ import org.apache.thrift.TException;
 import com.google.inject.Inject;
 
 import edu.washington.cs.cse490h.donut.business.Node;
+import edu.washington.cs.cse490h.donut.business.Pair;
 import edu.washington.cs.cse490h.donut.service.application.DonutHashTableService;
 import edu.washington.cs.cse490h.donut.util.KeyIdUtil;
 import edu.washington.edu.cs.cse490h.donut.service.DataNotFoundException;
-import edu.washington.edu.cs.cse490h.donut.service.DonutData;
 import edu.washington.edu.cs.cse490h.donut.service.KeyId;
 import edu.washington.edu.cs.cse490h.donut.service.NodeNotFoundException;
 import edu.washington.edu.cs.cse490h.donut.service.TNode;
@@ -60,19 +60,18 @@ public class NodeLocator implements Iface {
         }
     }
 
-    public DonutData get(KeyId entryId) throws TException, DataNotFoundException {
+    public byte[] get(KeyId entryId) throws TException, DataNotFoundException {
         LOGGER.info("Get entity with id \"" + entryId.toString() + "\".");
-        DonutData data = new DonutData();
-        data.setData(service.get(entryId));
-        if (data.getData() == null) {
+        Pair<byte[], Integer> data = service.get(entryId);
+        if (data == null) {
             throw new DataNotFoundException();
         }
-        return data;
+        return data.head();
     }
 
-    public void put(KeyId entryId, DonutData data, int numReplicas) throws TException {
+    public void put(KeyId entryId, byte[] data, int numReplicas) throws TException {
         LOGGER.info("Put \"" + data + "\" into entity with id \"" + entryId.toString() + "\".");
-        service.put(entryId, data.getData());
+        service.put(entryId, data, numReplicas);
         if (numReplicas > 0) {
             TNode successor = node.getSuccessor();
             try {

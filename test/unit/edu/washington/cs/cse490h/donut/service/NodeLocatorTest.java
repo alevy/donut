@@ -1,21 +1,23 @@
 package edu.washington.cs.cse490h.donut.service;
 
+import static org.easymock.EasyMock.aryEq;
 import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import edu.washington.cs.cse490h.donut.business.Node;
+import edu.washington.cs.cse490h.donut.business.Pair;
 import edu.washington.cs.cse490h.donut.service.application.DonutHashTableService;
 import edu.washington.edu.cs.cse490h.donut.service.DataNotFoundException;
-import edu.washington.edu.cs.cse490h.donut.service.DonutData;
 import edu.washington.edu.cs.cse490h.donut.service.KeyId;
 import edu.washington.edu.cs.cse490h.donut.service.KeyLocator;
 import edu.washington.edu.cs.cse490h.donut.service.TNode;
@@ -90,10 +92,10 @@ public class NodeLocatorTest {
         NodeLocator nodeLocator = new NodeLocator(null, service, null);
         String value = "Hello World";
 
-        expect(service.get(new KeyId(1))).andReturn(value.getBytes());
+        expect(service.get(new KeyId(1))).andReturn(new Pair<byte[], Integer>(value.getBytes(), 0));
         replay(clientFactoryMock, nextLocatorMock, service);
 
-        assertEquals(new DonutData(value.getBytes()), nodeLocator.get(new KeyId(1)));
+        assertArrayEquals(value.getBytes(), nodeLocator.get(new KeyId(1)));
     }
 
     @Test
@@ -101,10 +103,10 @@ public class NodeLocatorTest {
         NodeLocator nodeLocator = new NodeLocator(null, service, null);
         String value = "Hello World";
 
-        service.put(EasyMock.eq(new KeyId(1)), EasyMock.aryEq(value.getBytes()));
+        service.put(eq(new KeyId(1)), aryEq(value.getBytes()), eq(0));
         replay(clientFactoryMock, nextLocatorMock, service);
 
-        nodeLocator.put(new KeyId(1), new DonutData(value.getBytes()), 0);
+        nodeLocator.put(new KeyId(1), value.getBytes(), 0);
     }
 
     @Test
@@ -116,11 +118,11 @@ public class NodeLocatorTest {
 
         expect(clientFactoryMock.get(node.getSuccessor())).andReturn(nextLocatorMock);
         clientFactoryMock.release(node.getSuccessor());
-        nextLocatorMock.put(new KeyId(1), new DonutData(value.getBytes()), 1);
-        service.put(EasyMock.eq(new KeyId(1)), EasyMock.aryEq(value.getBytes()));
+        nextLocatorMock.put(eq(new KeyId(1)), aryEq(value.getBytes()), eq(1));
+        service.put(eq(new KeyId(1)), aryEq(value.getBytes()), eq(2));
         replay(clientFactoryMock, nextLocatorMock, service);
 
-        nodeLocator.put(new KeyId(1), new DonutData(value.getBytes()), 2);
+        nodeLocator.put(new KeyId(1), value.getBytes(), 2);
     }
 
     @Test
@@ -138,7 +140,7 @@ public class NodeLocatorTest {
         Node node = new Node(null);
         node.setSuccessor(new TNode("successor", 1234, new KeyId(123)));
         NodeLocator nodeLocator = new NodeLocator(node, service, clientFactoryMock);
-        
+
         expect(clientFactoryMock.get(node.getSuccessor())).andReturn(nextLocatorMock);
         clientFactoryMock.release(node.getSuccessor());
         nextLocatorMock.remove(new KeyId(1), 1);

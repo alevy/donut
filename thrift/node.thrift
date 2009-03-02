@@ -16,10 +16,6 @@ struct TNode {
   i32 port
   KeyId nodeId
 }
- 
-struct DonutData {
-  binary data
-}
 
 exception NodeNotFoundException {
 
@@ -42,9 +38,9 @@ service KeyLocator {
   
   void ping(),
   
-  DonutData get(KeyId entryId) throws (DataNotFoundException e),
+  binary get(KeyId entryId) throws (DataNotFoundException e),
   
-  void put(KeyId entryId, DonutData data, i32 numReplicas),
+  void put(KeyId entryId, binary data, i32 numReplicas),
   
   void remove(KeyId entryId, i32 numReplicas),
   
