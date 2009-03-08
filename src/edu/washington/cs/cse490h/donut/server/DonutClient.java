@@ -138,8 +138,7 @@ public class DonutClient extends Thread {
 
         } catch (RetryFailedException e) {
 
-            LOGGER
-                    .warning("Something funny in the sockets is going down for successor :"
+            LOGGER.warning("Something funny in the sockets is going down for successor :"
                             + successor);
             e.printStackTrace();
             clientFactory.release(successor);
@@ -208,12 +207,19 @@ public class DonutClient extends Thread {
     }
 
     public void updateSuccessorList(List<TNode> list) {
-        for (int i = 0; (i < this.node.SUCCESSORLISTSIZE - 1) && (i < list.size()); i++) {
+        int i;
+        for (i = 0; (i < this.node.SUCCESSORLISTSIZE - 1) && (i < list.size()); i++) {
             try {
                 this.node.setSuccessor(i + 1, list.get(i));
             } catch (IndexOutOfBoundsException e) {
                 this.node.addSuccessor(list.get(i));
             }
+        }
+        
+        // Remove any left over successors
+        i++;
+        while(i < this.node.getSuccessorList().size()){
+            this.node.removeSuccessor(i);
         }
     }
 

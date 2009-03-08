@@ -91,5 +91,17 @@ public class NodeTest {
         TNode nextHop = initialNode.closestPrecedingNode(entryId);
         assertEquals(initialNode.getName(), nextHop.getName());
     }
+    
+    @Test
+    public void testSetGetFingers() throws Exception {
+        Node node1 = new Node("testNode1", 8080, new KeyId(50));
+        Node node2 = new Node("testNode2", 8080, new KeyId(60));
+        
+        node1.setFinger(0, node2.getTNode());
+        
+        assertEquals(node1.getSuccessor(), node2.getTNode());
+        assertEquals(node1.getSuccessor(), node1.getFinger(0));
+        
+    }
 
 }

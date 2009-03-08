@@ -192,4 +192,8 @@ public class Node {
         this.successorList.remove(0);
     }
     
+    public void removeSuccessor(int i){
+        this.successorList.remove(i);
+    }
+    
 }

@@ -316,5 +316,63 @@ public class DonutClientTest {
         
         assertSame(finger10, node.getFinger(10));
     }
+    
+    @Test
+    public void testUpdateSuccessorListOfSize3() throws Exception {
+        Node node = new Node("self", 0, new KeyId(0));
+        TNode successor0 = new TNode("other1", 0, new KeyId(100));
+        
+        List<TNode> list = new ArrayList<TNode>(Node.SUCCESSORLISTSIZE);
+        for(int i = 0 ; i < Node.SUCCESSORLISTSIZE ; i++){
+            list.add(new TNode("other" + i, 0, new KeyId(200 * i)));
+        }
+        
+        node.setSuccessor(successor0);
+        
+        DonutClient donutClient = new DonutClient(node, clientLocatorMock);
+        replay(clientLocatorMock, keyLocator);
+        
+        donutClient.updateSuccessorList(list);
+        
+        List<TNode> list2 = node.getSuccessorList();
+
+        // This is set to 3 instead of the constant so that if you change the constant you can 
+        // make this test more concise with more successors
+        assertSame(list2.size(), Node.SUCCESSORLISTSIZE);
+        assertSame(successor0, list2.get(0));
+        for (int i = 0 ; i < Node.SUCCESSORLISTSIZE - 1 ; i++){
+            assertSame(list.get(i), list2.get(i + 1));
+        }
+        
+           
+    }
+    
+    @Test
+    public void testUpdateSuccessorListOfSize1() throws Exception {
+        Node node = new Node("self", 0, new KeyId(0));
+        TNode successor0 = new TNode("other1", 0, new KeyId(100));
+        node.setSuccessor(successor0);
+        
+        DonutClient donutClient = new DonutClient(node, clientLocatorMock);
+        replay(clientLocatorMock, keyLocator);
+        
+        List<TNode> list0 = new ArrayList<TNode>(Node.SUCCESSORLISTSIZE);
+        for(int i = 0 ; i < Node.SUCCESSORLISTSIZE ; i++){
+            list0.add(new TNode("other" + i, 0, new KeyId(200 * i)));
+        }
+        
+        donutClient.updateSuccessorList(list0);
+        
+        List<TNode> list = new ArrayList<TNode>(Node.SUCCESSORLISTSIZE);
+        TNode successor1 = new TNode("other1", 0, new KeyId(100));
+        list.add(successor1);
+        
+        donutClient.updateSuccessorList(list);
+
+        assertSame(node.getSuccessorList().size(), list.size() + 1);
+        assertSame(successor0, node.getSuccessorList().get(0));
+        assertSame(successor1, node.getSuccessorList().get(1));
+           
+    }
 
 }

@@ -1,13 +1,15 @@
 package edu.washington.cs.cse490h.donut;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
+import java.util.List;
 
 import org.junit.Test;
 
 import edu.washington.cs.cse490h.donut.business.Node;
 import edu.washington.cs.cse490h.donut.util.DonutTestCase;
 import edu.washington.cs.cse490h.donut.util.DonutTestRunner;
-import edu.washington.edu.cs.cse490h.donut.service.KeyId;
+import edu.washington.edu.cs.cse490h.donut.service.TNode;
 
 /**
  * @author alevy
@@ -38,6 +40,17 @@ public class DonutJoinLeaveTest {
                 }
                 
                 assertEquals(node0.getTNode(), node1.getPredecessor());
+                
+                List<TNode> list = node0.getSuccessorList();
+                for(int i = 0 ; i < Node.SUCCESSORLISTSIZE; ++i) {
+                    assertEquals(list.get(i), (i % 2 == 0) ? node1.getTNode() : node0.getTNode());
+                }
+                
+                list = node1.getSuccessorList();
+                for(int i = 0 ; i < Node.SUCCESSORLISTSIZE; ++i) {
+                    assertEquals(list.get(i), (i % 2 == 0) ? node0.getTNode() : node1.getTNode());
+                }
+                
             }
         });
         donutTestRunner.run();
@@ -67,6 +80,16 @@ public class DonutJoinLeaveTest {
                 }
                 
                 assertEquals(node1.getTNode(), node0.getPredecessor());
+                
+                List<TNode> list = node0.getSuccessorList();
+                for(int i = 0 ; i < Node.SUCCESSORLISTSIZE; ++i) {
+                    assertEquals(list.get(i), (i % 2 == 0) ? node1.getTNode() : node0.getTNode());
+                }
+                
+                list = node1.getSuccessorList();
+                for(int i = 0 ; i < Node.SUCCESSORLISTSIZE; ++i) {
+                    assertEquals(list.get(i), (i % 2 == 0) ? node0.getTNode() : node1.getTNode());
+                }
             }
         });
         donutTestRunner.run();
@@ -120,6 +143,26 @@ public class DonutJoinLeaveTest {
                         .getFinger(Node.KEYSPACESIZE - 1));
                 
                 assertEquals(node2.getTNode(), node3.getPredecessor());
+                
+                List<TNode> list = node0.getSuccessorList();
+                for(int i = 0 ; i < Node.SUCCESSORLISTSIZE; ++i) {
+                    assertEquals(list.get(i), donutTestRunner.node((1 + i) % 4).getTNode());
+                }
+                
+                list = node1.getSuccessorList();
+                for(int i = 0 ; i < Node.SUCCESSORLISTSIZE; ++i) {
+                    assertEquals(list.get(i), donutTestRunner.node((2 + i) % 4).getTNode());
+                }
+                
+                list = node2.getSuccessorList();
+                for(int i = 0 ; i < Node.SUCCESSORLISTSIZE; ++i) {
+                    assertEquals(list.get(i), donutTestRunner.node((3 + i) % 4).getTNode());
+                }
+                
+                list = node3.getSuccessorList();
+                for(int i = 0 ; i < Node.SUCCESSORLISTSIZE; ++i) {
+                    assertEquals(list.get(i), donutTestRunner.node((4 + i) % 4).getTNode());
+                }
             }
         });
         donutTestRunner.addEvent(8000).leave(2);
@@ -151,6 +194,22 @@ public class DonutJoinLeaveTest {
                         .getFinger(Node.KEYSPACESIZE - 1));
                 
                 assertEquals(node1.getTNode(), node3.getPredecessor());
+                
+                List<TNode> list = node0.getSuccessorList();
+                assertEquals(list.get(0), node1.getTNode());
+                assertEquals(list.get(1), node3.getTNode());
+                assertEquals(list.get(2), node0.getTNode());
+                
+                
+                list = node1.getSuccessorList();
+                assertEquals(list.get(0), node3.getTNode());
+                assertEquals(list.get(1), node0.getTNode());
+                assertEquals(list.get(2), node1.getTNode());
+                
+                list = node3.getSuccessorList();
+                assertEquals(list.get(0), node0.getTNode());
+                assertEquals(list.get(1), node1.getTNode());
+                assertEquals(list.get(2), node3.getTNode());
             }
         });
         donutTestRunner.run();
@@ -205,6 +264,26 @@ public class DonutJoinLeaveTest {
                         .getFinger(Node.KEYSPACESIZE - 1));
                 
                 assertEquals(node2.getTNode(), node3.getPredecessor());
+                
+                List<TNode> list = node0.getSuccessorList();
+                for(int i = 0 ; i < Node.SUCCESSORLISTSIZE; ++i) {
+                    assertEquals(list.get(i), donutTestRunner.node((1 + i) % 4).getTNode());
+                }
+                
+                list = node1.getSuccessorList();
+                for(int i = 0 ; i < Node.SUCCESSORLISTSIZE; ++i) {
+                    assertEquals(list.get(i), donutTestRunner.node((2 + i) % 4).getTNode());
+                }
+                
+                list = node2.getSuccessorList();
+                for(int i = 0 ; i < Node.SUCCESSORLISTSIZE; ++i) {
+                    assertEquals(list.get(i), donutTestRunner.node((3 + i) % 4).getTNode());
+                }
+                
+                list = node3.getSuccessorList();
+                for(int i = 0 ; i < Node.SUCCESSORLISTSIZE; ++i) {
+                    assertEquals(list.get(i), donutTestRunner.node((4 + i) % 4).getTNode());
+                }
             }
         });
         donutTestRunner.run();
@@ -237,6 +316,16 @@ public class DonutJoinLeaveTest {
                         .getFinger(Node.KEYSPACESIZE - 1));
                 
                 assertEquals(node0.getTNode(), node3.getPredecessor());
+                
+                List<TNode> list = node0.getSuccessorList();
+                assertEquals(list.get(0), node3.getTNode());
+                assertEquals(list.get(1), node0.getTNode());
+                assertEquals(list.get(2), node3.getTNode());
+                
+                list = node3.getSuccessorList();
+                assertEquals(list.get(0), node0.getTNode());
+                assertEquals(list.get(1), node3.getTNode());
+                assertEquals(list.get(2), node0.getTNode());
             }
         });
         donutTestRunner.run();
@@ -293,6 +382,26 @@ public class DonutJoinLeaveTest {
                         .getFinger(Node.KEYSPACESIZE - 1));
                 
                 assertEquals(node2.getTNode(), node3.getPredecessor());
+                
+                List<TNode> list = node0.getSuccessorList();
+                assertEquals(list.get(0), node1.getTNode());
+                assertEquals(list.get(1), node2.getTNode());
+                assertEquals(list.get(2), node3.getTNode());
+                
+                list = node1.getSuccessorList();
+                assertEquals(list.get(0), node2.getTNode());
+                assertEquals(list.get(1), node3.getTNode());
+                assertEquals(list.get(2), node0.getTNode());
+                
+                list = node2.getSuccessorList();
+                assertEquals(list.get(0), node3.getTNode());
+                assertEquals(list.get(1), node0.getTNode());
+                assertEquals(list.get(2), node1.getTNode());
+                
+                list = node3.getSuccessorList();
+                assertEquals(list.get(0), node0.getTNode());
+                assertEquals(list.get(1), node1.getTNode());
+                assertEquals(list.get(2), node2.getTNode());
             }
         });
         donutTestRunner.run();
