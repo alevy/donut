@@ -9,7 +9,7 @@ attu="attu.cs.washington.edu"
 jarFile="donut.jar"
 
 function printUsage () {
-	printf "Usage: %s: -u username" $(basename $0) >&2
+	printf "Usage: %s: -u username\n" $(basename $0) >&2
 	exit 2
 }
 
