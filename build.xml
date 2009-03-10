@@ -80,7 +80,7 @@
 			</batchtest>
 		</junit>
 	</target>
-
+	
 	<target name="integration-tests" depends="build">
 		<mkdir dir="${reports.test}" />
 		<junit printsummary="yes" haltonfailure="yes">
@@ -93,12 +93,6 @@
 			</batchtest>
 		</junit>
 	</target>
-
+	
 	<target name="test" depends="unit-tests, integration-tests" />
-
-	<target name="TestDonut" depends="build">
-		<java classname="edu.washington.cs.cse490h.donut.TestDonut" failonerror="true" fork="true">
-			<classpath refid="project.class.path" />
-		</java>
-	</target>
 </project>
