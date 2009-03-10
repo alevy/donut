@@ -39,5 +39,5 @@ fi
 for shortName in ${*}; do
 	host="${username}@${shortName}${cseHost}"
 	echo "Killing all java processes: ${host}"
-	ssh ${host} "killall java"
+	ssh -o ConnectTimeout=2 ${host} "killall java"
 done

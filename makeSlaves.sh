@@ -70,5 +70,5 @@ for shortName in $*; do
 		fi
 	done
 	
-	ssh -f "${username}@${host}" "${hostCommands[@]}true"
+	ssh -o ConnectTimeout=2 -f "${username}@${host}" "${hostCommands[@]}true"
 done
