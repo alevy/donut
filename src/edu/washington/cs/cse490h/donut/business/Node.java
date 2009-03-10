@@ -1,6 +1,7 @@
 package edu.washington.cs.cse490h.donut.business;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import edu.washington.cs.cse490h.donut.util.KeyIdUtil;
@@ -12,11 +13,11 @@ import edu.washington.edu.cs.cse490h.donut.service.TNode;
  * @author alevy, jprouty
  */
 public class Node {
-    private final TNode     tNode;
+    private final TNode tNode;
 
-    private List<TNode>     fingers;
-    private List<TNode>     successorList;
-    private TNode           predecessor;
+    private List<TNode> fingers;
+    private List<TNode> successorList;
+    private TNode       predecessor;
 
     /**
      * Create a new Chord ring
@@ -55,7 +56,7 @@ public class Node {
         for (int i = 0; i < Constants.SUCCESSORLISTSIZE; i++)
             this.successorList.add(tNode);
     }
-    
+
     /**
      * Initializes the finger table. The successor and all fingers will become this, creating a
      * complete chord ring.
@@ -116,7 +117,7 @@ public class Node {
         if (i < 0 && i >= fingers.size())
             // Invalid range
             throw new IndexOutOfBoundsException();
-        if(i == 0) 
+        if (i == 0)
             return getSuccessor();
 
         return fingers.get(i);
@@ -134,8 +135,8 @@ public class Node {
         if (i < 0 || i >= fingers.size())
             // Invalid range
             throw new IndexOutOfBoundsException();
-        
-        if(i == 0) {
+
+        if (i == 0) {
             setSuccessor(n);
             return;
         }
@@ -152,9 +153,53 @@ public class Node {
         return false;
     }
 
+    /**
+     * Formats a TNode into a prettier String. We cannot change the toString of TNode because it's
+     * implementation is generated each time with a thrift call. Therefore, this method subverts
+     * their efforts.
+     * 
+     * @param n
+     *            The node to print
+     * @return Returns a String in the format of hostname:port. If n == null, then returns "NULL".
+     */
+    public static String printTNode(TNode n) {
+        if (n == null)
+            return "NULL";
+        else
+            return n.getName() + ":" + n.getPort();
+    }
+
+    /**
+     * Prints a list of TNodes. Note: This implementation is based off Java 6 AbstractCollection
+     * toString.
+     * 
+     * @param l
+     *            List of TNodes
+     * @return Produced String
+     */
+    public static String printTNodeList(List<TNode> l) {
+        Iterator<TNode> i = l.iterator();
+        if (!i.hasNext())
+            // Empty list
+            return "[]";
+
+        StringBuilder result = new StringBuilder();
+
+        result.append("[");
+
+        while (true) {
+            TNode e = i.next();
+            result.append(printTNode(e));
+            if (!i.hasNext())
+                return result.append(']').toString();
+
+            result.append(", ");
+        }
+    }
+
     @Override
     public String toString() {
-        return tNode.toString();
+        return printTNode(this.tNode);
     }
 
     public TNode getTNode() {
@@ -167,31 +212,30 @@ public class Node {
 
     public void setSuccessor(TNode node) {
         this.successorList.set(0, node);
-
     }
 
     public List<TNode> getFingers() {
         return new ArrayList<TNode>(fingers);
     }
-    
+
     public List<TNode> getSuccessorList() {
         return new ArrayList<TNode>(successorList);
     }
-    
-    public void setSuccessor(int i, TNode node) throws IndexOutOfBoundsException{
+
+    public void setSuccessor(int i, TNode node) throws IndexOutOfBoundsException {
         this.successorList.set(i, node);
     }
-    
-    public void addSuccessor(TNode node){
+
+    public void addSuccessor(TNode node) {
         this.successorList.add(node);
     }
-    
-    public void removeSuccessor(){
+
+    public void removeSuccessor() {
         this.successorList.remove(0);
     }
-    
-    public void removeSuccessor(int i){
+
+    public void removeSuccessor(int i) {
         this.successorList.remove(i);
     }
-    
+
 }
