@@ -7,6 +7,7 @@ import org.junit.Test;
 import edu.washington.cs.cse490h.donut.business.Node;
 import edu.washington.cs.cse490h.donut.util.DonutTestCase;
 import edu.washington.cs.cse490h.donut.util.DonutTestRunner;
+import edu.washington.edu.cs.cse490h.donut.service.Constants;
 
 /**
  * @author alevy
@@ -28,11 +29,11 @@ public class DonutJoinLeaveTest {
                 
                 assertEquals(node1.getTNode(), node0.getPredecessor());
                 
-                for (int i = 11; i < Node.KEYSPACESIZE; ++i) {
+                for (int i = 11; i < Constants.KEY_SPACE; ++i) {
                     assertEquals("Incorrect finger " + i, node0.getTNode(), node0.getFinger(i));
                 }
 
-                for (int i = 0; i < Node.KEYSPACESIZE; ++i) {
+                for (int i = 0; i < Constants.KEY_SPACE; ++i) {
                     assertEquals("Incorrect finger " + i, node0.getTNode(), node1.getFinger(i));
                 }
                 
@@ -51,17 +52,17 @@ public class DonutJoinLeaveTest {
             public void test() {
                 Node node0 = donutTestRunner.node(0);
                 Node node1 = donutTestRunner.node(1);
-                for (int i = 0; i < Node.KEYSPACESIZE; ++i) {
+                for (int i = 0; i < Constants.KEY_SPACE; ++i) {
                     assertEquals("Incorrect finger " + i, node1.getTNode(), node0.getFinger(i));
                 }
                 
                 assertEquals(node0.getTNode(), node1.getPredecessor());
 
-                for (int i = 0; i < Node.KEYSPACESIZE - 2; ++i) {
+                for (int i = 0; i < Constants.KEY_SPACE - 2; ++i) {
                     assertEquals("Incorrect finger " + i, node0.getTNode(), node1.getFinger(i));
                 }
 
-                for (int i = Node.KEYSPACESIZE - 2; i < Node.KEYSPACESIZE - 1; ++i) {
+                for (int i = Constants.KEY_SPACE - 2; i < Constants.KEY_SPACE - 1; ++i) {
                     assertEquals("Incorrect finger " + i, node1.getTNode(), node1.getFinger(i));
                 }
                 
@@ -85,38 +86,38 @@ public class DonutJoinLeaveTest {
                 Node node1 = donutTestRunner.node(1);
                 Node node2 = donutTestRunner.node(2);
                 Node node3 = donutTestRunner.node(3);
-                for (int i = 0; i < Node.KEYSPACESIZE - 1; ++i) {
+                for (int i = 0; i < Constants.KEY_SPACE - 1; ++i) {
                     assertEquals("Incorrect finger " + i, node1.getTNode(), node0.getFinger(i));
                 }
 
-                assertEquals("Incorrect finger " + (Node.KEYSPACESIZE - 1), node2.getTNode(), node0
-                        .getFinger(Node.KEYSPACESIZE - 1));
+                assertEquals("Incorrect finger " + (Constants.KEY_SPACE - 1), node2.getTNode(), node0
+                        .getFinger(Constants.KEY_SPACE - 1));
                 assertEquals(node3.getTNode(), node0.getPredecessor());
 
-                for (int i = 0; i < Node.KEYSPACESIZE - 1; ++i) {
+                for (int i = 0; i < Constants.KEY_SPACE - 1; ++i) {
                     assertEquals("Incorrect finger " + i, node2.getTNode(), node1.getFinger(i));
                 }
 
-                assertEquals("Incorrect finger " + (Node.KEYSPACESIZE - 1), node3.getTNode(), node1
-                        .getFinger(Node.KEYSPACESIZE - 1));
+                assertEquals("Incorrect finger " + (Constants.KEY_SPACE - 1), node3.getTNode(), node1
+                        .getFinger(Constants.KEY_SPACE - 1));
                 
                 assertEquals(node0.getTNode(), node1.getPredecessor());
 
-                for (int i = 0; i < Node.KEYSPACESIZE - 1; ++i) {
+                for (int i = 0; i < Constants.KEY_SPACE - 1; ++i) {
                     assertEquals("Incorrect finger " + i, node3.getTNode(), node2.getFinger(i));
                 }
 
-                assertEquals("Incorrect finger " + (Node.KEYSPACESIZE - 1), node0.getTNode(), node2
-                        .getFinger(Node.KEYSPACESIZE - 1));
+                assertEquals("Incorrect finger " + (Constants.KEY_SPACE - 1), node0.getTNode(), node2
+                        .getFinger(Constants.KEY_SPACE - 1));
                 
                 assertEquals(node1.getTNode(), node2.getPredecessor());
 
-                for (int i = 0; i < Node.KEYSPACESIZE - 1; ++i) {
+                for (int i = 0; i < Constants.KEY_SPACE - 1; ++i) {
                     assertEquals("Incorrect finger " + i, node0.getTNode(), node3.getFinger(i));
                 }
 
-                assertEquals("Incorrect finger " + (Node.KEYSPACESIZE - 1), node1.getTNode(), node3
-                        .getFinger(Node.KEYSPACESIZE - 1));
+                assertEquals("Incorrect finger " + (Constants.KEY_SPACE - 1), node1.getTNode(), node3
+                        .getFinger(Constants.KEY_SPACE - 1));
                 
                 assertEquals(node2.getTNode(), node3.getPredecessor());
             }
@@ -127,27 +128,27 @@ public class DonutJoinLeaveTest {
                 Node node0 = donutTestRunner.node(0);
                 Node node1 = donutTestRunner.node(1);
                 Node node3 = donutTestRunner.node(3);
-                for (int i = 0; i < Node.KEYSPACESIZE - 1; ++i) {
+                for (int i = 0; i < Constants.KEY_SPACE - 1; ++i) {
                     assertEquals("Incorrect finger " + i, node1.getTNode(), node0.getFinger(i));
                 }
 
-                assertEquals("Incorrect finger " + (Node.KEYSPACESIZE - 1), node3.getTNode(), node0
-                        .getFinger(Node.KEYSPACESIZE - 1));
+                assertEquals("Incorrect finger " + (Constants.KEY_SPACE - 1), node3.getTNode(), node0
+                        .getFinger(Constants.KEY_SPACE - 1));
                 
                 assertEquals(node3.getTNode(), node0.getPredecessor());
 
-                for (int i = 0; i < Node.KEYSPACESIZE; ++i) {
+                for (int i = 0; i < Constants.KEY_SPACE; ++i) {
                     assertEquals("Incorrect finger " + i, node3.getTNode(), node1.getFinger(i));
                 }
                 
                 assertEquals(node0.getTNode(), node1.getPredecessor());
 
-                for (int i = 0; i < Node.KEYSPACESIZE - 1; ++i) {
+                for (int i = 0; i < Constants.KEY_SPACE - 1; ++i) {
                     assertEquals("Incorrect finger " + i, node0.getTNode(), node3.getFinger(i));
                 }
 
-                assertEquals("Incorrect finger " + (Node.KEYSPACESIZE - 1), node1.getTNode(), node3
-                        .getFinger(Node.KEYSPACESIZE - 1));
+                assertEquals("Incorrect finger " + (Constants.KEY_SPACE - 1), node1.getTNode(), node3
+                        .getFinger(Constants.KEY_SPACE - 1));
                 
                 assertEquals(node1.getTNode(), node3.getPredecessor());
             }
@@ -169,39 +170,39 @@ public class DonutJoinLeaveTest {
                 Node node1 = donutTestRunner.node(1);
                 Node node2 = donutTestRunner.node(2);
                 Node node3 = donutTestRunner.node(3);
-                for (int i = 0; i < Node.KEYSPACESIZE - 1; ++i) {
+                for (int i = 0; i < Constants.KEY_SPACE - 1; ++i) {
                     assertEquals("Incorrect finger " + i, node1.getTNode(), node0.getFinger(i));
                 }
 
-                assertEquals("Incorrect finger " + (Node.KEYSPACESIZE - 1), node2.getTNode(), node0
-                        .getFinger(Node.KEYSPACESIZE - 1));
+                assertEquals("Incorrect finger " + (Constants.KEY_SPACE - 1), node2.getTNode(), node0
+                        .getFinger(Constants.KEY_SPACE - 1));
                 
                 assertEquals(node3.getTNode(), node0.getPredecessor());
 
-                for (int i = 0; i < Node.KEYSPACESIZE - 1; ++i) {
+                for (int i = 0; i < Constants.KEY_SPACE - 1; ++i) {
                     assertEquals("Incorrect finger " + i, node2.getTNode(), node1.getFinger(i));
                 }
 
-                assertEquals("Incorrect finger " + (Node.KEYSPACESIZE - 1), node3.getTNode(), node1
-                        .getFinger(Node.KEYSPACESIZE - 1));
+                assertEquals("Incorrect finger " + (Constants.KEY_SPACE - 1), node3.getTNode(), node1
+                        .getFinger(Constants.KEY_SPACE - 1));
                 
                 assertEquals(node0.getTNode(), node1.getPredecessor());
 
-                for (int i = 0; i < Node.KEYSPACESIZE - 1; ++i) {
+                for (int i = 0; i < Constants.KEY_SPACE - 1; ++i) {
                     assertEquals("Incorrect finger " + i, node3.getTNode(), node2.getFinger(i));
                 }
 
-                assertEquals("Incorrect finger " + (Node.KEYSPACESIZE - 1), node0.getTNode(), node2
-                        .getFinger(Node.KEYSPACESIZE - 1));
+                assertEquals("Incorrect finger " + (Constants.KEY_SPACE - 1), node0.getTNode(), node2
+                        .getFinger(Constants.KEY_SPACE - 1));
                 
                 assertEquals(node1.getTNode(), node2.getPredecessor());
 
-                for (int i = 0; i < Node.KEYSPACESIZE - 1; ++i) {
+                for (int i = 0; i < Constants.KEY_SPACE - 1; ++i) {
                     assertEquals("Incorrect finger " + i, node0.getTNode(), node3.getFinger(i));
                 }
 
-                assertEquals("Incorrect finger " + (Node.KEYSPACESIZE - 1), node1.getTNode(), node3
-                        .getFinger(Node.KEYSPACESIZE - 1));
+                assertEquals("Incorrect finger " + (Constants.KEY_SPACE - 1), node1.getTNode(), node3
+                        .getFinger(Constants.KEY_SPACE - 1));
                 
                 assertEquals(node2.getTNode(), node3.getPredecessor());
             }
@@ -223,17 +224,17 @@ public class DonutJoinLeaveTest {
             public void test() {
                 Node node0 = donutTestRunner.node(0);
                 Node node3 = donutTestRunner.node(3);
-                for (int i = 0; i < Node.KEYSPACESIZE; ++i) {
+                for (int i = 0; i < Constants.KEY_SPACE; ++i) {
                     assertEquals("Incorrect finger " + i, node3.getTNode(), node0.getFinger(i));
                 }
                 
                 assertEquals(node3.getTNode(), node0.getPredecessor());
 
-                for (int i = 0; i < Node.KEYSPACESIZE - 1; ++i) {
+                for (int i = 0; i < Constants.KEY_SPACE - 1; ++i) {
                     assertEquals("Incorrect finger " + i, node0.getTNode(), node3.getFinger(i));
                 }
-                assertEquals("Incorrect finger " + (Node.KEYSPACESIZE - 1), node3.getTNode(), node3
-                        .getFinger(Node.KEYSPACESIZE - 1));
+                assertEquals("Incorrect finger " + (Constants.KEY_SPACE - 1), node3.getTNode(), node3
+                        .getFinger(Constants.KEY_SPACE - 1));
                 
                 assertEquals(node0.getTNode(), node3.getPredecessor());
             }
@@ -257,39 +258,39 @@ public class DonutJoinLeaveTest {
                 Node node1 = donutTestRunner.node(1);
                 Node node2 = donutTestRunner.node(2);
                 Node node3 = donutTestRunner.node(3);
-                for (int i = 0; i < Node.KEYSPACESIZE - 1; ++i) {
+                for (int i = 0; i < Constants.KEY_SPACE - 1; ++i) {
                     assertEquals("Incorrect finger " + i, node1.getTNode(), node0.getFinger(i));
                 }
 
-                assertEquals("Incorrect finger " + (Node.KEYSPACESIZE - 1), node2.getTNode(), node0
-                        .getFinger(Node.KEYSPACESIZE - 1));
+                assertEquals("Incorrect finger " + (Constants.KEY_SPACE - 1), node2.getTNode(), node0
+                        .getFinger(Constants.KEY_SPACE - 1));
                 
                 assertEquals(node3.getTNode(), node0.getPredecessor());
 
-                for (int i = 0; i < Node.KEYSPACESIZE - 1; ++i) {
+                for (int i = 0; i < Constants.KEY_SPACE - 1; ++i) {
                     assertEquals("Incorrect finger " + i, node2.getTNode(), node1.getFinger(i));
                 }
 
-                assertEquals("Incorrect finger " + (Node.KEYSPACESIZE - 1), node3.getTNode(), node1
-                        .getFinger(Node.KEYSPACESIZE - 1));
+                assertEquals("Incorrect finger " + (Constants.KEY_SPACE - 1), node3.getTNode(), node1
+                        .getFinger(Constants.KEY_SPACE - 1));
                 
                 assertEquals(node0.getTNode(), node1.getPredecessor());
 
-                for (int i = 0; i < Node.KEYSPACESIZE - 1; ++i) {
+                for (int i = 0; i < Constants.KEY_SPACE - 1; ++i) {
                     assertEquals("Incorrect finger " + i, node3.getTNode(), node2.getFinger(i));
                 }
 
-                assertEquals("Incorrect finger " + (Node.KEYSPACESIZE - 1), node0.getTNode(), node2
-                        .getFinger(Node.KEYSPACESIZE - 1));
+                assertEquals("Incorrect finger " + (Constants.KEY_SPACE - 1), node0.getTNode(), node2
+                        .getFinger(Constants.KEY_SPACE - 1));
                 
                 assertEquals(node1.getTNode(), node2.getPredecessor());
 
-                for (int i = 0; i < Node.KEYSPACESIZE - 1; ++i) {
+                for (int i = 0; i < Constants.KEY_SPACE - 1; ++i) {
                     assertEquals("Incorrect finger " + i, node0.getTNode(), node3.getFinger(i));
                 }
 
-                assertEquals("Incorrect finger " + (Node.KEYSPACESIZE - 1), node1.getTNode(), node3
-                        .getFinger(Node.KEYSPACESIZE - 1));
+                assertEquals("Incorrect finger " + (Constants.KEY_SPACE - 1), node1.getTNode(), node3
+                        .getFinger(Constants.KEY_SPACE - 1));
                 
                 assertEquals(node2.getTNode(), node3.getPredecessor());
             }
