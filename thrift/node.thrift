@@ -1,4 +1,4 @@
-namespace java edu.washington.edu.cs.cse490h.donut.service
+namespace java edu.washington.cs.cse490h.donut.service.thrift
 
 const i32 KEY_SPACE = 64;
 const i32 SUCCESSOR_LIST_SIZE = 3;
@@ -19,6 +19,11 @@ struct TNode {
   string name
   i32 port
   KeyId nodeId
+}
+
+struct DataPair {
+	binary data
+	i32 replicas
 }
 
 exception NodeNotFoundException {
@@ -46,15 +51,17 @@ service KeyLocator {
   
   void ping(),
   
-  binary get(EntryKey key) throws (DataNotFoundException e),
+  binary get(EntryKey key) throws (DataNotFoundException e)
   
-  void put(EntryKey key, binary data) throws (NotResponsibleForId e),
+  void put(EntryKey key, binary data) throws (NotResponsibleForId e)
   
-  void replicatePut(EntryKey key, binary data, i32 numReplicas),
+  void replicatePut(EntryKey key, binary data, i32 numReplicas)
   
-  void remove(EntryKey key) throws (NotResponsibleForId e),
+  void remove(EntryKey key) throws (NotResponsibleForId e)
   
-  void replicateRemove(EntryKey key, i32 numReplicas),
+  void replicateRemove(EntryKey key, i32 numReplicas)
+  
+  set<EntryKey> getDataRange(KeyId start, KeyId end)
   
   void notify(TNode n)
   

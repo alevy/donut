@@ -1,6 +1,7 @@
 package edu.washington.cs.cse490h.donut.service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -9,17 +10,17 @@ import org.apache.thrift.TException;
 import com.google.inject.Inject;
 
 import edu.washington.cs.cse490h.donut.business.Node;
-import edu.washington.cs.cse490h.donut.business.Pair;
 import edu.washington.cs.cse490h.donut.service.application.DonutHashTableService;
+import edu.washington.cs.cse490h.donut.service.thrift.Constants;
+import edu.washington.cs.cse490h.donut.service.thrift.DataNotFoundException;
+import edu.washington.cs.cse490h.donut.service.thrift.DataPair;
+import edu.washington.cs.cse490h.donut.service.thrift.EntryKey;
+import edu.washington.cs.cse490h.donut.service.thrift.KeyId;
+import edu.washington.cs.cse490h.donut.service.thrift.NodeNotFoundException;
+import edu.washington.cs.cse490h.donut.service.thrift.NotResponsibleForId;
+import edu.washington.cs.cse490h.donut.service.thrift.TNode;
+import edu.washington.cs.cse490h.donut.service.thrift.KeyLocator.Iface;
 import edu.washington.cs.cse490h.donut.util.KeyIdUtil;
-import edu.washington.edu.cs.cse490h.donut.service.Constants;
-import edu.washington.edu.cs.cse490h.donut.service.DataNotFoundException;
-import edu.washington.edu.cs.cse490h.donut.service.EntryKey;
-import edu.washington.edu.cs.cse490h.donut.service.KeyId;
-import edu.washington.edu.cs.cse490h.donut.service.NodeNotFoundException;
-import edu.washington.edu.cs.cse490h.donut.service.NotResponsibleForId;
-import edu.washington.edu.cs.cse490h.donut.service.TNode;
-import edu.washington.edu.cs.cse490h.donut.service.KeyLocator.Iface;
 
 /**
  * @author alevy
@@ -65,11 +66,11 @@ public class NodeLocator implements Iface {
 
     public byte[] get(EntryKey key) throws TException, DataNotFoundException {
         LOGGER.info("Get entity with id \"" + key.toString() + "\".");
-        Pair<byte[], Integer> data = service.get(key);
+        DataPair data = service.get(key);
         if (data == null) {
             throw new DataNotFoundException();
         }
-        return data.head();
+        return data.getData();
     }
 
     public void put(EntryKey key, byte[] data) throws TException, NotResponsibleForId {
@@ -158,9 +159,46 @@ public class NodeLocator implements Iface {
         if (node.getPredecessor() == null
                 || KeyIdUtil.isAfterXButBeforeEqualY(n.getNodeId(), node.getPredecessor()
                         .getNodeId(), node.getNodeId())) {
+            if (node.getPredecessor() == null) {
+                TNode successor = node.getSuccessor();
+
+                // Copy data that belongs to me from my successor
+                try {
+                    Iface successorClient = clientFactory.get(successor);
+                    copyData(successorClient, successorClient.getDataRange(n.getNodeId(), node
+                            .getNodeId()));
+                    clientFactory.release(successor);
+                } catch (RetryFailedException e) {
+                    throw new TException(e);
+                }
+            }
+
+            // Copy data that I should replicate from new predecessor
+            try {
+                Iface predecessorClient = clientFactory.get(n);
+                copyData(predecessorClient, predecessorClient.getDataRange(node.getNodeId(), n
+                        .getNodeId()));
+                clientFactory.release(n);
+            } catch (RetryFailedException e) {
+                throw new TException(e);
+            }
             node.setPredecessor(n);
         }
         return node.getSuccessorList();
+    }
+
+    private void copyData(Iface client, Set<EntryKey> keySet) throws TException {
+        try {
+            for (EntryKey key : keySet) {
+                byte[] data;
+                data = client.get(key);
+                service.put(key, data, Constants.SUCCESSOR_LIST_SIZE);
+            }
+        } catch (DataNotFoundException e) {
+            // We were lied to! Die gracefully
+            e.printStackTrace(System.err);
+            System.exit(1);
+        }
     }
 
     public List<TNode> getFingers() throws TException {
@@ -172,6 +210,10 @@ public class NodeLocator implements Iface {
             return "NULL";
         else
             return "" + n.getName();
+    }
+
+    public Set<EntryKey> getDataRange(KeyId start, KeyId end) throws TException {
+        return service.getRange(start, end);
     }
 
 }

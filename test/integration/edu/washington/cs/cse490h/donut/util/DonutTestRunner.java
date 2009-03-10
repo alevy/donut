@@ -9,7 +9,7 @@ import edu.washington.cs.cse490h.donut.server.DonutClient;
 import edu.washington.cs.cse490h.donut.service.LocalLocatorClientFactory;
 import edu.washington.cs.cse490h.donut.service.NodeLocator;
 import edu.washington.cs.cse490h.donut.service.application.DonutInMemoryHashTableService;
-import edu.washington.edu.cs.cse490h.donut.service.KeyId;
+import edu.washington.cs.cse490h.donut.service.thrift.KeyId;
 
 /**
  * <p>

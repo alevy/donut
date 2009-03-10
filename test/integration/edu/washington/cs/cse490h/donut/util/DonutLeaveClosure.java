@@ -2,7 +2,7 @@ package edu.washington.cs.cse490h.donut.util;
 
 import edu.washington.cs.cse490h.donut.server.DonutClient;
 import edu.washington.cs.cse490h.donut.service.LocalLocatorClientFactory;
-import edu.washington.edu.cs.cse490h.donut.service.TNode;
+import edu.washington.cs.cse490h.donut.service.thrift.TNode;
 
 /**
  * Donut closure for leaving nodes

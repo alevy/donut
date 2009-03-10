@@ -2,9 +2,13 @@ package edu.washington.cs.cse490h.donut.service.application;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
-import edu.washington.cs.cse490h.donut.business.Pair;
-import edu.washington.edu.cs.cse490h.donut.service.EntryKey;
+import edu.washington.cs.cse490h.donut.service.thrift.DataPair;
+import edu.washington.cs.cse490h.donut.service.thrift.EntryKey;
+import edu.washington.cs.cse490h.donut.service.thrift.KeyId;
+import edu.washington.cs.cse490h.donut.util.KeyIdUtil;
 
 /**
  * @author alevy
@@ -12,22 +16,33 @@ import edu.washington.edu.cs.cse490h.donut.service.EntryKey;
  */
 public class DonutInMemoryHashTableService implements DonutHashTableService {
     
-    private final Map<EntryKey, Pair<byte[], Integer>> map;
+    private final Map<EntryKey, DataPair> map;
     
     public DonutInMemoryHashTableService() {
-        map = new HashMap<EntryKey, Pair<byte[],Integer>>();
+        map = new HashMap<EntryKey, DataPair>();
     }
 
-    public Pair<byte[], Integer> get(EntryKey entryId) {
+    public DataPair get(EntryKey entryId) {
         return map.get(entryId);
     }
 
     public void put(EntryKey key, byte[] data, int replicas) {
-        map.put(key, new Pair<byte[], Integer>(data, replicas));
+        map.put(key, new DataPair(data, replicas));
     }
 
     public void remove(EntryKey entryId) {
         map.remove(entryId);
+    }
+
+    public Set<EntryKey> getRange(KeyId start, KeyId end) {
+        Set<EntryKey> result = new TreeSet<EntryKey>();
+        for (EntryKey key : map.keySet()) {
+            if (KeyIdUtil.isAfterXButBeforeEqualY(key.getId(), start, end)) {
+                result.add(key);
+            }
+        }
+        
+        return result;
     }
 
 

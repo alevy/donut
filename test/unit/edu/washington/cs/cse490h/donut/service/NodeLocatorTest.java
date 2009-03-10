@@ -15,15 +15,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 import edu.washington.cs.cse490h.donut.business.Node;
-import edu.washington.cs.cse490h.donut.business.Pair;
 import edu.washington.cs.cse490h.donut.service.application.DonutHashTableService;
-import edu.washington.edu.cs.cse490h.donut.service.Constants;
-import edu.washington.edu.cs.cse490h.donut.service.DataNotFoundException;
-import edu.washington.edu.cs.cse490h.donut.service.EntryKey;
-import edu.washington.edu.cs.cse490h.donut.service.KeyId;
-import edu.washington.edu.cs.cse490h.donut.service.KeyLocator;
-import edu.washington.edu.cs.cse490h.donut.service.NotResponsibleForId;
-import edu.washington.edu.cs.cse490h.donut.service.TNode;
+import edu.washington.cs.cse490h.donut.service.thrift.Constants;
+import edu.washington.cs.cse490h.donut.service.thrift.DataNotFoundException;
+import edu.washington.cs.cse490h.donut.service.thrift.DataPair;
+import edu.washington.cs.cse490h.donut.service.thrift.EntryKey;
+import edu.washington.cs.cse490h.donut.service.thrift.KeyId;
+import edu.washington.cs.cse490h.donut.service.thrift.KeyLocator;
+import edu.washington.cs.cse490h.donut.service.thrift.NotResponsibleForId;
+import edu.washington.cs.cse490h.donut.service.thrift.TNode;
 
 public class NodeLocatorTest {
 
@@ -98,7 +98,7 @@ public class NodeLocatorTest {
         NodeLocator nodeLocator = new NodeLocator(null, service, null);
         String value = "Hello World";
 
-        expect(service.get(ENTRY_KEY)).andReturn(new Pair<byte[], Integer>(value.getBytes(), 0));
+        expect(service.get(ENTRY_KEY)).andReturn(new DataPair(value.getBytes(), 0));
         replay(clientFactoryMock, nextLocatorMock, service);
 
         assertArrayEquals(value.getBytes(), nodeLocator.get(ENTRY_KEY));

@@ -22,12 +22,12 @@ import org.junit.Test;
 import edu.washington.cs.cse490h.donut.business.Node;
 import edu.washington.cs.cse490h.donut.service.LocatorClientFactory;
 import edu.washington.cs.cse490h.donut.service.RetryFailedException;
-import edu.washington.edu.cs.cse490h.donut.service.Constants;
-import edu.washington.edu.cs.cse490h.donut.service.KeyId;
-import edu.washington.edu.cs.cse490h.donut.service.KeyLocator;
-import edu.washington.edu.cs.cse490h.donut.service.NodeNotFoundException;
-import edu.washington.edu.cs.cse490h.donut.service.TNode;
-import edu.washington.edu.cs.cse490h.donut.service.KeyLocator.Iface;
+import edu.washington.cs.cse490h.donut.service.thrift.Constants;
+import edu.washington.cs.cse490h.donut.service.thrift.KeyId;
+import edu.washington.cs.cse490h.donut.service.thrift.KeyLocator;
+import edu.washington.cs.cse490h.donut.service.thrift.NodeNotFoundException;
+import edu.washington.cs.cse490h.donut.service.thrift.TNode;
+import edu.washington.cs.cse490h.donut.service.thrift.KeyLocator.Iface;
 
 /**
  * @author alevy

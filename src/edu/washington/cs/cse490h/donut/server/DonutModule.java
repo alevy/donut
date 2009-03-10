@@ -23,9 +23,9 @@ import edu.washington.cs.cse490h.donut.business.Node;
 import edu.washington.cs.cse490h.donut.service.LocatorClientFactory;
 import edu.washington.cs.cse490h.donut.service.NodeLocator;
 import edu.washington.cs.cse490h.donut.service.RemoteLocatorClientFactory;
-import edu.washington.edu.cs.cse490h.donut.service.KeyId;
-import edu.washington.edu.cs.cse490h.donut.service.KeyLocator;
-import edu.washington.edu.cs.cse490h.donut.service.KeyLocator.Iface;
+import edu.washington.cs.cse490h.donut.service.thrift.KeyId;
+import edu.washington.cs.cse490h.donut.service.thrift.KeyLocator;
+import edu.washington.cs.cse490h.donut.service.thrift.KeyLocator.Iface;
 
 /**
  * @author alevy

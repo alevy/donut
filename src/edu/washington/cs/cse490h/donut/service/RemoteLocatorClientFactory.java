@@ -9,8 +9,8 @@ import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 
-import edu.washington.edu.cs.cse490h.donut.service.KeyLocator;
-import edu.washington.edu.cs.cse490h.donut.service.TNode;
+import edu.washington.cs.cse490h.donut.service.thrift.KeyLocator;
+import edu.washington.cs.cse490h.donut.service.thrift.TNode;
 
 /**
  * @author alevy

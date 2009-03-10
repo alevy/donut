@@ -1,7 +1,7 @@
 package edu.washington.cs.cse490h.donut.service;
 
-import edu.washington.edu.cs.cse490h.donut.service.TNode;
-import edu.washington.edu.cs.cse490h.donut.service.KeyLocator.Iface;
+import edu.washington.cs.cse490h.donut.service.thrift.TNode;
+import edu.washington.cs.cse490h.donut.service.thrift.KeyLocator.Iface;
 
 /**
  * @author alevy

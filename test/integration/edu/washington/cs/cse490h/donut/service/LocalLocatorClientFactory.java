@@ -3,9 +3,9 @@ package edu.washington.cs.cse490h.donut.service;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.washington.edu.cs.cse490h.donut.service.KeyId;
-import edu.washington.edu.cs.cse490h.donut.service.TNode;
-import edu.washington.edu.cs.cse490h.donut.service.KeyLocator.Iface;
+import edu.washington.cs.cse490h.donut.service.thrift.KeyId;
+import edu.washington.cs.cse490h.donut.service.thrift.TNode;
+import edu.washington.cs.cse490h.donut.service.thrift.KeyLocator.Iface;
 
 /**
  * @author alevy

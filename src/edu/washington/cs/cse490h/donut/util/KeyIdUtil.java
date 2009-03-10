@@ -1,6 +1,6 @@
 package edu.washington.cs.cse490h.donut.util;
 
-import edu.washington.edu.cs.cse490h.donut.service.KeyId;
+import edu.washington.cs.cse490h.donut.service.thrift.KeyId;
 
 /**
  * @author alevy

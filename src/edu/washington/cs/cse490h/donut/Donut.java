@@ -6,7 +6,7 @@ import com.google.inject.Injector;
 import edu.washington.cs.cse490h.donut.business.Node;
 import edu.washington.cs.cse490h.donut.server.DonutModule;
 import edu.washington.cs.cse490h.donut.server.DonutPeer;
-import edu.washington.edu.cs.cse490h.donut.service.TNode;
+import edu.washington.cs.cse490h.donut.service.thrift.TNode;
 
 public class Donut {
     public static void main(String[] args) throws Exception {

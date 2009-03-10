@@ -4,7 +4,7 @@ import org.apache.thrift.TException;
 
 import com.google.inject.Inject;
 
-import edu.washington.edu.cs.cse490h.donut.service.TNode;
+import edu.washington.cs.cse490h.donut.service.thrift.TNode;
 
 
 /**

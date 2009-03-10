@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import edu.washington.edu.cs.cse490h.donut.service.KeyId;
-import edu.washington.edu.cs.cse490h.donut.service.TNode;
+import edu.washington.cs.cse490h.donut.service.thrift.KeyId;
+import edu.washington.cs.cse490h.donut.service.thrift.TNode;
 
 /**
  * @author alevy

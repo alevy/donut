@@ -10,12 +10,12 @@ import com.google.inject.Inject;
 import edu.washington.cs.cse490h.donut.business.Node;
 import edu.washington.cs.cse490h.donut.service.LocatorClientFactory;
 import edu.washington.cs.cse490h.donut.service.RetryFailedException;
+import edu.washington.cs.cse490h.donut.service.thrift.Constants;
+import edu.washington.cs.cse490h.donut.service.thrift.KeyId;
+import edu.washington.cs.cse490h.donut.service.thrift.NodeNotFoundException;
+import edu.washington.cs.cse490h.donut.service.thrift.TNode;
+import edu.washington.cs.cse490h.donut.service.thrift.KeyLocator.Iface;
 import edu.washington.cs.cse490h.donut.util.KeyIdUtil;
-import edu.washington.edu.cs.cse490h.donut.service.KeyId;
-import edu.washington.edu.cs.cse490h.donut.service.NodeNotFoundException;
-import edu.washington.edu.cs.cse490h.donut.service.TNode;
-import edu.washington.edu.cs.cse490h.donut.service.KeyLocator.Iface;
-import edu.washington.edu.cs.cse490h.donut.service.Constants;
 
 /**
  * @author alevy

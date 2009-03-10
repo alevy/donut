@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import edu.washington.cs.cse490h.donut.service.thrift.Constants;
+import edu.washington.cs.cse490h.donut.service.thrift.KeyId;
+import edu.washington.cs.cse490h.donut.service.thrift.TNode;
 import edu.washington.cs.cse490h.donut.util.KeyIdUtil;
-import edu.washington.edu.cs.cse490h.donut.service.Constants;
-import edu.washington.edu.cs.cse490h.donut.service.KeyId;
-import edu.washington.edu.cs.cse490h.donut.service.TNode;
 
 /**
  * @author alevy, jprouty

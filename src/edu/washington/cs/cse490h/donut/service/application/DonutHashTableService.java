@@ -1,7 +1,10 @@
 package edu.washington.cs.cse490h.donut.service.application;
 
-import edu.washington.cs.cse490h.donut.business.Pair;
-import edu.washington.edu.cs.cse490h.donut.service.EntryKey;
+import java.util.Set;
+
+import edu.washington.cs.cse490h.donut.service.thrift.DataPair;
+import edu.washington.cs.cse490h.donut.service.thrift.EntryKey;
+import edu.washington.cs.cse490h.donut.service.thrift.KeyId;
 
 /**
  * Interface for application level services.
@@ -10,10 +13,12 @@ import edu.washington.edu.cs.cse490h.donut.service.EntryKey;
  */
 public interface DonutHashTableService {
 
-    Pair<byte[], Integer> get(EntryKey key);
+    DataPair get(EntryKey key);
 
-    void put(EntryKey key, byte[] data, int replicas);
+    void put(EntryKey key, byte[] data, int numReplicas);
 
     void remove(EntryKey key);
+
+    Set<EntryKey> getRange(KeyId start, KeyId end);
 
 }
