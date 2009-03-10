@@ -1,7 +1,11 @@
 package edu.washington.cs.cse490h.donut.service;
 
-import static org.junit.Assert.*;
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -62,14 +66,16 @@ public class NodeLocatorTest {
     
     @Test
     public void testGet_Dne() throws Exception {
-        NodeLocator nodeLocator = new NodeLocator(null, null);
+        Node node = new Node(new TNode());
+        NodeLocator nodeLocator = new NodeLocator(node, null);
         nodeLocator.getDataMap().clear();
         assertEquals(new DonutData(false, null), nodeLocator.get(new KeyId(1)));
     }
     
     @Test
     public void testGet_Exists() throws Exception {
-        NodeLocator nodeLocator = new NodeLocator(null, null);
+        Node node = new Node(new TNode());
+        NodeLocator nodeLocator = new NodeLocator(node, null);
         String value = "Hello World";
         nodeLocator.getDataMap().put(new KeyId(1), value.getBytes());
         assertEquals(new DonutData(true, value.getBytes()), nodeLocator.get(new KeyId(1)));
@@ -77,7 +83,8 @@ public class NodeLocatorTest {
     
     @Test
     public void testPut() throws Exception {
-        NodeLocator nodeLocator = new NodeLocator(null, null);
+        Node node = new Node(new TNode());
+        NodeLocator nodeLocator = new NodeLocator(node, null);
         String value = "Hello World";
         nodeLocator.put(new KeyId(1), new DonutData(true, value.getBytes()));
         assertArrayEquals(value.getBytes(), nodeLocator.getDataMap().get(new KeyId(1)));
@@ -85,7 +92,8 @@ public class NodeLocatorTest {
     
     @Test
     public void testPut_Null() throws Exception {
-        NodeLocator nodeLocator = new NodeLocator(null, null);
+        Node node = new Node(new TNode());
+        NodeLocator nodeLocator = new NodeLocator(node, null);
         nodeLocator.put(new KeyId(1), new DonutData(false, null));
         assertNull(nodeLocator.getDataMap().get(new KeyId(1)));
     }

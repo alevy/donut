@@ -25,7 +25,6 @@ import edu.washington.cs.cse490h.donut.service.NodeLocator;
 import edu.washington.cs.cse490h.donut.service.RemoteLocatorClientFactory;
 import edu.washington.edu.cs.cse490h.donut.service.KeyId;
 import edu.washington.edu.cs.cse490h.donut.service.KeyLocator;
-import edu.washington.edu.cs.cse490h.donut.service.TNode;
 import edu.washington.edu.cs.cse490h.donut.service.KeyLocator.Iface;
 
 /**

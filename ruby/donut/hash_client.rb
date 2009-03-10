@@ -1,5 +1,6 @@
 require File.dirname(__FILE__) + '/../../gen-rb/KeyLocator'
 require File.dirname(__FILE__) + '/../../gen-rb/node_types'
+require File.dirname(__FILE__) + '/../../gen-rb/node_constants'
 require 'digest/sha2'
 
 module Donut
@@ -62,7 +63,7 @@ module Donut
     end
 
     def gen_key(key)
-      Digest::SHA512.hexdigest(key).hex % 2**64
+      Digest::SHA512.hexdigest(key).hex % 2**KEY_SPACE
     end
 
     def get_node(key)
@@ -72,6 +73,5 @@ module Donut
       return result
     end
   end
- 
 end
 

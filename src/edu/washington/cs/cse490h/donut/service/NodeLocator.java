@@ -59,7 +59,7 @@ public class NodeLocator implements Iface {
     }
 
     public DonutData get(KeyId entryId) throws TException {
-        LOGGER.info("Get [" + printNode(this.node.getTNode()) + "]: Id - \"" + entryId.toString() + "\"");
+        LOGGER.info("Get [" + printNode(this.node.getTNode()) + "]: Id - \"" + entryId + "\"");
         DonutData data = new DonutData();
         data.setData(dataMap.get(entryId));
         if (data.getData() != null) {

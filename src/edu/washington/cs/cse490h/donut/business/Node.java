@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.washington.cs.cse490h.donut.util.KeyIdUtil;
+import edu.washington.edu.cs.cse490h.donut.service.Constants;
 import edu.washington.edu.cs.cse490h.donut.service.KeyId;
 import edu.washington.edu.cs.cse490h.donut.service.TNode;
 
@@ -11,9 +12,6 @@ import edu.washington.edu.cs.cse490h.donut.service.TNode;
  * @author alevy, jprouty
  */
 public class Node {
-
-    public static final int KEYSPACESIZE = 64;
-    public static final int SUCCESSORLISTSIZE = 3;
     private final TNode     tNode;
 
     private List<TNode>     fingers;
@@ -51,10 +49,10 @@ public class Node {
      * Initializes the successor list.
      */
     private void initSuccessorList() {
-        this.successorList = new ArrayList<TNode>(SUCCESSORLISTSIZE);
+        this.successorList = new ArrayList<TNode>(Constants.SUCCESSORLISTSIZE);
 
         // Adds the initial successor
-        for (int i = 0; i < SUCCESSORLISTSIZE; i++)
+        for (int i = 0; i < Constants.SUCCESSORLISTSIZE; i++)
             this.successorList.add(tNode);
     }
     
@@ -63,8 +61,8 @@ public class Node {
      * complete chord ring.
      */
     private void initFingers() {
-        this.fingers = new ArrayList<TNode>(KEYSPACESIZE);
-        for (int i = 0; i < KEYSPACESIZE; i++)
+        this.fingers = new ArrayList<TNode>(Constants.KEY_SPACE);
+        for (int i = 0; i < Constants.KEY_SPACE; i++)
             this.fingers.add(tNode);
     }
 
