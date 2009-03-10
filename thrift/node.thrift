@@ -1,5 +1,7 @@
 namespace java edu.washington.edu.cs.cse490h.donut.service
- 
+
+const i32 KEY_SPACE = 64;
+
 struct KeyId {
   1:i64 id
 }

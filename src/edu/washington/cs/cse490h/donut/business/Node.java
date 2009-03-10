@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.washington.cs.cse490h.donut.util.KeyIdUtil;
+import edu.washington.edu.cs.cse490h.donut.service.Constants;
 import edu.washington.edu.cs.cse490h.donut.service.KeyId;
 import edu.washington.edu.cs.cse490h.donut.service.TNode;
 
@@ -11,8 +12,6 @@ import edu.washington.edu.cs.cse490h.donut.service.TNode;
  * @author alevy, jprouty
  */
 public class Node {
-
-    public static final int KEYSPACESIZE = 64;
     private final TNode     tNode;
 
     private List<TNode>     fingers;
@@ -49,8 +48,8 @@ public class Node {
      * complete chord ring.
      */
     private void initFingers() {
-        this.fingers = new ArrayList<TNode>(KEYSPACESIZE);
-        for (int i = 0; i < KEYSPACESIZE; i++)
+        this.fingers = new ArrayList<TNode>(Constants.KEY_SPACE);
+        for (int i = 0; i < Constants.KEY_SPACE; i++)
             this.fingers.add(tNode);
     }
 
