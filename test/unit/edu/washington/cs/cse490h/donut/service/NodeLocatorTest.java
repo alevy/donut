@@ -22,6 +22,7 @@ import edu.washington.edu.cs.cse490h.donut.service.DataNotFoundException;
 import edu.washington.edu.cs.cse490h.donut.service.EntryKey;
 import edu.washington.edu.cs.cse490h.donut.service.KeyId;
 import edu.washington.edu.cs.cse490h.donut.service.KeyLocator;
+import edu.washington.edu.cs.cse490h.donut.service.NotResponsibleForId;
 import edu.washington.edu.cs.cse490h.donut.service.TNode;
 
 public class NodeLocatorTest {
@@ -157,8 +158,9 @@ public class NodeLocatorTest {
 
     @Test
     public void testPut() throws Exception {
-        Node node = new Node(null);
+        Node node = new Node(null, 8080, new KeyId(1000));
         node.setSuccessor(new TNode("successor", 1234, new KeyId(123)));
+        node.setPredecessor(new TNode("predecessor", 1234, new KeyId(0)));
         NodeLocator nodeLocator = new NodeLocator(node, service, clientFactoryMock);
 
         expect(clientFactoryMock.get(node.getSuccessor())).andReturn(nextLocatorMock);
@@ -170,11 +172,24 @@ public class NodeLocatorTest {
 
         nodeLocator.put(ENTRY_KEY, "data".getBytes());
     }
+    
+    @Test(expected=NotResponsibleForId.class)
+    public void testPut_NotResponsible() throws Exception {
+        Node node = new Node(null, 8080, new KeyId(1000));
+        node.setSuccessor(new TNode("successor", 1234, new KeyId(123)));
+        node.setPredecessor(new TNode("predecessor", 1234, new KeyId(0)));
+        NodeLocator nodeLocator = new NodeLocator(node, service, clientFactoryMock);
+
+        replay(clientFactoryMock, nextLocatorMock, service);
+
+        nodeLocator.put(new EntryKey(new KeyId(-1), "key"), "data".getBytes());
+    }
 
     @Test
     public void testRemove() throws Exception {
-        Node node = new Node(null);
+        Node node = new Node(null, 8080, new KeyId(1000));
         node.setSuccessor(new TNode("successor", 1234, new KeyId(123)));
+        node.setPredecessor(new TNode("predecessor", 1234, new KeyId(0)));
         NodeLocator nodeLocator = new NodeLocator(node, service, clientFactoryMock);
 
         expect(clientFactoryMock.get(node.getSuccessor())).andReturn(nextLocatorMock);
@@ -184,6 +199,18 @@ public class NodeLocatorTest {
         replay(clientFactoryMock, nextLocatorMock, service);
 
         nodeLocator.remove(ENTRY_KEY);
+    }
+    
+    @Test(expected=NotResponsibleForId.class)
+    public void testRemove_NotResponsible() throws Exception {
+        Node node = new Node(null, 8080, new KeyId(1000));
+        node.setSuccessor(new TNode("successor", 1234, new KeyId(123)));
+        node.setPredecessor(new TNode("predecessor", 1234, new KeyId(0)));
+        NodeLocator nodeLocator = new NodeLocator(node, service, clientFactoryMock);
+
+        replay(clientFactoryMock, nextLocatorMock, service);
+
+        nodeLocator.remove(new EntryKey(new KeyId(-1), "key"));
     }
 
 }

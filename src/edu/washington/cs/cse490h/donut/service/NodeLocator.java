@@ -17,6 +17,7 @@ import edu.washington.edu.cs.cse490h.donut.service.DataNotFoundException;
 import edu.washington.edu.cs.cse490h.donut.service.EntryKey;
 import edu.washington.edu.cs.cse490h.donut.service.KeyId;
 import edu.washington.edu.cs.cse490h.donut.service.NodeNotFoundException;
+import edu.washington.edu.cs.cse490h.donut.service.NotResponsibleForId;
 import edu.washington.edu.cs.cse490h.donut.service.TNode;
 import edu.washington.edu.cs.cse490h.donut.service.KeyLocator.Iface;
 
@@ -71,7 +72,12 @@ public class NodeLocator implements Iface {
         return data.head();
     }
 
-    public void put(EntryKey key, byte[] data) throws TException {
+    public void put(EntryKey key, byte[] data) throws TException, NotResponsibleForId {
+        if (!KeyIdUtil.isAfterXButBeforeEqualY(key.getId(), node.getPredecessor().getNodeId(), node
+                .getNodeId())) {
+            LOGGER.info("Not responsible for entity with id \"" + key.toString() + "\".");
+            throw new NotResponsibleForId(key.getId());
+        }
         LOGGER.info("Put \"" + data + "\" into entity with id \"" + key.toString() + "\".");
         service.put(key, data, Constants.SUCCESSOR_LIST_SIZE);
         TNode successor = node.getSuccessor();
@@ -83,7 +89,12 @@ public class NodeLocator implements Iface {
         }
     }
 
-    public void remove(EntryKey key) throws TException {
+    public void remove(EntryKey key) throws TException, NotResponsibleForId {
+        if (!KeyIdUtil.isAfterXButBeforeEqualY(key.getId(), node.getPredecessor().getNodeId(), node
+                .getNodeId())) {
+            LOGGER.info("Not responsible for entity with id \"" + key.toString() + "\".");
+            throw new NotResponsibleForId(key.getId());
+        }
         LOGGER.info("Remove entity with id \"" + key.toString() + "\".");
         service.remove(key);
         TNode successor = node.getSuccessor();

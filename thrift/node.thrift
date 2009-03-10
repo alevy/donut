@@ -29,6 +29,10 @@ exception DataNotFoundException {
 
 }
 
+exception NotResponsibleForId {
+	KeyId id
+}
+
 service KeyLocator {
   
   /** 
@@ -44,11 +48,11 @@ service KeyLocator {
   
   binary get(EntryKey key) throws (DataNotFoundException e),
   
-  void put(EntryKey key, binary data),
+  void put(EntryKey key, binary data) throws (NotResponsibleForId e),
   
   void replicatePut(EntryKey key, binary data, i32 numReplicas),
   
-  void remove(EntryKey key),
+  void remove(EntryKey key) throws (NotResponsibleForId e),
   
   void replicateRemove(EntryKey key, i32 numReplicas),
   
