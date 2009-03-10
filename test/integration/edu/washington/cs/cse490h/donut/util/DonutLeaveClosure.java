@@ -10,17 +10,15 @@ public class DonutLeaveClosure extends DonutClosure {
     private final LocalLocatorClientFactory clientFactory;
     private final TNode                     node;
 
-    public DonutLeaveClosure(DonutClient client,
-            LocalLocatorClientFactory clientFactory, TNode node) {
+    public DonutLeaveClosure(DonutClient client, LocalLocatorClientFactory clientFactory, TNode node) {
         this.client = client;
         this.clientFactory = clientFactory;
         this.node = node;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void run() {
         clientFactory.remove(node);
-        client.stop();
+        client.kill();
     }
 }

@@ -28,4 +28,8 @@ public class DonutPeer {
         client.start();
     }
     
+    public void kill() {
+        server.kill();
+        client.kill();
+    }
 }

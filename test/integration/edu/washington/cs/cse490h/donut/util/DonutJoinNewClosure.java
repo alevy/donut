@@ -6,19 +6,19 @@ import edu.washington.cs.cse490h.donut.server.DonutClient;
 import edu.washington.edu.cs.cse490h.donut.service.TNode;
 
 public class DonutJoinNewClosure extends DonutClosure {
-    
+
     private final DonutTestRunner testRunner;
-    private final TNode knownNode;
-    private final String name;
-    private final long id;
-    
+    private final TNode           knownNode;
+    private final String          name;
+    private final long            id;
+
     public DonutJoinNewClosure(DonutTestRunner testRunner, TNode knownNode, String name, long id) {
         this.testRunner = testRunner;
         this.knownNode = knownNode;
         this.name = name;
         this.id = id;
     }
-    
+
     @Override
     public void run() {
         try {

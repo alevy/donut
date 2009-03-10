@@ -29,14 +29,13 @@ public class DonutTestRunner {
             createAndAddNode("node" + i, ids[i]);
         }
     }
-    
+
     public int createAndAddNode(String name, long id) {
         Node node = new Node(name, 8080, new KeyId(id));
         nodeList.add(node);
         NodeLocator nodeLocator = new NodeLocator(node, getClientFactory());
         clientFactory.add(node.getTNode(), nodeLocator);
         clientList.add(new DonutClient(node, getClientFactory()));
-        System.out.println("Added" + nodeList.get(nodeList.size() - 1).getName());
         return clientList.size() - 1;
     }
 
@@ -62,7 +61,6 @@ public class DonutTestRunner {
         return eventList;
     }
 
-    @SuppressWarnings("deprecation")
     public void run() {
         long start = System.currentTimeMillis();
         while (!eventList.isEmpty()) {
@@ -71,8 +69,7 @@ public class DonutTestRunner {
             }
         }
         for (DonutClient client : clientList) {
-            client.stop();
+            client.kill();
         }
     }
-
 }

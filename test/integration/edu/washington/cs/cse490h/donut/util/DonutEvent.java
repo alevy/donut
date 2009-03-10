@@ -20,7 +20,7 @@ public class DonutEvent implements Comparable<DonutEvent> {
         TNode node = testRunner.node(knownNode).getTNode();
         closure = new DonutJoinClosure(testRunner.client(nodeNum), node);
     }
-    
+
     public void joinNewNode(int knownNode, String name, long id) {
         TNode node = testRunner.node(knownNode).getTNode();
         closure = new DonutJoinNewClosure(testRunner, node, name, id);

@@ -26,11 +26,11 @@ public class LocalLocatorClientFactory implements LocatorClientFactory {
         if (locatorMap.containsKey(node.getNodeId())) {
             return locatorMap.get(node.getNodeId());
         }
-        System.out.println("Couldn't find node: " + node);
-        printKeySet();
+        // System.out.println("Couldn't find node: " + node);
+        // printKeySet();
         throw new RetryFailedException();
     }
-    
+
     public void printKeySet() {
         System.out.println("Does contain:" + locatorMap.keySet().toString());
     }

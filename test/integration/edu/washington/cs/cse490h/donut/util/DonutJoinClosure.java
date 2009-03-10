@@ -6,16 +6,15 @@ import edu.washington.cs.cse490h.donut.server.DonutClient;
 import edu.washington.edu.cs.cse490h.donut.service.TNode;
 
 public class DonutJoinClosure extends DonutClosure {
-    
+
     private final DonutClient donutClient;
-    private final TNode knownNode;
-    
+    private final TNode       knownNode;
+
     public DonutJoinClosure(DonutClient donutClient, TNode knownNode) {
         this.donutClient = donutClient;
         this.knownNode = knownNode;
-        
     }
-    
+
     @Override
     public void run() {
         try {

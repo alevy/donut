@@ -21,12 +21,16 @@ import edu.washington.edu.cs.cse490h.donut.service.Constants;
  * @author alevy
  */
 public class DonutClient extends Thread {
-    private static final Logger        LOGGER;
+    private static final Logger         LOGGER;
 
-    private final Node                 node;
-    private final LocatorClientFactory clientFactory;
+    private final Node                  node;
+    private final LocatorClientFactory  clientFactory;
 
-    private int                        nextFingerToUpdate;
+    private int                         nextFingerToUpdate;
+
+    final private AbstractRunAtInterval stabilize;
+    final private AbstractRunAtInterval checkPredecessor;
+    final private AbstractRunAtInterval fixFingers;
 
     static {
         LOGGER = Logger.getLogger(DonutClient.class.getName());
@@ -37,6 +41,26 @@ public class DonutClient extends Thread {
         this.node = node;
         this.clientFactory = clientFactory;
         nextFingerToUpdate = 0;
+
+        // Initialize the worker threads
+
+        stabilize = new AbstractRunAtInterval(Constants.STABILIZE_INTERVAL) {
+            public void runClosure() {
+                stabilize();
+            }
+        };
+
+        fixFingers = new AbstractRunAtInterval(Constants.FIX_FINGERS_INTERVAL) {
+            public void runClosure() {
+                fixFingers();
+            }
+        };
+
+        checkPredecessor = new AbstractRunAtInterval(Constants.CHECK_PREDECESSOR_INTERVAL) {
+            public void runClosure() {
+                checkPredecessor();
+            }
+        };
     }
 
     public void join(TNode n) throws TException {
@@ -76,6 +100,11 @@ public class DonutClient extends Thread {
             // A predecessor is defined but could not be reached. Nullify the current predecessor
             LOGGER.warning("Lost Predecessor [" + Node.TNodeToString(node.getTNode())
                     + "]: Predecessor - " + Node.TNodeToString(node.getPredecessor()));
+
+            // in a small ring this node probably has lost a successor in the successorList. Remove
+            // it in addition.
+            node.getSuccessorList().remove(node.getPredecessor());
+
             this.node.setPredecessor(null);
         }
     }
@@ -105,7 +134,7 @@ public class DonutClient extends Thread {
         try {
             iface = clientFactory.get(node.getTNode());
         } catch (RetryFailedException e1) {
-            e1.printStackTrace();
+            // e1.printStackTrace();
             return;
         }
 
@@ -119,8 +148,8 @@ public class DonutClient extends Thread {
             TNode updatedFinger = iface.findSuccessor(keyId);
             this.node.setFinger(finger, updatedFinger);
         } catch (TException e1) {
-            LOGGER.warning("Thrift Exception in findSuccessor [" + Node.TNodeToString(node.getTNode())
-                    + "]: keyId-" + keyId);
+            LOGGER.warning("Thrift Exception in findSuccessor ["
+                    + Node.TNodeToString(node.getTNode()) + "]: keyId-" + keyId);
         }
 
         clientFactory.release(node.getTNode());
@@ -130,7 +159,6 @@ public class DonutClient extends Thread {
      * Called periodically. Verify's immediate successor, and tell's successor about us.
      */
     public void stabilize() {
-
         TNode x = null;
         TNode successor = node.getSuccessor();
         Iface successorClient;
@@ -141,28 +169,23 @@ public class DonutClient extends Thread {
         } catch (RetryFailedException e) {
             LOGGER.info("Lost successor [" + Node.TNodeToString(node.getTNode()) + "]: Successor- "
                     + Node.TNodeToString(successor));
-            e.printStackTrace();
+            // e.printStackTrace();
             clientFactory.release(successor);
             node.removeSuccessor();
             return;
-
         }
 
         try {
-
             x = successorClient.getPredecessor();
-
         } catch (NodeNotFoundException e) {
             // Successor's predecessor is null
-
         } catch (TException e) {
-            LOGGER.info("Lost successor [" + Node.TNodeToString(node.getTNode()) + "]: Successor - "
-                    + Node.TNodeToString(node.getSuccessor()));
+            LOGGER.info("Lost successor [" + Node.TNodeToString(node.getTNode())
+                    + "]: Successor - " + Node.TNodeToString(node.getSuccessor()));
             e.printStackTrace();
             node.removeSuccessor();
             clientFactory.release(successor);
             return;
-
         }
 
         if (x != null
@@ -173,12 +196,11 @@ public class DonutClient extends Thread {
 
             try {
                 successorClient = clientFactory.get(successor);
-
             } catch (RetryFailedException e) {
 
                 LOGGER.info("Lost successor [" + Node.TNodeToString(node.getTNode())
                         + "]: Successor - " + Node.TNodeToString(node.getSuccessor()));
-                e.printStackTrace();
+                // e.printStackTrace();
                 clientFactory.release(successor);
                 return;
             }
@@ -188,48 +210,37 @@ public class DonutClient extends Thread {
 
         try {
             List<TNode> successorList = successorClient.notify(node.getTNode());
-            updateSuccessorList(successorList);
-
+            node.updateSuccessorList(successorList);
+            // node.updateSuccessorList(successor, successorList);
         } catch (TException e) {
-            LOGGER.info("Lost successor [" + Node.TNodeToString(node.getTNode()) + "]: Successor - "
-                    + Node.TNodeToString(node.getSuccessor()));
+            LOGGER.info("Lost successor [" + Node.TNodeToString(node.getTNode())
+                    + "]: Successor - " + Node.TNodeToString(node.getSuccessor()));
             e.printStackTrace();
             node.removeSuccessor();
             return;
-
         } finally {
             clientFactory.release(successor);
         }
     }
 
-    public void updateSuccessorList(List<TNode> list) {
-        int i;
-        for (i = 0; (i < Constants.SUCCESSOR_LIST_SIZE - 1) && (i < list.size()); i++) {
-            try {
-                this.node.setSuccessor(i + 1, list.get(i));
-            } catch (IndexOutOfBoundsException e) {
-                this.node.addSuccessor(list.get(i));
-            }
-        }
-
-        // Remove any left over successors
-        i++;
-        while (i < this.node.getSuccessorList().size()) {
-            this.node.removeSuccessor(i);
-        }
+    /**
+     * Stops the worker threads.
+     */
+    public void kill() {
+        stabilize.kill();
+        checkPredecessor.kill();
+        fixFingers.kill();
     }
 
+    /**
+     * Starts the worker threads.
+     */
     @Override
     public void run() {
         super.run();
-        while (true) {
-            try {
-                stabilize();
-                fixFingers();
-                checkPredecessor();
-                sleep(10);
-            } catch (InterruptedException e) {
-            }
-        }
+
+        stabilize.start();
+        checkPredecessor.start();
+        fixFingers.start();
     }
 }

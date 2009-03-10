@@ -8,28 +8,30 @@ import com.google.inject.Inject;
 
 /**
  * @author alevy
- *
  */
 public class DonutServer extends Thread {
-    
+
     private static final Logger LOGGER;
-    
-    private final TServer server;
+
+    private final TServer       server;
 
     static {
         LOGGER = Logger.getLogger(DonutPeer.class.getName());
     }
-    
+
     @Inject
     public DonutServer(TServer server) {
         this.server = server;
     }
-    
+
     @Override
     public void run() {
         LOGGER.info("Starting Donut server...");
         super.run();
         server.serve();
     }
-    
+
+    public void kill() {
+        server.stop();
+    }
 }

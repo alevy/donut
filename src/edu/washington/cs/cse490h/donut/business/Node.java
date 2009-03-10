@@ -197,6 +197,23 @@ public class Node {
         }
     }
 
+    public void updateSuccessorList(List<TNode> list) {
+        int i;
+        for (i = 0; (i < Constants.SUCCESSOR_LIST_SIZE - 1) && (i < list.size()); i++) {
+            try {
+                setSuccessor(i + 1, list.get(i));
+            } catch (IndexOutOfBoundsException e) {
+                addSuccessor(list.get(i));
+            }
+        }
+
+        // Remove any leftover successors
+        i++;
+        while (i < getSuccessorList().size()) {
+            removeSuccessor(i);
+        }
+    }
+
     @Override
     public String toString() {
         return TNodeToString(this.tNode);
@@ -222,7 +239,7 @@ public class Node {
         return new ArrayList<TNode>(successorList);
     }
 
-    public void setSuccessor(int i, TNode node) throws IndexOutOfBoundsException {
+    public void setSuccessor(int i, TNode node) {
         this.successorList.set(i, node);
     }
 
@@ -237,5 +254,4 @@ public class Node {
     public void removeSuccessor(int i) {
         this.successorList.remove(i);
     }
-
 }
