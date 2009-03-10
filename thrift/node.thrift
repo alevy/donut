@@ -1,7 +1,7 @@
 namespace java edu.washington.edu.cs.cse490h.donut.service
 
 const i32 KEY_SPACE = 64;
-const i32 SUCCESSORLISTSIZE = 3;
+const i32 SUCCESSOR_LIST_SIZE = 3;
 
 struct KeyId {
   1:i64 id

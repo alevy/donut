@@ -162,7 +162,7 @@ public class DonutClientTest {
         clientLocatorMock.release(predecessor);
         expect(keyLocator.getPredecessor()).andReturn(predecessor);
         
-        List<TNode> list = new ArrayList<TNode>(Constants.SUCCESSORLISTSIZE);
+        List<TNode> list = new ArrayList<TNode>(Constants.SUCCESSOR_LIST_SIZE);
         list.add(node.getTNode());
         list.add(predecessor);
         
@@ -187,7 +187,7 @@ public class DonutClientTest {
         clientLocatorMock.release(successor);
         expect(keyLocator.getPredecessor()).andThrow(new NodeNotFoundException());
         
-        List<TNode> list = new ArrayList<TNode>(Constants.SUCCESSORLISTSIZE);
+        List<TNode> list = new ArrayList<TNode>(Constants.SUCCESSOR_LIST_SIZE);
         list.add(node.getTNode());
         list.add(successor);
         
@@ -213,7 +213,7 @@ public class DonutClientTest {
         clientLocatorMock.release(successor);
         expect(keyLocator.getPredecessor()).andReturn(between);
         
-        List<TNode> list = new ArrayList<TNode>(Constants.SUCCESSORLISTSIZE);
+        List<TNode> list = new ArrayList<TNode>(Constants.SUCCESSOR_LIST_SIZE);
         
         expect(keyLocator.notify(node.getTNode())).andReturn(list);
         replay(clientLocatorMock, keyLocator);
@@ -237,7 +237,7 @@ public class DonutClientTest {
         clientLocatorMock.release(between);
         expect(keyLocator.getPredecessor()).andReturn(between);
         
-        List<TNode> list = new ArrayList<TNode>(Constants.SUCCESSORLISTSIZE);
+        List<TNode> list = new ArrayList<TNode>(Constants.SUCCESSOR_LIST_SIZE);
         list.add(successor);
         list.add(node.getTNode());
         
@@ -323,8 +323,8 @@ public class DonutClientTest {
         Node node = new Node("self", 0, new KeyId(0));
         TNode successor0 = new TNode("other1", 0, new KeyId(100));
         
-        List<TNode> list = new ArrayList<TNode>(Constants.SUCCESSORLISTSIZE);
-        for(int i = 0 ; i < Constants.SUCCESSORLISTSIZE ; i++){
+        List<TNode> list = new ArrayList<TNode>(Constants.SUCCESSOR_LIST_SIZE);
+        for(int i = 0 ; i < Constants.SUCCESSOR_LIST_SIZE ; i++){
             list.add(new TNode("other" + i, 0, new KeyId(200 * i)));
         }
         
@@ -339,9 +339,9 @@ public class DonutClientTest {
 
         // This is set to 3 instead of the constant so that if you change the constant you can 
         // make this test more concise with more successors
-        assertSame(list2.size(), Constants.SUCCESSORLISTSIZE);
+        assertSame(list2.size(), Constants.SUCCESSOR_LIST_SIZE);
         assertSame(successor0, list2.get(0));
-        for (int i = 0 ; i < Constants.SUCCESSORLISTSIZE - 1 ; i++){
+        for (int i = 0 ; i < Constants.SUCCESSOR_LIST_SIZE - 1 ; i++){
             assertSame(list.get(i), list2.get(i + 1));
         }
         
@@ -357,14 +357,14 @@ public class DonutClientTest {
         DonutClient donutClient = new DonutClient(node, clientLocatorMock);
         replay(clientLocatorMock, keyLocator);
         
-        List<TNode> list0 = new ArrayList<TNode>(Constants.SUCCESSORLISTSIZE);
-        for(int i = 0 ; i < Constants.SUCCESSORLISTSIZE ; i++){
+        List<TNode> list0 = new ArrayList<TNode>(Constants.SUCCESSOR_LIST_SIZE);
+        for(int i = 0 ; i < Constants.SUCCESSOR_LIST_SIZE ; i++){
             list0.add(new TNode("other" + i, 0, new KeyId(200 * i)));
         }
         
         donutClient.updateSuccessorList(list0);
         
-        List<TNode> list = new ArrayList<TNode>(Constants.SUCCESSORLISTSIZE);
+        List<TNode> list = new ArrayList<TNode>(Constants.SUCCESSOR_LIST_SIZE);
         TNode successor1 = new TNode("other1", 0, new KeyId(100));
         list.add(successor1);
         

@@ -50,10 +50,10 @@ public class Node {
      * Initializes the successor list.
      */
     private void initSuccessorList() {
-        this.successorList = new ArrayList<TNode>(Constants.SUCCESSORLISTSIZE);
+        this.successorList = new ArrayList<TNode>(Constants.SUCCESSOR_LIST_SIZE);
 
         // Adds the initial successor
-        for (int i = 0; i < Constants.SUCCESSORLISTSIZE; i++)
+        for (int i = 0; i < Constants.SUCCESSOR_LIST_SIZE; i++)
             this.successorList.add(tNode);
     }
 
@@ -162,7 +162,7 @@ public class Node {
      *            The node to print
      * @return Returns a String in the format of hostname:port. If n == null, then returns "NULL".
      */
-    public static String printTNode(TNode n) {
+    public static String TNodeToString(TNode n) {
         if (n == null)
             return "NULL";
         else
@@ -170,14 +170,14 @@ public class Node {
     }
 
     /**
-     * Prints a list of TNodes. Note: This implementation is based off Java 6 AbstractCollection
+     * Formats a list of TNodes. Note: This implementation is based off Java 6 AbstractCollection
      * toString.
      * 
      * @param l
      *            List of TNodes
      * @return Produced String
      */
-    public static String printTNodeList(List<TNode> l) {
+    public static String TNodeListToString(List<TNode> l) {
         Iterator<TNode> i = l.iterator();
         if (!i.hasNext())
             // Empty list
@@ -189,7 +189,7 @@ public class Node {
 
         while (true) {
             TNode e = i.next();
-            result.append(printTNode(e));
+            result.append(TNodeToString(e));
             if (!i.hasNext())
                 return result.append(']').toString();
 
@@ -199,7 +199,7 @@ public class Node {
 
     @Override
     public String toString() {
-        return printTNode(this.tNode);
+        return TNodeToString(this.tNode);
     }
 
     public TNode getTNode() {

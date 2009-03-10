@@ -43,12 +43,12 @@ public class DonutJoinLeaveTest {
                 assertEquals(node0.getTNode(), node1.getPredecessor());
                 
                 List<TNode> list = node0.getSuccessorList();
-                for(int i = 0 ; i < Constants.SUCCESSORLISTSIZE; ++i) {
+                for(int i = 0 ; i < Constants.SUCCESSOR_LIST_SIZE; ++i) {
                     assertEquals(list.get(i), (i % 2 == 0) ? node1.getTNode() : node0.getTNode());
                 }
                 
                 list = node1.getSuccessorList();
-                for(int i = 0 ; i < Constants.SUCCESSORLISTSIZE; ++i) {
+                for(int i = 0 ; i < Constants.SUCCESSOR_LIST_SIZE; ++i) {
                     assertEquals(list.get(i), (i % 2 == 0) ? node0.getTNode() : node1.getTNode());
                 }
                 
@@ -83,12 +83,12 @@ public class DonutJoinLeaveTest {
                 assertEquals(node1.getTNode(), node0.getPredecessor());
                 
                 List<TNode> list = node0.getSuccessorList();
-                for(int i = 0 ; i < Constants.SUCCESSORLISTSIZE; ++i) {
+                for(int i = 0 ; i < Constants.SUCCESSOR_LIST_SIZE; ++i) {
                     assertEquals(list.get(i), (i % 2 == 0) ? node1.getTNode() : node0.getTNode());
                 }
                 
                 list = node1.getSuccessorList();
-                for(int i = 0 ; i < Constants.SUCCESSORLISTSIZE; ++i) {
+                for(int i = 0 ; i < Constants.SUCCESSOR_LIST_SIZE; ++i) {
                     assertEquals(list.get(i), (i % 2 == 0) ? node0.getTNode() : node1.getTNode());
                 }
             }
@@ -146,22 +146,22 @@ public class DonutJoinLeaveTest {
                 assertEquals(node2.getTNode(), node3.getPredecessor());
                 
                 List<TNode> list = node0.getSuccessorList();
-                for(int i = 0 ; i < Constants.SUCCESSORLISTSIZE; ++i) {
+                for(int i = 0 ; i < Constants.SUCCESSOR_LIST_SIZE; ++i) {
                     assertEquals(list.get(i), donutTestRunner.node((1 + i) % 4).getTNode());
                 }
                 
                 list = node1.getSuccessorList();
-                for(int i = 0 ; i < Constants.SUCCESSORLISTSIZE; ++i) {
+                for(int i = 0 ; i < Constants.SUCCESSOR_LIST_SIZE; ++i) {
                     assertEquals(list.get(i), donutTestRunner.node((2 + i) % 4).getTNode());
                 }
                 
                 list = node2.getSuccessorList();
-                for(int i = 0 ; i < Constants.SUCCESSORLISTSIZE; ++i) {
+                for(int i = 0 ; i < Constants.SUCCESSOR_LIST_SIZE; ++i) {
                     assertEquals(list.get(i), donutTestRunner.node((3 + i) % 4).getTNode());
                 }
                 
                 list = node3.getSuccessorList();
-                for(int i = 0 ; i < Constants.SUCCESSORLISTSIZE; ++i) {
+                for(int i = 0 ; i < Constants.SUCCESSOR_LIST_SIZE; ++i) {
                     assertEquals(list.get(i), donutTestRunner.node((4 + i) % 4).getTNode());
                 }
             }
@@ -267,22 +267,22 @@ public class DonutJoinLeaveTest {
                 assertEquals(node2.getTNode(), node3.getPredecessor());
                 
                 List<TNode> list = node0.getSuccessorList();
-                for(int i = 0 ; i < Constants.SUCCESSORLISTSIZE; ++i) {
+                for(int i = 0 ; i < Constants.SUCCESSOR_LIST_SIZE; ++i) {
                     assertEquals(list.get(i), donutTestRunner.node((1 + i) % 4).getTNode());
                 }
                 
                 list = node1.getSuccessorList();
-                for(int i = 0 ; i < Constants.SUCCESSORLISTSIZE; ++i) {
+                for(int i = 0 ; i < Constants.SUCCESSOR_LIST_SIZE; ++i) {
                     assertEquals(list.get(i), donutTestRunner.node((2 + i) % 4).getTNode());
                 }
                 
                 list = node2.getSuccessorList();
-                for(int i = 0 ; i < Constants.SUCCESSORLISTSIZE; ++i) {
+                for(int i = 0 ; i < Constants.SUCCESSOR_LIST_SIZE; ++i) {
                     assertEquals(list.get(i), donutTestRunner.node((3 + i) % 4).getTNode());
                 }
                 
                 list = node3.getSuccessorList();
-                for(int i = 0 ; i < Constants.SUCCESSORLISTSIZE; ++i) {
+                for(int i = 0 ; i < Constants.SUCCESSOR_LIST_SIZE; ++i) {
                     assertEquals(list.get(i), donutTestRunner.node((4 + i) % 4).getTNode());
                 }
             }
