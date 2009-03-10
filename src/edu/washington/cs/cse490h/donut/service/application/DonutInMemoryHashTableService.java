@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.washington.cs.cse490h.donut.business.Pair;
-import edu.washington.edu.cs.cse490h.donut.service.KeyId;
+import edu.washington.edu.cs.cse490h.donut.service.EntryKey;
 
 /**
  * @author alevy
@@ -12,21 +12,21 @@ import edu.washington.edu.cs.cse490h.donut.service.KeyId;
  */
 public class DonutInMemoryHashTableService implements DonutHashTableService {
     
-    private final Map<KeyId, Pair<byte[], Integer>> map;
+    private final Map<EntryKey, Pair<byte[], Integer>> map;
     
     public DonutInMemoryHashTableService() {
-        map = new HashMap<KeyId, Pair<byte[],Integer>>();
+        map = new HashMap<EntryKey, Pair<byte[],Integer>>();
     }
 
-    public Pair<byte[], Integer> get(KeyId entryId) {
+    public Pair<byte[], Integer> get(EntryKey entryId) {
         return map.get(entryId);
     }
 
-    public void put(KeyId entryId, byte[] data, int replicas) {
-        map.put(entryId, new Pair<byte[], Integer>(data, replicas));
+    public void put(EntryKey key, byte[] data, int replicas) {
+        map.put(key, new Pair<byte[], Integer>(data, replicas));
     }
 
-    public void remove(KeyId entryId) {
+    public void remove(EntryKey entryId) {
         map.remove(entryId);
     }
 

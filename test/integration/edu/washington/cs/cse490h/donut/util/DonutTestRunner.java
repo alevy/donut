@@ -8,6 +8,7 @@ import edu.washington.cs.cse490h.donut.business.Node;
 import edu.washington.cs.cse490h.donut.server.DonutClient;
 import edu.washington.cs.cse490h.donut.service.LocalLocatorClientFactory;
 import edu.washington.cs.cse490h.donut.service.NodeLocator;
+import edu.washington.cs.cse490h.donut.service.application.DonutInMemoryHashTableService;
 import edu.washington.edu.cs.cse490h.donut.service.KeyId;
 
 /**
@@ -60,7 +61,8 @@ public class DonutTestRunner {
     public int createAndAddNode(String name, long id) {
         Node node = new Node(name, 8080, new KeyId(id));
         nodeList.add(node);
-        NodeLocator nodeLocator = new NodeLocator(node, getClientFactory());
+        NodeLocator nodeLocator = new NodeLocator(node, new DonutInMemoryHashTableService(),
+                getClientFactory());
         clientFactory.add(node.getTNode(), nodeLocator);
         clientList.add(new DonutClient(node, getClientFactory()));
         return clientList.size() - 1;

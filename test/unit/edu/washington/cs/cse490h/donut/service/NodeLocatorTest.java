@@ -17,16 +17,19 @@ import org.junit.Test;
 import edu.washington.cs.cse490h.donut.business.Node;
 import edu.washington.cs.cse490h.donut.business.Pair;
 import edu.washington.cs.cse490h.donut.service.application.DonutHashTableService;
+import edu.washington.edu.cs.cse490h.donut.service.Constants;
 import edu.washington.edu.cs.cse490h.donut.service.DataNotFoundException;
+import edu.washington.edu.cs.cse490h.donut.service.EntryKey;
 import edu.washington.edu.cs.cse490h.donut.service.KeyId;
 import edu.washington.edu.cs.cse490h.donut.service.KeyLocator;
 import edu.washington.edu.cs.cse490h.donut.service.TNode;
 
 public class NodeLocatorTest {
 
-    LocatorClientFactory  clientFactoryMock;
-    KeyLocator.Iface      nextLocatorMock;
-    DonutHashTableService service;
+    private static final EntryKey ENTRY_KEY = new EntryKey(new KeyId(1), "key");
+    LocatorClientFactory          clientFactoryMock;
+    KeyLocator.Iface              nextLocatorMock;
+    DonutHashTableService         service;
 
     @Before
     public void setUp() throws Exception {
@@ -37,7 +40,9 @@ public class NodeLocatorTest {
 
     @After
     public void tearDown() throws Exception {
-        verify(clientFactoryMock, nextLocatorMock, service);
+        verify(clientFactoryMock);
+        verify(nextLocatorMock);
+        verify(service);
     }
 
     @Test
@@ -81,10 +86,10 @@ public class NodeLocatorTest {
     public void testGet_Dne() throws Exception {
         NodeLocator nodeLocator = new NodeLocator(null, service, null);
 
-        expect(service.get(new KeyId(1))).andReturn(null);
+        expect(service.get(ENTRY_KEY)).andReturn(null);
         replay(clientFactoryMock, nextLocatorMock, service);
 
-        nodeLocator.get(new KeyId(1));
+        nodeLocator.get(ENTRY_KEY);
     }
 
     @Test
@@ -92,25 +97,25 @@ public class NodeLocatorTest {
         NodeLocator nodeLocator = new NodeLocator(null, service, null);
         String value = "Hello World";
 
-        expect(service.get(new KeyId(1))).andReturn(new Pair<byte[], Integer>(value.getBytes(), 0));
+        expect(service.get(ENTRY_KEY)).andReturn(new Pair<byte[], Integer>(value.getBytes(), 0));
         replay(clientFactoryMock, nextLocatorMock, service);
 
-        assertArrayEquals(value.getBytes(), nodeLocator.get(new KeyId(1)));
+        assertArrayEquals(value.getBytes(), nodeLocator.get(ENTRY_KEY));
     }
 
     @Test
-    public void testPut_NoReplica() throws Exception {
+    public void testReplicatePut_NoReplica() throws Exception {
         NodeLocator nodeLocator = new NodeLocator(null, service, null);
         String value = "Hello World";
 
-        service.put(eq(new KeyId(1)), aryEq(value.getBytes()), eq(0));
+        service.put(eq(ENTRY_KEY), aryEq(value.getBytes()), eq(0));
         replay(clientFactoryMock, nextLocatorMock, service);
 
-        nodeLocator.put(new KeyId(1), value.getBytes(), 0);
+        nodeLocator.replicatePut(ENTRY_KEY, value.getBytes(), 0);
     }
 
     @Test
-    public void testPut_WithReplica() throws Exception {
+    public void testReplicatePut_WithReplica() throws Exception {
         Node node = new Node(null);
         node.setSuccessor(new TNode("successor", 1234, new KeyId(123)));
         NodeLocator nodeLocator = new NodeLocator(node, service, clientFactoryMock);
@@ -118,35 +123,68 @@ public class NodeLocatorTest {
 
         expect(clientFactoryMock.get(node.getSuccessor())).andReturn(nextLocatorMock);
         clientFactoryMock.release(node.getSuccessor());
-        nextLocatorMock.put(eq(new KeyId(1)), aryEq(value.getBytes()), eq(1));
-        service.put(eq(new KeyId(1)), aryEq(value.getBytes()), eq(2));
+        nextLocatorMock.replicatePut(eq(ENTRY_KEY), aryEq(value.getBytes()), eq(1));
+        service.put(eq(ENTRY_KEY), aryEq(value.getBytes()), eq(2));
         replay(clientFactoryMock, nextLocatorMock, service);
 
-        nodeLocator.put(new KeyId(1), value.getBytes(), 2);
+        nodeLocator.replicatePut(ENTRY_KEY, value.getBytes(), 2);
     }
 
     @Test
-    public void testRemove_NoReplica() throws Exception {
+    public void testReplicateRemove_NoReplica() throws Exception {
         NodeLocator nodeLocator = new NodeLocator(null, service, null);
 
-        service.remove(new KeyId(1));
+        service.remove(ENTRY_KEY);
         replay(clientFactoryMock, nextLocatorMock, service);
 
-        nodeLocator.remove(new KeyId(1), 0);
+        nodeLocator.replicateRemove(ENTRY_KEY, 0);
     }
 
     @Test
-    public void testRemove_WithReplica() throws Exception {
+    public void testReplicateRemove_WithReplica() throws Exception {
         Node node = new Node(null);
         node.setSuccessor(new TNode("successor", 1234, new KeyId(123)));
         NodeLocator nodeLocator = new NodeLocator(node, service, clientFactoryMock);
 
         expect(clientFactoryMock.get(node.getSuccessor())).andReturn(nextLocatorMock);
         clientFactoryMock.release(node.getSuccessor());
-        nextLocatorMock.remove(new KeyId(1), 1);
-        service.remove(new KeyId(1));
+        nextLocatorMock.replicateRemove(ENTRY_KEY, 1);
+        service.remove(ENTRY_KEY);
         replay(clientFactoryMock, nextLocatorMock, service);
 
-        nodeLocator.remove(new KeyId(1), 2);
+        nodeLocator.replicateRemove(ENTRY_KEY, 2);
     }
+
+    @Test
+    public void testPut() throws Exception {
+        Node node = new Node(null);
+        node.setSuccessor(new TNode("successor", 1234, new KeyId(123)));
+        NodeLocator nodeLocator = new NodeLocator(node, service, clientFactoryMock);
+
+        expect(clientFactoryMock.get(node.getSuccessor())).andReturn(nextLocatorMock);
+        clientFactoryMock.release(node.getSuccessor());
+        nextLocatorMock.replicatePut(eq(ENTRY_KEY), aryEq("data".getBytes()),
+                eq(Constants.SUCCESSOR_LIST_SIZE - 1));
+        service.put(eq(ENTRY_KEY), aryEq("data".getBytes()), eq(Constants.SUCCESSOR_LIST_SIZE));
+        replay(clientFactoryMock, nextLocatorMock, service);
+
+        nodeLocator.put(ENTRY_KEY, "data".getBytes());
+    }
+
+    @Test
+    public void testRemove() throws Exception {
+        Node node = new Node(null);
+        node.setSuccessor(new TNode("successor", 1234, new KeyId(123)));
+        NodeLocator nodeLocator = new NodeLocator(node, service, clientFactoryMock);
+
+        expect(clientFactoryMock.get(node.getSuccessor())).andReturn(nextLocatorMock);
+        clientFactoryMock.release(node.getSuccessor());
+        nextLocatorMock.replicateRemove(eq(ENTRY_KEY), eq(Constants.SUCCESSOR_LIST_SIZE - 1));
+        service.remove(eq(ENTRY_KEY));
+        replay(clientFactoryMock, nextLocatorMock, service);
+
+        nodeLocator.remove(ENTRY_KEY);
+    }
+
 }
+>>>>>>> Added string parameter to get/put/remove and encapsulated in EntryKey. Separated remove/put from replication methods.:test/unit/edu/washington/cs/cse490h/donut/service/NodeLocatorTest.java

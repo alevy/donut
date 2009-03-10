@@ -12,7 +12,9 @@ import edu.washington.cs.cse490h.donut.business.Node;
 import edu.washington.cs.cse490h.donut.business.Pair;
 import edu.washington.cs.cse490h.donut.service.application.DonutHashTableService;
 import edu.washington.cs.cse490h.donut.util.KeyIdUtil;
+import edu.washington.edu.cs.cse490h.donut.service.Constants;
 import edu.washington.edu.cs.cse490h.donut.service.DataNotFoundException;
+import edu.washington.edu.cs.cse490h.donut.service.EntryKey;
 import edu.washington.edu.cs.cse490h.donut.service.KeyId;
 import edu.washington.edu.cs.cse490h.donut.service.NodeNotFoundException;
 import edu.washington.edu.cs.cse490h.donut.service.TNode;
@@ -23,9 +25,9 @@ import edu.washington.edu.cs.cse490h.donut.service.KeyLocator.Iface;
  */
 public class NodeLocator implements Iface {
 
-    private static Logger              LOGGER;
-    private final Node                 node;
-    private final LocatorClientFactory clientFactory;
+    private static Logger               LOGGER;
+    private final Node                  node;
+    private final LocatorClientFactory  clientFactory;
     private final DonutHashTableService service;
 
     static {
@@ -60,36 +62,60 @@ public class NodeLocator implements Iface {
         }
     }
 
-    public byte[] get(KeyId entryId) throws TException, DataNotFoundException {
-        LOGGER.info("Get entity with id \"" + entryId.toString() + "\".");
-        Pair<byte[], Integer> data = service.get(entryId);
+    public byte[] get(EntryKey key) throws TException, DataNotFoundException {
+        LOGGER.info("Get entity with id \"" + key.toString() + "\".");
+        Pair<byte[], Integer> data = service.get(key);
         if (data == null) {
             throw new DataNotFoundException();
         }
         return data.head();
     }
 
-    public void put(KeyId entryId, byte[] data, int numReplicas) throws TException {
-        LOGGER.info("Put \"" + data + "\" into entity with id \"" + entryId.toString() + "\".");
-        service.put(entryId, data, numReplicas);
+    public void put(EntryKey key, byte[] data) throws TException {
+        LOGGER.info("Put \"" + data + "\" into entity with id \"" + key.toString() + "\".");
+        service.put(key, data, Constants.SUCCESSOR_LIST_SIZE);
+        TNode successor = node.getSuccessor();
+        try {
+            clientFactory.get(successor).replicatePut(key, data, Constants.SUCCESSOR_LIST_SIZE - 1);
+            clientFactory.release(successor);
+        } catch (RetryFailedException e) {
+            throw new TException(e);
+        }
+    }
+
+    public void remove(EntryKey key) throws TException {
+        LOGGER.info("Remove entity with id \"" + key.toString() + "\".");
+        service.remove(key);
+        TNode successor = node.getSuccessor();
+        try {
+            clientFactory.get(successor).replicateRemove(key, Constants.SUCCESSOR_LIST_SIZE - 1);
+            clientFactory.release(successor);
+        } catch (RetryFailedException e) {
+            throw new TException(e);
+        }
+    }
+
+    public void replicatePut(EntryKey key, byte[] data, int numReplicas) throws TException {
+        LOGGER.info("Put \"" + data + "\" into entity with id \"" + key.toString() + "\".");
+        service.put(key, data, numReplicas);
         if (numReplicas > 0) {
             TNode successor = node.getSuccessor();
             try {
-                clientFactory.get(successor).put(entryId, data, numReplicas - 1);
+                clientFactory.get(successor).replicatePut(key, data, numReplicas - 1);
                 clientFactory.release(successor);
             } catch (RetryFailedException e) {
                 throw new TException(e);
             }
         }
     }
-    
-    public void remove(KeyId entryId, int numReplicas) throws TException {
-        LOGGER.info("Remove entity with id \"" + entryId.toString() + "\".");
-        service.remove(entryId);
+
+    public void replicateRemove(EntryKey key, int numReplicas) throws TException {
+        LOGGER.info("Remove entity with id \"" + key.toString() + "\".");
+        service.remove(key);
         if (numReplicas > 0) {
             TNode successor = node.getSuccessor();
             try {
-                clientFactory.get(successor).remove(entryId, numReplicas - 1);
+                clientFactory.get(successor).replicateRemove(key, numReplicas - 1);
                 clientFactory.release(successor);
             } catch (RetryFailedException e) {
                 throw new TException(e);

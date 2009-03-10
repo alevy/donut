@@ -2,13 +2,17 @@ namespace java edu.washington.edu.cs.cse490h.donut.service
 
 const i32 KEY_SPACE = 64;
 const i32 SUCCESSOR_LIST_SIZE = 3;
-
 const i32 FIX_FINGERS_INTERVAL = 10;
 const i32 STABILIZE_INTERVAL = 100;
 const i32 CHECK_PREDECESSOR_INTERVAL = 150;
 
 struct KeyId {
   i64 id
+}
+
+struct EntryKey {
+	KeyId id
+	string key
 }
 
 struct TNode {
@@ -38,11 +42,15 @@ service KeyLocator {
   
   void ping(),
   
-  binary get(KeyId entryId) throws (DataNotFoundException e),
+  binary get(EntryKey key) throws (DataNotFoundException e),
   
-  void put(KeyId entryId, binary data, i32 numReplicas),
+  void put(EntryKey key, binary data),
   
-  void remove(KeyId entryId, i32 numReplicas),
+  void replicatePut(EntryKey key, binary data, i32 numReplicas),
+  
+  void remove(EntryKey key),
+  
+  void replicateRemove(EntryKey key, i32 numReplicas),
   
   void notify(TNode n)
   

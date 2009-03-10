@@ -121,10 +121,6 @@ public class DonutClient extends Thread {
         // if (node.getSuccessor().equals(node.getTNode())) {
         // return;
         // }
-        if (node.getPort() == 8081 && finger > 1) {
-            @SuppressWarnings("unused")
-            int j = 0;
-        }
 
         Iface iface;
         try {
