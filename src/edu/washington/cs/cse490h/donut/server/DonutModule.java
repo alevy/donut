@@ -23,6 +23,8 @@ import edu.washington.cs.cse490h.donut.business.Node;
 import edu.washington.cs.cse490h.donut.service.LocatorClientFactory;
 import edu.washington.cs.cse490h.donut.service.NodeLocator;
 import edu.washington.cs.cse490h.donut.service.RemoteLocatorClientFactory;
+import edu.washington.cs.cse490h.donut.service.application.DonutHashTableService;
+import edu.washington.cs.cse490h.donut.service.application.DonutInMemoryHashTableService;
 import edu.washington.cs.cse490h.donut.service.thrift.KeyId;
 import edu.washington.cs.cse490h.donut.service.thrift.KeyLocator;
 import edu.washington.cs.cse490h.donut.service.thrift.KeyLocator.Iface;
@@ -75,6 +77,7 @@ public class DonutModule implements Module {
         binder.bind(Node.class).toInstance(node);
         binder.bind(LocatorClientFactory.class).to(RemoteLocatorClientFactory.class);
         binder.bind(KeyLocator.Iface.class).to(NodeLocator.class);
+        binder.bind(DonutHashTableService.class).to(DonutInMemoryHashTableService.class);
         try {
             binder.bind(TServerTransport.class).toInstance(new TServerSocket(getPort()));
         } catch (TTransportException e) {

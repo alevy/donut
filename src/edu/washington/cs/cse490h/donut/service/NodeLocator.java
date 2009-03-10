@@ -82,11 +82,14 @@ public class NodeLocator implements Iface {
         LOGGER.info("Put \"" + data + "\" into entity with id \"" + key.toString() + "\".");
         service.put(key, data, Constants.SUCCESSOR_LIST_SIZE);
         TNode successor = node.getSuccessor();
-        try {
-            clientFactory.get(successor).replicatePut(key, data, Constants.SUCCESSOR_LIST_SIZE - 1);
-            clientFactory.release(successor);
-        } catch (RetryFailedException e) {
-            throw new TException(e);
+        if (!successor.equals(node.getTNode())) {
+            try {
+                clientFactory.get(successor).replicatePut(key, data,
+                        Constants.SUCCESSOR_LIST_SIZE - 1);
+                clientFactory.release(successor);
+            } catch (RetryFailedException e) {
+                throw new TException(e);
+            }
         }
     }
 
@@ -99,11 +102,14 @@ public class NodeLocator implements Iface {
         LOGGER.info("Remove entity with id \"" + key.toString() + "\".");
         service.remove(key);
         TNode successor = node.getSuccessor();
-        try {
-            clientFactory.get(successor).replicateRemove(key, Constants.SUCCESSOR_LIST_SIZE - 1);
-            clientFactory.release(successor);
-        } catch (RetryFailedException e) {
-            throw new TException(e);
+        if (!node.getSuccessor().equals(node.getTNode())) {
+            try {
+                clientFactory.get(successor)
+                        .replicateRemove(key, Constants.SUCCESSOR_LIST_SIZE - 1);
+                clientFactory.release(successor);
+            } catch (RetryFailedException e) {
+                throw new TException(e);
+            }
         }
     }
 

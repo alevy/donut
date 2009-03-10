@@ -61,7 +61,7 @@ service KeyLocator {
   
   void replicateRemove(EntryKey key, i32 numReplicas)
   
-  set<EntryKey> getDataRange(KeyId start, KeyId end)
+  set<EntryKey> getDataRange(KeyId startVal, KeyId endVal)
   
   void notify(TNode n)
   

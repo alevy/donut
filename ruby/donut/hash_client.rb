@@ -27,43 +27,44 @@ module Donut
 
 
     def get(key)
-      key_id = KeyId.new({:id => gen_key(key)})
+      key_id = gen_key(key)
       node = get_node(key_id)
       socket = Thrift::Socket.new(node.name, node.port)
       client = KeyLocator::Client.new(Thrift::BinaryProtocol.new(socket))
       socket.open if not socket.open?
-      result = client.get(key_id)
-      socket.close
-      if result.exists
-        return result.data
-      else
-        return nil
+      begin
+        result = client.get(key_id)
+      rescue
+        result = nil
       end
+      socket.close
+      return result
     end
 
     def put(key, data)
-      key_id = KeyId.new({:id => gen_key(key)})
+      key_id = gen_key(key)
       node = get_node(key_id)
       socket = Thrift::Socket.new(node.name, node.port)
       client = KeyLocator::Client.new(Thrift::BinaryProtocol.new(socket))
       socket.open if not socket.open?
-      val = DonutData.new
-      if data
-        val.exists = true
-        val.data = data
-      else
-        val.exists = false
-      end
-      client.put(key_id, val)
+      client.put(key_id, data)
       socket.close
     end
 
     def remove(key)
-      put(key, nil)
+      key_id = gen_key(key)
+      node = get_node(key_id)
+      socket = Thrift::Socket.new(node.name, node.port)
+      client = KeyLocator::Client.new(Thrift::BinaryProtocol.new(socket))
+      socket.open if not socket.open?
+      client.remove(key_id)
+      socket.close
     end
 
     def gen_key(key)
-      Digest::SHA512.hexdigest(key).hex % 2**KEY_SPACE
+      result = EntryKey.new({:key => key, :id => KeyId.new({
+        :id => Digest::SHA512.hexdigest(key).hex % 2**KEY_SPACE})})
+      return result
     end
 
     def get_node(key)
