@@ -39,7 +39,6 @@ public class DonutClient extends Thread {
     }
 
     public void join(TNode n) throws TException {
-        LOGGER.info(printNode(this.node.getTNode()) + " - Joining Donut by node: " + printNode(n));
         try {
             if (!n.equals(node.getTNode())) {
                 TNode found = clientFactory.get(n).findSuccessor(node.getNodeId());
@@ -49,7 +48,7 @@ public class DonutClient extends Thread {
         } catch (RetryFailedException e) {
             throw new TException(e);
         }
-        LOGGER.info(printNode(this.node.getTNode()) + " - Joined Donut!");
+        LOGGER.info("Joined Donut [" + printNode(node.getTNode()) + "]: Known Node - " + printNode(n));
     }
 
     public boolean ping(TNode n) {
@@ -73,7 +72,7 @@ public class DonutClient extends Thread {
     public void checkPredecessor() {
         if (this.node.getPredecessor() != null && !ping(this.node.getPredecessor())) {
             // A predecessor is defined but could not be reached. Nullify the current predecessor
-            LOGGER.warning("Node " + node.getPredecessor() + " is down!");
+            LOGGER.warning("Lost Predecessor [" + printNode(node.getTNode()) + "]: Predecessor - " + printNode(node.getPredecessor()));
             this.node.setPredecessor(null);
         }
     }
@@ -103,7 +102,6 @@ public class DonutClient extends Thread {
         try {
             iface = clientFactory.get(node.getTNode());
         } catch (RetryFailedException e1) {
-            LOGGER.warning("Something funny in the sockets is going down");
             e1.printStackTrace();
             return;
         }
@@ -118,7 +116,7 @@ public class DonutClient extends Thread {
             TNode updatedFinger = iface.findSuccessor(keyId);
             this.node.setFinger(finger, updatedFinger);
         } catch (TException e1) {
-            LOGGER.warning("Thrift exception on findSuccessor in fixFingers");
+            LOGGER.warning("Thrift Exception in findSuccessor [" + printNode(node.getTNode()) + "]: keyId-" + keyId);
         }
 
         clientFactory.release(node.getTNode());
@@ -137,12 +135,9 @@ public class DonutClient extends Thread {
             successorClient = clientFactory.get(successor);
 
         } catch (RetryFailedException e) {
-
-            LOGGER.warning("Something funny in the sockets is going down for successor :"
-                            + successor);
+            LOGGER.info("Lost successor [" + printNode(node.getTNode()) + "]: Successor- " + printNode(successor));
             e.printStackTrace();
             clientFactory.release(successor);
-            LOGGER.info("Lost successor: Node-" + printNode(node.getTNode()) + "Successor" + printNode(node.getSuccessor()));
             node.removeSuccessor();
             return;
 
@@ -156,9 +151,8 @@ public class DonutClient extends Thread {
             // Successor's predecessor is null
 
         } catch (TException e) {
-            LOGGER.warning("Successor went down");
+            LOGGER.info("Lost successor [" + printNode(node.getTNode()) + "]: Successor - " + printNode(node.getSuccessor()));
             e.printStackTrace();
-            // node.setSuccessor(node.getTNode());
             node.removeSuccessor();
             clientFactory.release(successor);
             return;
@@ -176,7 +170,7 @@ public class DonutClient extends Thread {
 
             } catch (RetryFailedException e) {
 
-                LOGGER.warning("Something funny in the sockets is going down");
+                LOGGER.info("Lost successor [" + printNode(node.getTNode()) + "]: Successor - " + printNode(node.getSuccessor()));
                 e.printStackTrace();
                 clientFactory.release(successor);
                 return;
@@ -186,15 +180,12 @@ public class DonutClient extends Thread {
         node.setSuccessor(successor);
 
         try {
-            LOGGER.info("Notification Sent: FROM: " + printNode(node.getTNode()) + " TO: " + printNode(node.getSuccessor()));
             List<TNode> successorList = successorClient.notify(node.getTNode());
             updateSuccessorList(successorList);
 
         } catch (TException e) {
-
+            LOGGER.info("Lost successor [" + printNode(node.getTNode()) + "]: Successor - " + printNode(node.getSuccessor()));
             e.printStackTrace();
-            // node.setSuccessor(node.getTNode());
-            LOGGER.info("Lost successor: Node-" + printNode(node.getTNode()) + "Successor" + printNode(node.getSuccessor()));
             node.removeSuccessor();
             return;
 
@@ -247,11 +238,6 @@ public class DonutClient extends Thread {
         super.run();
         while (true) {
             try {
-                LOGGER.info(printNode(node.getTNode()) + ": Pred - "
-                        + printNode(node.getPredecessor()) + "\t Succ - "
-                        + printNode(node.getSuccessor()) + "\t FingerList - "
-                        + printNodeList(node.getFingers()) + "\t SuccessorList - "
-                        + printNodeList(node.getSuccessorList()));
                 stabilize();
                 fixFingers();
                 checkPredecessor();

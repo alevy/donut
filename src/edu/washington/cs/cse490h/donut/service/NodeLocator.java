@@ -41,14 +41,14 @@ public class NodeLocator implements Iface {
     }
 
     public TNode findSuccessor(KeyId entryId) throws TException {
-        LOGGER.info(this.node.getPort() + " - Request for entity with id \"" + entryId.toString() + "\"");
+        LOGGER.info("Request for entity [" + printNode(this.node.getTNode()) + "]: Id - \"" + entryId.toString() + "\"");
         TNode next = node.closestPrecedingNode(entryId);
         if (next.equals(node.getTNode())) {
-            LOGGER.info("I (" + this.node.getPort() + ") am the predecessor for \"" + entryId.toString() + "\"");
+            LOGGER.info("I am predecessor [" + printNode(this.node.getTNode()) + "]: Id \"" + entryId.toString() + "\"");
             return node.getSuccessor();
         }
         try {
-            LOGGER.info("I (" + this.node.getPort() + ") am NOT the predecessor for \"" + entryId.toString() + "\" \n" +
+            LOGGER.info("I am NOT the predecessor [" + printNode(this.node.getTNode()) + "]: Id \"" + entryId.toString() + "\" \n" +
             		"Connecting to " + next.getPort());
             TNode successor = clientFactory.get(next).findSuccessor(entryId);
             clientFactory.release(next);
@@ -59,7 +59,7 @@ public class NodeLocator implements Iface {
     }
 
     public DonutData get(KeyId entryId) throws TException {
-        LOGGER.info("Get entity with id \"" + entryId.toString() + "\".");
+        LOGGER.info("Get [" + printNode(this.node.getTNode()) + "]: Id - \"" + entryId.toString() + "\"");
         DonutData data = new DonutData();
         data.setData(dataMap.get(entryId));
         if (data.getData() != null) {
@@ -71,7 +71,7 @@ public class NodeLocator implements Iface {
     }
 
     public void put(KeyId entryId, DonutData data) throws TException {
-        LOGGER.info("Put \"" + data + "\" into entity with id \"" + entryId.toString() + "\".");
+        LOGGER.info("Put [" + printNode(this.node.getTNode()) + "]: Data - \"" + data + "\" Id: \"" + entryId.toString() + "\"");
         if (data.isExists()) {
             dataMap.put(entryId, data.getData());
         } else {
@@ -100,7 +100,6 @@ public class NodeLocator implements Iface {
     }
 
     public List<TNode> notify(TNode n) throws TException {
-        LOGGER.warning("Notification Received: AT: " + printNode(this.node.getTNode()) + " FROM: " + printNode(n));
         if (node.getPredecessor() == null || KeyIdUtil.isAfterXButBeforeEqualY(n
                         .getNodeId(), node.getPredecessor().getNodeId(), node.getNodeId())) {
             node.setPredecessor(n);
