@@ -9,8 +9,9 @@ public class DonutClosure {
     
     /**
      * Defines the functionality of the closure when it is run.
+     * @throws Exception 
      */
-    public void run() {
+    public void run() throws Exception {
         // Do nothing by default
     }
 }

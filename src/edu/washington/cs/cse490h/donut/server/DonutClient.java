@@ -116,12 +116,6 @@ public class DonutClient extends Thread {
     }
 
     public void fixFinger(int finger) {
-        // Even if the successor is self, we still might need to fix other fingers.
-        // Do NOT, therefore include this code (left in until we're sure of this statement)
-        // if (node.getSuccessor().equals(node.getTNode())) {
-        // return;
-        // }
-
         Iface iface;
         try {
             iface = clientFactory.get(node.getTNode());

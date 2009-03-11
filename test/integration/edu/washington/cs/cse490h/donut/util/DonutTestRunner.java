@@ -8,8 +8,10 @@ import edu.washington.cs.cse490h.donut.business.Node;
 import edu.washington.cs.cse490h.donut.server.DonutClient;
 import edu.washington.cs.cse490h.donut.service.LocalLocatorClientFactory;
 import edu.washington.cs.cse490h.donut.service.NodeLocator;
+import edu.washington.cs.cse490h.donut.service.RetryFailedException;
 import edu.washington.cs.cse490h.donut.service.application.DonutInMemoryHashTableService;
 import edu.washington.cs.cse490h.donut.service.thrift.KeyId;
+import edu.washington.cs.cse490h.donut.service.thrift.KeyLocator.Iface;
 
 /**
  * <p>
@@ -39,10 +41,11 @@ import edu.washington.cs.cse490h.donut.service.thrift.KeyId;
  */
 public class DonutTestRunner {
 
-    private final List<Node>                nodeList;
-    private final LocalLocatorClientFactory clientFactory;
-    private final List<DonutClient>         clientList;
-    private final PriorityQueue<DonutEvent> eventList;
+    private final List<Node>                          nodeList;
+    private final List<DonutInMemoryHashTableService> serviceList;
+    private final LocalLocatorClientFactory           clientFactory;
+    private final List<DonutClient>                   clientList;
+    private final PriorityQueue<DonutEvent>           eventList;
 
     /**
      * @param ids
@@ -50,6 +53,7 @@ public class DonutTestRunner {
      */
     public DonutTestRunner(long... ids) {
         nodeList = new ArrayList<Node>();
+        serviceList = new ArrayList<DonutInMemoryHashTableService>();
         eventList = new PriorityQueue<DonutEvent>();
         clientList = new ArrayList<DonutClient>();
         clientFactory = new LocalLocatorClientFactory();
@@ -61,8 +65,9 @@ public class DonutTestRunner {
     public int createAndAddNode(String name, long id) {
         Node node = new Node(name, 8080, new KeyId(id));
         nodeList.add(node);
-        NodeLocator nodeLocator = new NodeLocator(node, new DonutInMemoryHashTableService(),
-                getClientFactory());
+        DonutInMemoryHashTableService service = new DonutInMemoryHashTableService();
+        serviceList.add(service);
+        NodeLocator nodeLocator = new NodeLocator(node, service, getClientFactory());
         clientFactory.add(node.getTNode(), nodeLocator);
         clientList.add(new DonutClient(node, getClientFactory()));
         return clientList.size() - 1;
@@ -90,8 +95,20 @@ public class DonutTestRunner {
         return nodeList.get(index);
     }
 
+    /**
+     * Returns the {@link DonutInMemoryHashTableService} referneced in this {@link DonutTestRunner}
+     * by the index specified.
+     */
+    public DonutInMemoryHashTableService service(int index) {
+        return serviceList.get(index);
+    }
+
     protected LocalLocatorClientFactory getClientFactory() {
         return clientFactory;
+    }
+    
+    public Iface iface(int index) throws RetryFailedException {
+        return clientFactory.get(node(index).getTNode());
     }
 
     protected DonutClient client(int index) {
@@ -106,7 +123,7 @@ public class DonutTestRunner {
      * Runs the test.
      */
     @SuppressWarnings("deprecation")
-    public void run() {
+    public void run() throws Exception {
         long start = System.currentTimeMillis();
         while (!eventList.isEmpty()) {
             if (eventList.peek().getMilliseconds() <= (System.currentTimeMillis() - start)) {

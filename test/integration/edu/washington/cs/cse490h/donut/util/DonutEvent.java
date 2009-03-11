@@ -21,7 +21,7 @@ public class DonutEvent implements Comparable<DonutEvent> {
      * @param test the {@link DonutTestCase} to run.
      */
     public void test(DonutTestCase test) {
-        closure = test;
+        setClosure(test);
     }
 
     /**
@@ -32,12 +32,12 @@ public class DonutEvent implements Comparable<DonutEvent> {
      */
     public void join(int nodeNum, int knownNode) {
         TNode node = testRunner.node(knownNode).getTNode();
-        closure = new DonutJoinClosure(testRunner.client(nodeNum), node);
+        setClosure(new DonutJoinClosure(testRunner.client(nodeNum), node));
     }
 
     public void joinNewNode(int knownNode, String name, long id) {
         TNode node = testRunner.node(knownNode).getTNode();
-        closure = new DonutJoinNewClosure(testRunner, node, name, id);
+        setClosure(new DonutJoinNewClosure(testRunner, node, name, id));
     }
 
     /**
@@ -46,12 +46,12 @@ public class DonutEvent implements Comparable<DonutEvent> {
      * @param nodeNum
      */
     public void leave(int nodeNum) {
-        closure = new DonutLeaveClosure(testRunner.client(nodeNum), testRunner.getClientFactory(),
-                testRunner.node(nodeNum).getTNode());
+        setClosure(new DonutLeaveClosure(testRunner.client(nodeNum), testRunner.getClientFactory(),
+                testRunner.node(nodeNum).getTNode()));
     }
 
-    public void run() {
-        closure.run();
+    public void run() throws Exception {
+        getClosure().run();
     }
 
     public int getMilliseconds() {
@@ -60,5 +60,13 @@ public class DonutEvent implements Comparable<DonutEvent> {
 
     public int compareTo(DonutEvent o) {
         return this.milliseconds - o.milliseconds;
+    }
+
+    public void setClosure(DonutClosure closure) {
+        this.closure = closure;
+    }
+
+    public DonutClosure getClosure() {
+        return closure;
     }
 }

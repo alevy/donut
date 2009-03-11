@@ -6,10 +6,10 @@ package edu.washington.cs.cse490h.donut.util;
  *
  */
 public abstract class DonutTestCase extends DonutClosure {
-    public abstract void test();
+    public abstract void test() throws Exception;
     
     @Override
-    public void run() {
+    public void run() throws Exception {
         test();
     }
 }
