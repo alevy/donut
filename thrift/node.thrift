@@ -63,7 +63,7 @@ service KeyLocator {
   
   set<EntryKey> getDataRange(KeyId startVal, KeyId endVal)
   
-  void notify(TNode n)
+  list<TNode> notify(TNode n)
   
   list<TNode> getFingers()
 }

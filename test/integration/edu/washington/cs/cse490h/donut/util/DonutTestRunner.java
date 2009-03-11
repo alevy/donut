@@ -122,7 +122,6 @@ public class DonutTestRunner {
     /**
      * Runs the test.
      */
-    @SuppressWarnings("deprecation")
     public void run() throws Exception {
         long start = System.currentTimeMillis();
         while (!eventList.isEmpty()) {

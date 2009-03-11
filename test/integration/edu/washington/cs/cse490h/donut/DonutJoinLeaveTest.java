@@ -69,11 +69,10 @@ public class DonutJoinLeaveTest {
                     assertEquals("Incorrect finger " + i, node0.getTNode(), node1.getFinger(i));
                 }
 
-                
                 assertEquals(node0.getTNode(), node1.getPredecessor());
-                
+
                 List<TNode> list = node0.getSuccessorList();
-                for (int i = 0 ; i < Constants.SUCCESSOR_LIST_SIZE; ++i) {
+                for (int i = 0; i < Constants.SUCCESSOR_LIST_SIZE; ++i) {
                     assertEquals(list.get(i), (i % 2 == 0) ? node1.getTNode() : node0.getTNode());
                 }
 
@@ -698,20 +697,6 @@ public class DonutJoinLeaveTest {
                     assertEquals(list.get(i), donutTestRunner.node((1 + i) % 4 + 1).getTNode());
                 }
 
-                list = node2.getSuccessorList();
-                for (int i = 0; i < Constants.SUCCESSOR_LIST_SIZE; ++i) {
-                    assertEquals(list.get(i), donutTestRunner.node((2 + i) % 4 + 1).getTNode());
-                }
-
-                list = node3.getSuccessorList();
-                for (int i = 0; i < Constants.SUCCESSOR_LIST_SIZE; ++i) {
-                    assertEquals(list.get(i), donutTestRunner.node((3 + i) % 4 + 1).getTNode());
-                }
-            }
-        });
-        donutTestRunner.run();
-    }
-}
                 list = node2.getSuccessorList();
                 for (int i = 0; i < Constants.SUCCESSOR_LIST_SIZE; ++i) {
                     assertEquals(list.get(i), donutTestRunner.node((2 + i) % 4 + 1).getTNode());

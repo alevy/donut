@@ -324,7 +324,6 @@ public class DonutClientTest {
 
         node.setSuccessor(successor0);
 
-        DonutClient donutClient = new DonutClient(node, clientLocatorMock);
         replay(clientLocatorMock, keyLocator);
 
         node.updateSuccessorList(list);
@@ -346,7 +345,6 @@ public class DonutClientTest {
         TNode successor0 = new TNode("other1", 0, new KeyId(100));
         node.setSuccessor(successor0);
 
-        DonutClient donutClient = new DonutClient(node, clientLocatorMock);
         replay(clientLocatorMock, keyLocator);
 
         List<TNode> list0 = new ArrayList<TNode>(Constants.SUCCESSOR_LIST_SIZE);
