@@ -16,7 +16,7 @@ public abstract class AbstractRunAtInterval extends Thread {
         this.interval = interval;
     }
 
-    abstract public void runClosure();
+    public abstract void runClosure();
 
     public void kill() {
         interval = 0;
