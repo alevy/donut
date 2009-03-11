@@ -101,10 +101,6 @@ public class DonutClient extends Thread {
             LOGGER.warning("Lost Predecessor [" + Node.TNodeToString(node.getTNode())
                     + "]: Predecessor - " + Node.TNodeToString(node.getPredecessor()));
 
-            // in a small ring this node probably has lost a successor in the successorList. Remove
-            // it in addition.
-            node.getSuccessorList().remove(node.getPredecessor());
-
             this.node.setPredecessor(null);
         }
     }
@@ -133,12 +129,16 @@ public class DonutClient extends Thread {
         Iface iface;
         try {
             iface = clientFactory.get(node.getTNode());
-        } catch (RetryFailedException e1) {
-            // e1.printStackTrace();
+        } catch (RetryFailedException e) {
+            // We should always be able to connect to our own service. If not, its serious
+            LOGGER.severe("FixFingers [" + Node.TNodeToString(node.getTNode())
+                    + "] failed to get client to itself.");
+
+            // Skip this finger. It will get updated on the next go throw the finger table.
             return;
         }
 
-        // Keep as seperate variable: Be careful of some weirdass java background shit with ints
+        // Keep as separate variable: Be careful of some weird java issues with overflowing ints
         long base = node.getNodeId().getId();
         long pow = 0x0000000000000001L << finger;
         long id = base + pow;
@@ -169,7 +169,7 @@ public class DonutClient extends Thread {
         } catch (RetryFailedException e) {
             LOGGER.info("Lost successor [" + Node.TNodeToString(node.getTNode()) + "]: Successor- "
                     + Node.TNodeToString(successor));
-            // e.printStackTrace();
+
             clientFactory.release(successor);
             node.removeSuccessor();
             return;
@@ -182,7 +182,7 @@ public class DonutClient extends Thread {
         } catch (TException e) {
             LOGGER.info("Lost successor [" + Node.TNodeToString(node.getTNode())
                     + "]: Successor - " + Node.TNodeToString(node.getSuccessor()));
-            e.printStackTrace();
+
             node.removeSuccessor();
             clientFactory.release(successor);
             return;
@@ -197,10 +197,9 @@ public class DonutClient extends Thread {
             try {
                 successorClient = clientFactory.get(successor);
             } catch (RetryFailedException e) {
-
                 LOGGER.info("Lost successor [" + Node.TNodeToString(node.getTNode())
                         + "]: Successor - " + Node.TNodeToString(node.getSuccessor()));
-                // e.printStackTrace();
+
                 clientFactory.release(successor);
                 return;
             }
@@ -211,7 +210,6 @@ public class DonutClient extends Thread {
         try {
             List<TNode> successorList = successorClient.notify(node.getTNode());
             node.updateSuccessorList(successorList);
-            // node.updateSuccessorList(successor, successorList);
         } catch (TException e) {
             LOGGER.info("Lost successor [" + Node.TNodeToString(node.getTNode())
                     + "]: Successor - " + Node.TNodeToString(node.getSuccessor()));
