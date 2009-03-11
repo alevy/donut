@@ -232,7 +232,9 @@ public class Node {
     }
 
     public List<TNode> getFingers() {
-        return new ArrayList<TNode>(fingers);
+        List<TNode> result = new ArrayList<TNode>(fingers);
+        result.set(0, getSuccessor());
+        return result;
     }
 
     public List<TNode> getSuccessorList() {

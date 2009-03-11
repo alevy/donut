@@ -1,9 +1,9 @@
 package edu.washington.cs.cse490h.donut.service.application;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import edu.washington.cs.cse490h.donut.service.thrift.DataPair;
 import edu.washington.cs.cse490h.donut.service.thrift.EntryKey;
@@ -21,6 +21,10 @@ public class DonutInMemoryHashTableService implements DonutHashTableService {
     public DonutInMemoryHashTableService() {
         map = new HashMap<EntryKey, DataPair>();
     }
+    
+    public DonutInMemoryHashTableService(Map<EntryKey, DataPair> map) {
+        this.map = map;
+    }
 
     public DataPair get(EntryKey entryId) {
         return map.get(entryId);
@@ -35,7 +39,7 @@ public class DonutInMemoryHashTableService implements DonutHashTableService {
     }
 
     public Set<EntryKey> getRange(KeyId start, KeyId end) {
-        Set<EntryKey> result = new TreeSet<EntryKey>();
+        Set<EntryKey> result = new HashSet<EntryKey>();
         for (EntryKey key : map.keySet()) {
             if (KeyIdUtil.isAfterXButBeforeEqualY(key.getId(), start, end)) {
                 result.add(key);

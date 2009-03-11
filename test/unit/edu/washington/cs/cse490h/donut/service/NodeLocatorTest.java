@@ -10,6 +10,9 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,6 +25,7 @@ import edu.washington.cs.cse490h.donut.service.thrift.DataPair;
 import edu.washington.cs.cse490h.donut.service.thrift.EntryKey;
 import edu.washington.cs.cse490h.donut.service.thrift.KeyId;
 import edu.washington.cs.cse490h.donut.service.thrift.KeyLocator;
+import edu.washington.cs.cse490h.donut.service.thrift.NodeNotFoundException;
 import edu.washington.cs.cse490h.donut.service.thrift.NotResponsibleForId;
 import edu.washington.cs.cse490h.donut.service.thrift.TNode;
 
@@ -172,8 +176,8 @@ public class NodeLocatorTest {
 
         nodeLocator.put(ENTRY_KEY, "data".getBytes());
     }
-    
-    @Test(expected=NotResponsibleForId.class)
+
+    @Test(expected = NotResponsibleForId.class)
     public void testPut_NotResponsible() throws Exception {
         Node node = new Node(null, 8080, new KeyId(1000));
         node.setSuccessor(new TNode("successor", 1234, new KeyId(123)));
@@ -200,8 +204,8 @@ public class NodeLocatorTest {
 
         nodeLocator.remove(ENTRY_KEY);
     }
-    
-    @Test(expected=NotResponsibleForId.class)
+
+    @Test(expected = NotResponsibleForId.class)
     public void testRemove_NotResponsible() throws Exception {
         Node node = new Node(null, 8080, new KeyId(1000));
         node.setSuccessor(new TNode("successor", 1234, new KeyId(123)));
@@ -213,5 +217,95 @@ public class NodeLocatorTest {
         nodeLocator.remove(new EntryKey(new KeyId(-1), "key"));
     }
 
+    @Test
+    public void getPredecessor() throws Exception {
+        Node node = new Node(null, 8080, new KeyId(1000));
+        node.setPredecessor(new TNode("predecessor", 1234, new KeyId(0)));
+        NodeLocator nodeLocator = new NodeLocator(node, null, null);
+
+        replay(clientFactoryMock, nextLocatorMock, service);
+
+        assertEquals(node.getPredecessor(), nodeLocator.getPredecessor());
+    }
+
+    @Test(expected = NodeNotFoundException.class)
+    public void getPredecessor_Null() throws Exception {
+        Node node = new Node(null, 8080, new KeyId(1000));
+        node.setPredecessor(null);
+        NodeLocator nodeLocator = new NodeLocator(node, null, null);
+
+        replay(clientFactoryMock, nextLocatorMock, service);
+
+        nodeLocator.getPredecessor();
+    }
+
+    @Test
+    public void testNotify_NotPredecessor() throws Exception {
+        Node node = new Node(null, 8080, new KeyId(1000));
+        node.setPredecessor(new TNode("realPred", 8080, new KeyId(999)));
+        NodeLocator nodeLocator = new NodeLocator(node, service, clientFactoryMock);
+
+        replay(clientFactoryMock, nextLocatorMock, service);
+
+        nodeLocator.notify(new TNode("mynode", 8080, new KeyId(1)));
+    }
+
+    @Test
+    public void testNotify_IsPredecessor() throws Exception {
+        Node node = new Node(null, 8080, new KeyId(1000));
+        TNode oldPredecessor = new TNode("realPred", 8080, new KeyId(1));
+        TNode newPredecessor = new TNode("mynode", 8080, new KeyId(999));
+        node.setPredecessor(oldPredecessor);
+        NodeLocator nodeLocator = new NodeLocator(node, service, clientFactoryMock);
+
+        EntryKey key = new EntryKey(new KeyId(1234), "hello");
+        Set<EntryKey> keys = new TreeSet<EntryKey>();
+        keys.add(key);
+
+        expect(clientFactoryMock.get(newPredecessor)).andReturn(nextLocatorMock);
+        clientFactoryMock.release(newPredecessor);
+        expect(nextLocatorMock.getDataRange(node.getNodeId(), newPredecessor.getNodeId()))
+                .andReturn(keys);
+        expect(nextLocatorMock.get(key)).andReturn("world".getBytes());
+        service.put(eq(key), aryEq("world".getBytes()), eq(Constants.SUCCESSOR_LIST_SIZE));
+        replay(clientFactoryMock, nextLocatorMock, service);
+
+        nodeLocator.notify(newPredecessor);
+    }
+
+    @Test
+    public void testNotify_WasNullPredecessor() throws Exception {
+        Node node = new Node(null, 8080, new KeyId(1000));
+        TNode successor = new TNode("successor", 8080, new KeyId(1500));
+        TNode newPredecessor = new TNode("mynode", 8080, new KeyId(999));
+        node.setPredecessor(null);
+        node.setSuccessor(successor);
+        NodeLocator nodeLocator = new NodeLocator(node, service, clientFactoryMock);
+
+        EntryKey key0 = new EntryKey(new KeyId(4321), "test");
+        Set<EntryKey> keys0 = new TreeSet<EntryKey>();
+        keys0.add(key0);
+        
+        EntryKey key1 = new EntryKey(new KeyId(1234), "hello");
+        Set<EntryKey> keys1 = new TreeSet<EntryKey>();
+        keys1.add(key1);
+
+        expect(clientFactoryMock.get(successor)).andReturn(nextLocatorMock);
+        clientFactoryMock.release(successor);
+        expect(nextLocatorMock.getDataRange(newPredecessor.getNodeId(), node.getNodeId())).andReturn(
+                keys0);
+        expect(nextLocatorMock.get(key0)).andReturn("testing".getBytes());
+        service.put(eq(key0), aryEq("testing".getBytes()), eq(Constants.SUCCESSOR_LIST_SIZE));
+
+        expect(clientFactoryMock.get(newPredecessor)).andReturn(nextLocatorMock);
+        clientFactoryMock.release(newPredecessor);
+        expect(nextLocatorMock.getDataRange(node.getNodeId(), newPredecessor.getNodeId()))
+                .andReturn(keys1);
+        expect(nextLocatorMock.get(key1)).andReturn("world".getBytes());
+        service.put(eq(key1), aryEq("world".getBytes()), eq(Constants.SUCCESSOR_LIST_SIZE));
+        replay(clientFactoryMock, nextLocatorMock, service);
+
+        nodeLocator.notify(newPredecessor);
+    }
+
 }
->>>>>>> Added string parameter to get/put/remove and encapsulated in EntryKey. Separated remove/put from replication methods.:test/unit/edu/washington/cs/cse490h/donut/service/NodeLocatorTest.java
