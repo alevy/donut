@@ -2,6 +2,7 @@ namespace java edu.washington.cs.cse490h.donut.service
 
 include "types.thrift"
 include "exceptions.thrift"
+include "constants.thrift"
 
 service KeyLocator {
   

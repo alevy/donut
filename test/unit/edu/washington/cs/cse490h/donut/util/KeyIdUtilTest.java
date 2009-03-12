@@ -1,9 +1,12 @@
 package edu.washington.cs.cse490h.donut.util;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+
+import edu.washington.cs.cse490h.donut.business.KeyId;
 
 /**
  * @author alevy
@@ -62,6 +65,12 @@ public class KeyIdUtilTest {
     public void testIsAfterXButBeforeY_YAndIdNegativeXPositive() throws Exception {
         assertTrue(KeyIdUtil.isAfterXButBeforeOrEqualY(-11, 4, -8));
         assertFalse(KeyIdUtil.isAfterXButBeforeOrEqualY(-4, 11, -8));
+    }
+    
+    @Test
+    public void testGenerateKeyId() throws Exception {
+        KeyId expected = new KeyId(-7136519034228736278L);
+        assertEquals(expected, KeyIdUtil.generateKeyId("hello world"));
     }
 
 }

@@ -18,16 +18,18 @@ import com.google.inject.Binder;
 import com.google.inject.Inject;
 import com.google.inject.Module;
 import com.google.inject.Provider;
+import com.google.inject.name.Names;
 
+import edu.washington.cs.cse490h.donut.business.KeyId;
 import edu.washington.cs.cse490h.donut.business.Node;
+import edu.washington.cs.cse490h.donut.service.DonutHashRequestService;
+import edu.washington.cs.cse490h.donut.service.HashService;
+import edu.washington.cs.cse490h.donut.service.KeyLocator;
 import edu.washington.cs.cse490h.donut.service.LocatorClientFactory;
 import edu.washington.cs.cse490h.donut.service.NodeLocator;
 import edu.washington.cs.cse490h.donut.service.RemoteLocatorClientFactory;
 import edu.washington.cs.cse490h.donut.service.application.DonutHashTableService;
 import edu.washington.cs.cse490h.donut.service.application.DonutInMemoryHashTableService;
-import edu.washington.cs.cse490h.donut.business.KeyId;
-import edu.washington.cs.cse490h.donut.service.KeyLocator;
-import edu.washington.cs.cse490h.donut.service.KeyLocator.Iface;
 
 /**
  * @author alevy
@@ -78,6 +80,7 @@ public class DonutModule implements Module {
         binder.bind(Node.class).toInstance(node);
         binder.bind(LocatorClientFactory.class).to(RemoteLocatorClientFactory.class);
         binder.bind(KeyLocator.Iface.class).to(NodeLocator.class);
+        binder.bind(HashService.Iface.class).to(DonutHashRequestService.class);
         binder.bind(DonutHashTableService.class).to(DonutInMemoryHashTableService.class);
         try {
             binder.bind(TServerTransport.class).toInstance(new TServerSocket(getPort()));
@@ -85,7 +88,10 @@ public class DonutModule implements Module {
             System.err.println("Unable to listen on port " + getPort() + ".");
             System.exit(1);
         }
-        binder.bind(TProcessor.class).toProvider(TProcessorProvider.class);
+        binder.bind(TProcessor.class).annotatedWith(Names.named(DonutPeer.DONUT_NODE)).toProvider(
+                TKeyLocatorProcessorProvider.class);
+        binder.bind(TProcessor.class).annotatedWith(Names.named(DonutPeer.DONUT_REQUEST_SERVER)).toProvider(
+                TRequestServerProcessorProvider.class);
         binder.bind(TServer.class).toProvider(TServerProvider.class);
     }
 
@@ -144,16 +150,29 @@ public class DonutModule implements Module {
         }
     }
 
-    private class TProcessorProvider implements Provider<TProcessor> {
-        private final Iface iface;
+    private class TKeyLocatorProcessorProvider implements Provider<TProcessor> {
+        private final KeyLocator.Iface iface;
 
         @Inject
-        private TProcessorProvider(KeyLocator.Iface iface) {
+        private TKeyLocatorProcessorProvider(KeyLocator.Iface iface) {
             this.iface = iface;
         }
 
         public TProcessor get() {
             return new KeyLocator.Processor(iface);
+        }
+    }
+    
+    private class TRequestServerProcessorProvider implements Provider<TProcessor> {
+        private final HashService.Iface iface;
+
+        @Inject
+        private TRequestServerProcessorProvider(HashService.Iface iface) {
+            this.iface = iface;
+        }
+
+        public TProcessor get() {
+            return new HashService.Processor(iface);
         }
     }
 }

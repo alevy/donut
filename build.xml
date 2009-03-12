@@ -8,6 +8,7 @@
 	<property name="build" value="bin" />
 	<property name="lib" value="lib" />
 	<property name="thrift-rb" value="gen-rb" />
+	<property name="thrift-py" value="gen-py" />
 	<property name="thrift-java" value="gen-javabean" />
 	<property name="reports.test" value="test_reports" />
 	<property name="jar-file" value="donut.jar" />
@@ -23,12 +24,12 @@
 	<target name="gen-thrift">
 		<echo message="Generating thrift sources" />
 		<exec executable="thrift" failonerror="true">
-			<arg line="-r -v -gen rb -gen py -gen java:beans,hashcode" />
+			<arg line="-r -v -gen rb -gen java:beans,hashcode" />
 			<arg file="thrift/key_locator.thrift" />
 		</exec>
 		<exec executable="thrift" failonerror="true">
 			<arg line="-r -v -gen rb -gen py -gen java:beans,hashcode" />
-			<arg file="thrift/constants.thrift" />
+			<arg file="thrift/hash_service.thrift" />
 		</exec>
 	</target>
 
@@ -67,6 +68,7 @@
 		<delete includeemptydirs="true" quiet="true">
 			<fileset dir="${thrift-java}" />
 			<fileset dir="${thrift-rb}" />
+			<fileset dir="${thrift-py}" />
 			<fileset dir="${build}" />
 			<fileset file="${jar-file}" />
 		</delete>
