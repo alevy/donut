@@ -4,12 +4,10 @@ import org.apache.thrift.TException;
 
 import com.google.inject.Inject;
 
-import edu.washington.cs.cse490h.donut.service.thrift.TNode;
-
+import edu.washington.cs.cse490h.donut.business.TNode;
 
 /**
  * @author alevy
- *
  */
 public class DonutPeer {
 
@@ -21,13 +19,13 @@ public class DonutPeer {
         this.server = serverThread;
         this.client = client;
     }
-    
+
     public void run(TNode knownNode) throws TException {
         server.start();
         client.join(knownNode);
         client.start();
     }
-    
+
     public void kill() {
         server.kill();
         client.kill();

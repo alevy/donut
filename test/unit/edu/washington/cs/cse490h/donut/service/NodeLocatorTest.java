@@ -16,17 +16,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import edu.washington.cs.cse490h.donut.Constants;
+import edu.washington.cs.cse490h.donut.business.DataPair;
+import edu.washington.cs.cse490h.donut.business.EntryKey;
+import edu.washington.cs.cse490h.donut.business.KeyId;
 import edu.washington.cs.cse490h.donut.business.Node;
+import edu.washington.cs.cse490h.donut.business.TNode;
 import edu.washington.cs.cse490h.donut.service.application.DonutHashTableService;
-import edu.washington.cs.cse490h.donut.service.thrift.Constants;
-import edu.washington.cs.cse490h.donut.service.thrift.DataNotFoundException;
-import edu.washington.cs.cse490h.donut.service.thrift.DataPair;
-import edu.washington.cs.cse490h.donut.service.thrift.EntryKey;
-import edu.washington.cs.cse490h.donut.service.thrift.KeyId;
-import edu.washington.cs.cse490h.donut.service.thrift.KeyLocator;
-import edu.washington.cs.cse490h.donut.service.thrift.NodeNotFoundException;
-import edu.washington.cs.cse490h.donut.service.thrift.NotResponsibleForId;
-import edu.washington.cs.cse490h.donut.service.thrift.TNode;
 
 public class NodeLocatorTest {
 
@@ -284,15 +280,15 @@ public class NodeLocatorTest {
         EntryKey key0 = new EntryKey(new KeyId(4321), "test");
         Set<EntryKey> keys0 = new TreeSet<EntryKey>();
         keys0.add(key0);
-        
+
         EntryKey key1 = new EntryKey(new KeyId(1234), "hello");
         Set<EntryKey> keys1 = new TreeSet<EntryKey>();
         keys1.add(key1);
 
         expect(clientFactoryMock.get(successor)).andReturn(nextLocatorMock);
         clientFactoryMock.release(successor);
-        expect(nextLocatorMock.getDataRange(newPredecessor.getNodeId(), node.getNodeId())).andReturn(
-                keys0);
+        expect(nextLocatorMock.getDataRange(newPredecessor.getNodeId(), node.getNodeId()))
+                .andReturn(keys0);
         expect(nextLocatorMock.get(key0)).andReturn("testing".getBytes());
         service.put(eq(key0), aryEq("testing".getBytes()), eq(Constants.SUCCESSOR_LIST_SIZE));
 

@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
 
+import edu.washington.cs.cse490h.donut.business.KeyId;
 import edu.washington.cs.cse490h.donut.business.Node;
 import edu.washington.cs.cse490h.donut.server.DonutClient;
 import edu.washington.cs.cse490h.donut.service.LocalLocatorClientFactory;
 import edu.washington.cs.cse490h.donut.service.NodeLocator;
 import edu.washington.cs.cse490h.donut.service.RetryFailedException;
+import edu.washington.cs.cse490h.donut.service.KeyLocator.Iface;
 import edu.washington.cs.cse490h.donut.service.application.DonutInMemoryHashTableService;
-import edu.washington.cs.cse490h.donut.service.thrift.KeyId;
-import edu.washington.cs.cse490h.donut.service.thrift.KeyLocator.Iface;
 
 /**
  * <p>
@@ -106,7 +106,7 @@ public class DonutTestRunner {
     protected LocalLocatorClientFactory getClientFactory() {
         return clientFactory;
     }
-    
+
     public Iface iface(int index) throws RetryFailedException {
         return clientFactory.get(node(index).getTNode());
     }

@@ -8,9 +8,9 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import edu.washington.cs.cse490h.donut.service.thrift.DataPair;
-import edu.washington.cs.cse490h.donut.service.thrift.EntryKey;
-import edu.washington.cs.cse490h.donut.service.thrift.KeyId;
+import edu.washington.cs.cse490h.donut.business.DataPair;
+import edu.washington.cs.cse490h.donut.business.EntryKey;
+import edu.washington.cs.cse490h.donut.business.KeyId;
 
 /**
  * @author alevy

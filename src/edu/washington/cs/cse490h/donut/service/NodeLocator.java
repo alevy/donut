@@ -9,17 +9,14 @@ import org.apache.thrift.TException;
 
 import com.google.inject.Inject;
 
+import edu.washington.cs.cse490h.donut.Constants;
+import edu.washington.cs.cse490h.donut.business.DataPair;
+import edu.washington.cs.cse490h.donut.business.EntryKey;
+import edu.washington.cs.cse490h.donut.business.KeyId;
 import edu.washington.cs.cse490h.donut.business.Node;
+import edu.washington.cs.cse490h.donut.business.TNode;
+import edu.washington.cs.cse490h.donut.service.KeyLocator.Iface;
 import edu.washington.cs.cse490h.donut.service.application.DonutHashTableService;
-import edu.washington.cs.cse490h.donut.service.thrift.Constants;
-import edu.washington.cs.cse490h.donut.service.thrift.DataNotFoundException;
-import edu.washington.cs.cse490h.donut.service.thrift.DataPair;
-import edu.washington.cs.cse490h.donut.service.thrift.EntryKey;
-import edu.washington.cs.cse490h.donut.service.thrift.KeyId;
-import edu.washington.cs.cse490h.donut.service.thrift.NodeNotFoundException;
-import edu.washington.cs.cse490h.donut.service.thrift.NotResponsibleForId;
-import edu.washington.cs.cse490h.donut.service.thrift.TNode;
-import edu.washington.cs.cse490h.donut.service.thrift.KeyLocator.Iface;
 import edu.washington.cs.cse490h.donut.util.KeyIdUtil;
 
 /**

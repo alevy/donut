@@ -1,13 +1,13 @@
 package edu.washington.cs.cse490h.donut.util;
 
+import edu.washington.cs.cse490h.donut.business.TNode;
 import edu.washington.cs.cse490h.donut.server.DonutClient;
 import edu.washington.cs.cse490h.donut.service.LocalLocatorClientFactory;
-import edu.washington.cs.cse490h.donut.service.thrift.TNode;
 
 /**
  * Donut closure for leaving nodes
+ * 
  * @author alevy
- *
  */
 public class DonutLeaveClosure extends DonutClosure {
 
@@ -18,10 +18,10 @@ public class DonutLeaveClosure extends DonutClosure {
     /**
      * @param client
      * @param clientFactory
-     * @param node the {@link TNode} to remove.
+     * @param node
+     *            the {@link TNode} to remove.
      */
-    public DonutLeaveClosure(DonutClient client,
-            LocalLocatorClientFactory clientFactory, TNode node) {
+    public DonutLeaveClosure(DonutClient client, LocalLocatorClientFactory clientFactory, TNode node) {
         this.client = client;
         this.clientFactory = clientFactory;
         this.node = node;

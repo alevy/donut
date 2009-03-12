@@ -3,7 +3,7 @@ package edu.washington.cs.cse490h.donut.util;
 import org.apache.thrift.TException;
 
 import edu.washington.cs.cse490h.donut.server.DonutClient;
-import edu.washington.cs.cse490h.donut.service.thrift.TNode;
+import edu.washington.cs.cse490h.donut.business.TNode;
 
 public class DonutJoinNewClosure extends DonutClosure {
 

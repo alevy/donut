@@ -9,8 +9,8 @@ import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 
-import edu.washington.cs.cse490h.donut.service.thrift.KeyLocator;
-import edu.washington.cs.cse490h.donut.service.thrift.TNode;
+import edu.washington.cs.cse490h.donut.service.KeyLocator;
+import edu.washington.cs.cse490h.donut.business.TNode;
 
 /**
  * @author alevy
@@ -26,7 +26,7 @@ public class RemoteLocatorClientFactory extends AbstractRetriable<KeyLocator.Ifa
         while (socketMap.containsKey(node)) {
             wait();
         }
-        
+
         Socket socket = new Socket(node.getName(), node.getPort());
         socketMap.put(node, socket);
         protocol = new TBinaryProtocol(new TSocket(socket));
@@ -36,7 +36,7 @@ public class RemoteLocatorClientFactory extends AbstractRetriable<KeyLocator.Ifa
     public synchronized void release(TNode node) {
         Socket socket = socketMap.remove(node);
         try {
-            if(socket != null){
+            if (socket != null) {
                 socket.close();
             }
         } catch (IOException e) {

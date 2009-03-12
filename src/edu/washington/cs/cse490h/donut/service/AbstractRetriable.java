@@ -1,6 +1,5 @@
 package edu.washington.cs.cse490h.donut.service;
 
-
 public abstract class AbstractRetriable<T, E> {
 
     private int retries = 3;
@@ -16,7 +15,7 @@ public abstract class AbstractRetriable<T, E> {
     public int getRetries() {
         return retries;
     }
-    
+
     public T get(E name) throws RetryFailedException {
         Exception exception = null;
 
@@ -29,9 +28,9 @@ public abstract class AbstractRetriable<T, E> {
             }
         }
 
-        throw new RetryFailedException(exception);  
+        throw new RetryFailedException(exception);
     }
-    
+
     protected abstract T tryOne(E name) throws Exception;
 
 }

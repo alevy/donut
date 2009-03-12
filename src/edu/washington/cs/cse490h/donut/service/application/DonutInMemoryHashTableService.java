@@ -5,23 +5,22 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import edu.washington.cs.cse490h.donut.service.thrift.DataPair;
-import edu.washington.cs.cse490h.donut.service.thrift.EntryKey;
-import edu.washington.cs.cse490h.donut.service.thrift.KeyId;
+import edu.washington.cs.cse490h.donut.business.DataPair;
+import edu.washington.cs.cse490h.donut.business.EntryKey;
+import edu.washington.cs.cse490h.donut.business.KeyId;
 import edu.washington.cs.cse490h.donut.util.KeyIdUtil;
 
 /**
  * @author alevy
- *
  */
 public class DonutInMemoryHashTableService implements DonutHashTableService {
-    
+
     private final Map<EntryKey, DataPair> map;
-    
+
     public DonutInMemoryHashTableService() {
         map = new HashMap<EntryKey, DataPair>();
     }
-    
+
     public DonutInMemoryHashTableService(Map<EntryKey, DataPair> map) {
         this.map = map;
     }
@@ -45,9 +44,8 @@ public class DonutInMemoryHashTableService implements DonutHashTableService {
                 result.add(key);
             }
         }
-        
+
         return result;
     }
-
 
 }

@@ -25,9 +25,9 @@ import edu.washington.cs.cse490h.donut.service.NodeLocator;
 import edu.washington.cs.cse490h.donut.service.RemoteLocatorClientFactory;
 import edu.washington.cs.cse490h.donut.service.application.DonutHashTableService;
 import edu.washington.cs.cse490h.donut.service.application.DonutInMemoryHashTableService;
-import edu.washington.cs.cse490h.donut.service.thrift.KeyId;
-import edu.washington.cs.cse490h.donut.service.thrift.KeyLocator;
-import edu.washington.cs.cse490h.donut.service.thrift.KeyLocator.Iface;
+import edu.washington.cs.cse490h.donut.business.KeyId;
+import edu.washington.cs.cse490h.donut.service.KeyLocator;
+import edu.washington.cs.cse490h.donut.service.KeyLocator.Iface;
 
 /**
  * @author alevy
@@ -35,12 +35,13 @@ import edu.washington.cs.cse490h.donut.service.thrift.KeyLocator.Iface;
 public class DonutModule implements Module {
 
     @Option(name = "--hostname", usage = "the hostname to use for this Node")
-    private String hostname      = InetAddress.getLocalHost().getCanonicalHostName();
+    private String hostname = InetAddress.getLocalHost().getCanonicalHostName();
 
     @Option(name = "--port", usage = "the port on which to bind this Node's Server (default: 8080)")
-    private int    port          = 8080;
+    private int    port     = 8080;
 
-    private long   key           = UUID.randomUUID().getMostSignificantBits();
+    private long   key      = UUID.randomUUID().getMostSignificantBits();
+
     @Option(name = "--key", usage = "the 64-bit key for this Node (default: random)")
     void setKey(String key) {
         this.key = Long.decode(key);

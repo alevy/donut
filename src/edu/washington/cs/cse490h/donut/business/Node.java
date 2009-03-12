@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import edu.washington.cs.cse490h.donut.service.thrift.Constants;
-import edu.washington.cs.cse490h.donut.service.thrift.KeyId;
-import edu.washington.cs.cse490h.donut.service.thrift.TNode;
+import edu.washington.cs.cse490h.donut.Constants;
+import edu.washington.cs.cse490h.donut.business.KeyId;
+import edu.washington.cs.cse490h.donut.business.TNode;
 import edu.washington.cs.cse490h.donut.util.KeyIdUtil;
 
 /**

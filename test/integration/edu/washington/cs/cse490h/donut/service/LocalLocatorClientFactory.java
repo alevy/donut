@@ -3,9 +3,9 @@ package edu.washington.cs.cse490h.donut.service;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.washington.cs.cse490h.donut.service.thrift.KeyId;
-import edu.washington.cs.cse490h.donut.service.thrift.TNode;
-import edu.washington.cs.cse490h.donut.service.thrift.KeyLocator.Iface;
+import edu.washington.cs.cse490h.donut.business.KeyId;
+import edu.washington.cs.cse490h.donut.business.TNode;
+import edu.washington.cs.cse490h.donut.service.KeyLocator.Iface;
 
 /**
  * @author alevy
@@ -26,7 +26,7 @@ public class LocalLocatorClientFactory implements LocatorClientFactory {
         if (locatorMap.containsKey(node.getNodeId())) {
             return locatorMap.get(node.getNodeId());
         }
-  
+
         // The node wasn't found.
         throw new RetryFailedException();
     }

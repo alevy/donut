@@ -23,8 +23,12 @@
 	<target name="gen-thrift">
 		<echo message="Generating thrift sources" />
 		<exec executable="thrift" failonerror="true">
-			<arg line="-gen rb -gen java:beans,hashcode" />
-			<arg file="thrift/node.thrift" />
+			<arg line="-r -v -gen rb -gen py -gen java:beans,hashcode" />
+			<arg file="thrift/key_locator.thrift" />
+		</exec>
+		<exec executable="thrift" failonerror="true">
+			<arg line="-r -v -gen rb -gen py -gen java:beans,hashcode" />
+			<arg file="thrift/constants.thrift" />
 		</exec>
 	</target>
 

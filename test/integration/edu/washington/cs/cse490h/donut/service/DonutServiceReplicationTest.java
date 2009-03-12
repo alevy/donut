@@ -4,10 +4,10 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import edu.washington.cs.cse490h.donut.service.thrift.Constants;
-import edu.washington.cs.cse490h.donut.service.thrift.DataPair;
-import edu.washington.cs.cse490h.donut.service.thrift.EntryKey;
-import edu.washington.cs.cse490h.donut.service.thrift.KeyId;
+import edu.washington.cs.cse490h.donut.Constants;
+import edu.washington.cs.cse490h.donut.business.DataPair;
+import edu.washington.cs.cse490h.donut.business.EntryKey;
+import edu.washington.cs.cse490h.donut.business.KeyId;
 import edu.washington.cs.cse490h.donut.util.DonutClosure;
 import edu.washington.cs.cse490h.donut.util.DonutTestCase;
 import edu.washington.cs.cse490h.donut.util.DonutTestRunner;
@@ -46,8 +46,8 @@ public class DonutServiceReplicationTest {
                 assertEquals(value21.getData(), donutTestRunner.iface(1).get(key21));
                 assertEquals(value22.getData(), donutTestRunner.iface(1).get(key22));
 
-                //assertEquals(value21, donutTestRunner.service(4).get(key21));
-                //assertEquals(value22, donutTestRunner.service(4).get(key22));
+                // assertEquals(value21, donutTestRunner.service(4).get(key21));
+                // assertEquals(value22, donutTestRunner.service(4).get(key22));
             }
         });
         donutTestRunner.run();

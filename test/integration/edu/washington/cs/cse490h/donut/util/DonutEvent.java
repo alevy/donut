@@ -1,6 +1,6 @@
 package edu.washington.cs.cse490h.donut.util;
 
-import edu.washington.cs.cse490h.donut.service.thrift.TNode;
+import edu.washington.cs.cse490h.donut.business.TNode;
 
 /**
  * Holds information about an event to be run, including
@@ -18,7 +18,8 @@ public class DonutEvent implements Comparable<DonutEvent> {
     }
 
     /**
-     * @param test the {@link DonutTestCase} to run.
+     * @param test
+     *            the {@link DonutTestCase} to run.
      */
     public void test(DonutTestCase test) {
         setClosure(test);

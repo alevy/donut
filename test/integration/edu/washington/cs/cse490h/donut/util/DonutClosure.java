@@ -6,10 +6,11 @@ package edu.washington.cs.cse490h.donut.util;
  * @author alevy
  */
 public class DonutClosure {
-    
+
     /**
      * Defines the functionality of the closure when it is run.
-     * @throws Exception 
+     * 
+     * @throws Exception
      */
     public void run() throws Exception {
         // Do nothing by default
