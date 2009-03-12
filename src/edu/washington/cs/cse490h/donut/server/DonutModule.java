@@ -4,21 +4,12 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.UUID;
 
-import org.apache.thrift.TProcessor;
-import org.apache.thrift.server.TServer;
-import org.apache.thrift.server.TThreadPoolServer;
-import org.apache.thrift.transport.TServerSocket;
-import org.apache.thrift.transport.TServerTransport;
-import org.apache.thrift.transport.TTransportException;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
 import com.google.inject.Binder;
-import com.google.inject.Inject;
 import com.google.inject.Module;
-import com.google.inject.Provider;
-import com.google.inject.name.Names;
 
 import edu.washington.cs.cse490h.donut.business.KeyId;
 import edu.washington.cs.cse490h.donut.business.Node;
@@ -37,12 +28,15 @@ import edu.washington.cs.cse490h.donut.service.application.DonutInMemoryHashTabl
 public class DonutModule implements Module {
 
     @Option(name = "--hostname", usage = "the hostname to use for this Node")
-    private String hostname = InetAddress.getLocalHost().getCanonicalHostName();
+    private String hostname          = InetAddress.getLocalHost().getCanonicalHostName();
 
     @Option(name = "--port", usage = "the port on which to bind this Node's Server (default: 8080)")
-    private int    port     = 8080;
+    private int    port              = 8080;
 
-    private long   key      = UUID.randomUUID().getMostSignificantBits();
+    @Option(name = "--request-offset", usage = "the port on which to bind this Node's Server (default: 8080)")
+    private int    requestPortOffset = -4080;
+
+    private long   key               = UUID.randomUUID().getMostSignificantBits();
 
     @Option(name = "--key", usage = "the 64-bit key for this Node (default: random)")
     void setKey(String key) {
@@ -82,17 +76,6 @@ public class DonutModule implements Module {
         binder.bind(KeyLocator.Iface.class).to(NodeLocator.class);
         binder.bind(HashService.Iface.class).to(DonutHashRequestService.class);
         binder.bind(DonutHashTableService.class).to(DonutInMemoryHashTableService.class);
-        try {
-            binder.bind(TServerTransport.class).toInstance(new TServerSocket(getPort()));
-        } catch (TTransportException e) {
-            System.err.println("Unable to listen on port " + getPort() + ".");
-            System.exit(1);
-        }
-        binder.bind(TProcessor.class).annotatedWith(Names.named(DonutPeer.DONUT_NODE)).toProvider(
-                TKeyLocatorProcessorProvider.class);
-        binder.bind(TProcessor.class).annotatedWith(Names.named(DonutPeer.DONUT_REQUEST_SERVER)).toProvider(
-                TRequestServerProcessorProvider.class);
-        binder.bind(TServer.class).toProvider(TServerProvider.class);
     }
 
     public void setHostname(String hostname) {
@@ -135,44 +118,8 @@ public class DonutModule implements Module {
         return knownPort;
     }
 
-    private class TServerProvider implements Provider<TServer> {
-        private final TProcessor       proc;
-        private final TServerTransport transport;
-
-        @Inject
-        private TServerProvider(TProcessor proc, TServerTransport transport) {
-            this.proc = proc;
-            this.transport = transport;
-        }
-
-        public TServer get() {
-            return new TThreadPoolServer(proc, transport);
-        }
+    public int getRequestPort() {
+        return port + requestPortOffset;
     }
 
-    private class TKeyLocatorProcessorProvider implements Provider<TProcessor> {
-        private final KeyLocator.Iface iface;
-
-        @Inject
-        private TKeyLocatorProcessorProvider(KeyLocator.Iface iface) {
-            this.iface = iface;
-        }
-
-        public TProcessor get() {
-            return new KeyLocator.Processor(iface);
-        }
-    }
-    
-    private class TRequestServerProcessorProvider implements Provider<TProcessor> {
-        private final HashService.Iface iface;
-
-        @Inject
-        private TRequestServerProcessorProvider(HashService.Iface iface) {
-            this.iface = iface;
-        }
-
-        public TProcessor get() {
-            return new HashService.Processor(iface);
-        }
-    }
 }

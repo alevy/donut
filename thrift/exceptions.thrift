@@ -1,4 +1,5 @@
 namespace java edu.washington.cs.cse490h.donut.service
+namespace py donut.service
 
 include "types.thrift"
 

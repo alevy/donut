@@ -31,6 +31,10 @@
 			<arg line="-r -v -gen rb -gen py -gen java:beans,hashcode" />
 			<arg file="thrift/hash_service.thrift" />
 		</exec>
+		<exec executable="thrift" failonerror="true">
+			<arg line="-r -v -gen rb -gen py -gen java:beans,hashcode" />
+			<arg file="thrift/exceptions.thrift" />
+		</exec>
 	</target>
 
 	<target name="init">

@@ -1,14 +1,12 @@
-require File.dirname(__FILE__) + '/../../gen-rb/KeyLocator'
-require File.dirname(__FILE__) + '/../../gen-rb/node_types'
-require File.dirname(__FILE__) + '/../../gen-rb/node_constants'
+require File.dirname(__FILE__) + '/../../gen-rb/HashService'
 require 'digest/sha2'
 
 module Donut
   class HashClient
 
-    def initialize(hostname = 'localhost', port = 8080)
+    def initialize(hostname = 'localhost', port = 4000)
       @socket = Thrift::Socket.new(hostname, port)
-      @client = KeyLocator::Client.new(Thrift::BinaryProtocol.new(@socket))
+      @client = HashService::Client.new(Thrift::BinaryProtocol.new(@socket))
     end
 
     def get_fingers
@@ -27,38 +25,24 @@ module Donut
 
 
     def get(key)
-      key_id = gen_key(key)
-      node = get_node(key_id)
-      socket = Thrift::Socket.new(node.name, node.port)
-      client = KeyLocator::Client.new(Thrift::BinaryProtocol.new(socket))
-      socket.open if not socket.open?
-      begin
-        result = client.get(key_id)
-      rescue
-        result = nil
+      if not @socket.open?
+        @socket.open
       end
-      socket.close
-      return result
+      return @client.get(key)
     end
 
     def put(key, data)
-      key_id = gen_key(key)
-      node = get_node(key_id)
-      socket = Thrift::Socket.new(node.name, node.port)
-      client = KeyLocator::Client.new(Thrift::BinaryProtocol.new(socket))
-      socket.open if not socket.open?
-      client.put(key_id, data)
-      socket.close
+      if not @socket.open?
+        @socket.open
+      end
+      @client.put(key, data)
     end
 
     def remove(key)
-      key_id = gen_key(key)
-      node = get_node(key_id)
-      socket = Thrift::Socket.new(node.name, node.port)
-      client = KeyLocator::Client.new(Thrift::BinaryProtocol.new(socket))
-      socket.open if not socket.open?
-      client.remove(key_id)
-      socket.close
+      if not @socket.open?
+        @socket.open
+      end
+      @client.remove(key)
     end
 
     def gen_key(key)

@@ -1,4 +1,5 @@
 namespace java edu.washington.cs.cse490h.donut.business
+namespace py donut.types
 
 struct KeyId {
   i64 id
