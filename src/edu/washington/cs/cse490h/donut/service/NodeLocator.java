@@ -202,7 +202,7 @@ public class NodeLocator implements Iface {
             }
         } catch (DataNotFoundException e) {
             // We were lied to! Die gracefully
-            e.printStackTrace(System.err);
+            LOGGER.severe("Data copying failed because of bad data. Exiting...");
             System.exit(1);
         }
     }
