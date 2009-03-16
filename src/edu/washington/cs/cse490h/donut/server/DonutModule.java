@@ -34,7 +34,7 @@ public class DonutModule implements Module {
     private int    port              = 8080;
 
     @Option(name = "--request-offset", usage = "the port on which to bind this Node's Server (default: 8080)")
-    private int    requestPortOffset = -4080;
+    private int    requestPortOffset = -80;
 
     private long   key               = UUID.randomUUID().getMostSignificantBits();
 

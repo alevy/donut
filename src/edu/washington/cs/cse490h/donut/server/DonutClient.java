@@ -195,9 +195,12 @@ public class DonutClient extends Thread {
         }
 
         try {
-            node.setSuccessor(successor);
             List<TNode> successorList = successorClient.notify(node.getTNode());
+            
+            // Set successor *MUST* be called after notify for replication
+            // to be guaranteed
             node.updateSuccessorList(successorList);
+            node.setSuccessor(successor);
         } catch (TException e) {
             LOGGER.info("Lost successor [" + Node.TNodeToString(node.getTNode())
                     + "]: Successor - " + Node.TNodeToString(node.getSuccessor()));
