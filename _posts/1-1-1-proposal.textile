@@ -1,0 +1,48 @@
+---
+layout: default
+title: Proposal
+permalink: /proposal.html
+---
+
+CSE 490H Capstone
+
+Rylan Hawkins, Amit Levy, Jeff Prouty
+
+h2. Overview
+
+Implement a distributed hash table for use as a file store of a distributed file system.
+
+h2. Objective
+
+The objective is to create a file store remotely located on the Internet that allows clients to store and access data. With the constant improvement of internet connectivity, the idea of having a remote file system is feasible. Our goal is to implement a file system which communicates seamlessly with highly available, low latency service located outside of the client's LAN. The service will be able to tolerate hardware/software failure and scaling with no noticeable difference in service to the end user.
+
+h2. Implementation
+
+h3. Milestones
+
+# Implement Chord overlay network
+# Design and implement a distributed hash table (DHT) on top of Chord
+## Replicate DHT data to enhance availability of data in the case of simple node failures.
+## Expose a request handler to fulfill client requests
+## Provide replication at the application level to detect stale reads (given certain assumptions)
+# Design and implement a distributed file system (DFS)
+## Design a meta-data and block storage scheme
+## Provide a client-side DFS module
+
+h2. Interesting Scalable Systems Problems
+
+Chord scales well. This property is inherent to Chord's design. Chord guarantees it can locate a key on the ring with O(log(n)).
+
+By harnessing Chord's ability to scale look ups, the Donut implementation will ensure reliability and availability of data by means of smart replication of data across nodes on the ring.
+
+h2. Resources we require
+
+We need a cluster of machines to run our servers on. For testing client interactions, we need to simulate internet conditions between the server cluster and the remote clients. 
+
+A candidate cluster is the 002/006/022 CSE linux computer lab machines. They are all open to the internet and are a local cluster with real network traffic patterns (including other applications and services running in the same cluster).
+
+h2. Mentors
+
+* Arunabha Ghosh
+* Jeff Carollo
+

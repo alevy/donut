@@ -1,0 +1,21 @@
+---
+layout: default
+title: References
+permalink: /references.html
+---
+
+Alan Dearle, Graham NC Kirby, and Stuart J Norcross, Hosting Byzantine Fault Tolerant Services on a Chord Ring, University of St Andrews 2007, "Abstract":http://www.cs.st-andrews.ac.uk/?q=research/output/detail&output=DKN07.php, "PDF":http://www.cs.st-andrews.ac.uk/files/publications/download/DKN07.pdf.
+
+Amos Fiat, Jared Saia, and Maxwell Young, Making Chord Robust to Byzantine Attacks, In European Symposium on Algorithms (ESA), 2005. "PDF":http://www.cs.unm.edu/~saia/papers/swarm.pdf.
+
+Antony Chazapis and Nectarios Koziris, Storing and locating mutable data in structured peer-to-peer overlay networks, Proceedings of the Panhellenic Conference on Informatics 2005. "PDF":http://www.cslab.ece.ntua.gr/~chazapis/papers/chazapis-pci2005.pdf
+
+Apu Kapadia and Nikos Triandopoulos, Halo: High-Assurance Locate for Distributed Hash Tables, Proceedings of the 15th Annual Network & Distributed System Security Symposium (NDSS '08), February 2008. "PDF":http://www.cs.dartmouth.edu/~akapadia/papers/halo_NDSS08.pdf.
+
+Frank Dabek, Emma Brunskill, M. Frans Kaashoek, David Karger, Robert Morris, Ion Stoica, and Hari Balakrishnan, Building Peer-to-Peer Systems With Chord, a Distributed Lookup Service, Proceedings of the 8th Workshop on Hot Topics in Operating Systems (HotOS-VIII), May 2001. "Abstract":http://pdos.csail.mit.edu/papers/chord:hotos01/, "PDF":http://pdos.csail.mit.edu/papers/chord:hotos01/hotos8.pdf.
+
+Ion Stoica, Robert Morris, David Karger, M. Frans Kaashoek, and Hari Balakrishnan, Chord: A Scalable Peer-to-peer Lookup Service for Internet Applications, ACM SIGCOMM 2001, San Deigo, CA, August 2001, pp. 149-160. "Abstract":http://pdos.csail.mit.edu/papers/chord:sigcomm01/, "PDF":http://pdos.csail.mit.edu/papers/chord:sigcomm01/chord_sigcomm.pdf.
+
+Ion Stoica, Robert Morris, David Liben-Nowell, David R. Karger, M. Frans Kaashoek, Frank Dabek, Hari Balakrishnan, Chord: A Scalable Peer-to-peer Lookup Protocol for Internet Applications, IEEE Transactions on Networking, February 2003. "Abstract":http://pdos.csail.mit.edu/papers/ton:chord/, "PDF":http://pdos.csail.mit.edu/chord/papers/paper-ton.pdf.
+
+Ying Chen and Kai Hwang, Byzantine Fault Tolerance of Inverse de Bruijn Overlay Networks for Secure P2P Routing, Technical Report, USC Internet and Grid Computing Lab (TR-2006-4), October, 2006. "PDF":http://gridsec.usc.edu/files/TR/TPDS-Chen-Hwang-Oct20-2006final.pdf.

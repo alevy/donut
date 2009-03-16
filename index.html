@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head profile="http://gmpg.org/xfn/11">
+        <title>Donut - A Distributed Hash Table</title>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" media="screen,projection" href="styles/style.css" title="Simplr">
+        <style type="text/css" media="screen,projection">
+        /*<![CDATA[*/
+        /* CSS inserted by theme options */
+        body{font-family:verdana, geneva, sans-serif;font-size:75%;}
+        body div#wrapper{width:45em;}
+        div#header,div.hentry .entry-title,div#content .page-title,div.entry-content h2,div.entry-content h3,div.entry-content h4,div.entry-content h5,div.entry-content h6{
+            font-family:arial, helvetica, sans-serif;
+        }
+        div.hentry div.entry-content{
+            text-align:left;
+        }
+        body div#primary{clear:both;float:left;}
+        body div#secondary{
+            float:right;
+        }
+        div.banner:hover div.access{
+            display:block;
+        }
+        /*]]>*/
+    </style>
+
+</head>
+<body class="y2009 m03 d15 h10 home">
+
+    <div class="banner">
+        <div id="globalnav">
+            <ul id="menu">
+                <li class="page_item page-item-2"><a href="http://github.com/levya/distributed-fs" title="Repo">GitHub Repo</a></li>
+                <li class="page_item page-item-2"><a href="http://wiki.github.com/levya/distributed-fs" title="Wiki">Wiki</a></li>
+                <li class="page_item page-item-2"><a href="http://github.com/levya/distributed-fs/downloads" title="Downloads">Downloads</a></li>
+            </ul>
+        </div>
+    </div><!-- .banner -->
+
+    <div id="wrapper" class="hatom">
+
+        <div id="header">
+            <h1 id="blog-title"><a href="index.html" target="Donut">Donut</a></h1>
+            <div id="blog-description">A distributed hash table based on Chord</div>
+	</div><!-- #header -->
+	<div id="container">
+            <div id="content">
+                <h2>Overview</h2>
+                <p>
+                    Donut is an implementation of an available, replicated distributed hash table built on top of Chord. The design was built to support storage of common file sizes in a closed cluster of systems. This paper discusses the two layers of the implementation and a discussion of future development. First, we discuss the basics of Chord as an "overlay network" and our implementation details, second, Donut as a hash table providing availability and replication and thirdly how further development towards a distributed file system may proceed.
+                </p>
+                <p>Paper: <a href="donut.pdf" target="Paper">
+                        <img src="images/file-pdf.png" />
+                        Donut: An Robust Distributed Hash Table based on Chord
+                </a></p>
+                <hr/>
+                <h2>Contents</h2>
+                <ol>
+                    <li><a href="proposal.html" title="Proposal"/>Proposal</a></li>
+                    <li><a href="chord_implementation.html" title="Chord Implementation"/>Chord Implementation</a>
+                        <ol>
+                            <li>Introduction</li>
+                            <li>Terms</li>
+                            <li>Basic design</li>
+                            <li>Joins</li>
+                            <li>Stabilize, Notify, Fix Fingers and Check Predecessor</li>
+                            <li>Leaves and Successor Lists</li>
+                        </ol>
+                    </li>
+                    <li><a href="hashtable.html" title="Hashtable Implementation"/>Hashtable Implementation</a>
+                        <ol>
+                            <li>Interface</li>
+                            <li>Replication</li>
+                        </ol>
+                    </li>
+                    <li><a href="further.html" title="Further Work"/>Further Work</a></li>
+                    <li><a href="references.html" title="References"/>References</a></li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
