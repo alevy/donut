@@ -6,58 +6,61 @@ permalink: /chord_implementation.html
 
 h3. Introduction
 
-Chord is a distributed lookup protocol which seeks to solve the problem of mapping data to nodes in a pure Peer-to-Peer system. Chord associates a ranges of keys with a particular node using a variant of consistent hashing. While traditional consistent hashing schemes require nodes to maintain state of the the system as a whole, Chord only requires that nodes know of a fixed number of "finger" nodes, allowing both massive scalability while maintaining efficient lookup time (O(log n)).
+Chord is an overlay network that maps logical addresses to physical nodes in a Peer-to-Peer system. Chord associates a ranges of keys with a particular node using a variant of consistent hashing. While traditional consistent hashing schemes require nodes to maintain state of the the system as a whole, Chord only requires that nodes know of a fixed number of "finger" nodes, allowing both massive scalability while maintaining efficient lookup time (O(log n)).
 
 h3. Terms
 
 h4. Chord
 
 Chord works by arranging keys in a ring, such that when we reach the highest value in the key-space, the following key is zero. Nodes take on a particular key in this ring.
-h3. Successor
 
-A node n is called the successor of a key k, if and only if n is the closest node after or equal to k on the ring.
+h4. Successor
+
+Node <em>n</em> is called the successor of a key <em>k</em> if and only if <em>n</em> is the closest node after or equal to <em>k</em> on the ring.
 
 h4. Predecessor
 
-A node n is called the predecessor of a key k if and only n is the closest node before k in the ring.
+Node <em>n</em> is called the predecessor of a key <em>k</em> if and only <em>n</em> is the closest node before <em>k</em> in the ring.
 
 h4. Finger
 
-Nodes maintain a set of other nodes, called _fingers_, at different points on the ring.
+Nodes maintain a set of other nodes, called <em>fingers</em>, which refer to other points on the ring. The first <em>finger</em> of node <em>n</em> is always the successor of  <em>n</em>.
 
 h4. Variables
 
-|_. Variable |_. definition |
-| K | the total number of possible keys |
-| k | a particular key in the key-space |
-| m | log(K) |
-| N | total number of a nodes currently in the ring |
-| n | a particular node |
+|_. Variable |_. Definition |
+| <em>K</em> | the total number of possible keys |
+| <em>k</em> | a particular key in the key-space |
+| <em>m</em> | log(<em>K</em>) |
+| <em>N</em> | total number of nodes currently in the ring |
+| <em>n</em> | a particular node |
+| <em>r</em> | number of successors to keep in the successor list |
 
 h3. Basic Design
 
-A node n with key k stores a finger table containing the successors of the keys k + 2 ^0^ , k + 2 ^1^ , k + 2 ^2^ ,  ..., k + 2 ^m^ , where m is the key-space width (so a key-space of width m has 2 ^m^ possible keys). (Note: it may be the case that one node in two different finger entries). Given this distribution of fingers, lookup time of any key's successor, as well as the number of messages to achieve the same, is O(log(2 ^N^)).
-Lookup is done by the recursive, _findSuccessor_ call. If a node is the predecessor of a requested key, it returns its first finger (also the successor of the request key) in _findSuccessor_. Otherwise, the node searches its finger table for a the closest predecessor the key it knows of, and recursively calls _findSuccessor_ on that node.
+A node <em>n</em> with key <em>k</em> stores a finger table containing the successors of the keys <em>k</em> + 2<sup>0</sup>, <em>k</em> + 2<sup>1</sup>, <em>k</em> + 2<sup>2</sup>,  ..., <em>k</em> + 2<sup><em>m</em></sup>. (Note: it may be the case that one node in two different finger entries). Given this distribution of fingers, the number of lookup  of any key's successor, as well as the number of messages to achieve the same, is O(log(<em>N</em>)).
 
-Donut's _findSuccessor_ is recursive, meaning each node in call tree blocks until a result is found. It is also possible to do this asynchronously, where the predeccessor of the key returns its successor directly to the client. Donut is particularly attune to this optimization since the clients are "request servers":RequestServer still internal to the system. However, network hops are not a primary performance bottleneck, so this optimization has not been implemented. 
+Chord's lookup protocol is defined by the <em>findSuccessor</em> procedure. If node <em>n</em> realizes it is the predecessor of requested key <em>k</em>, <em>n</em>.<em>successor</em> is returned. Otherwise, the node finds the closest predecessor of <em>k</em> by searching <em>fingers</em> and invoking <em>findSuccessor</em> on the closest preceding node.
+
+Donut's <em>findSuccessor</em> is recursive, meaning each node in the call tree blocks until a result is found. It is also possible to do this asynchronously, where the predeccessor of the key returns its successor directly to the client. Donut is particularly attune to this optimization since the clients are "request servers":RequestServer still internal to the system. However, network hops are not a primary performance bottleneck, so this optimization has not been implemented. 
 
 h3. Joins
 
-Nodes joining a chord ring must bootstrap using an existing node in the circle. The node does looks up the successor for its own key using the known node. The joining node now has its successor and may enter the ring from there.Once a node knows its own successor, it notifies its successor telling it to set its predecessor to the joining node, this is done in the _stabilize_ function. The node is considered fully joined when the node immediately preceding it in the ring recognizes that it is the joining node's predecessor.
+Nodes joining a chord ring must bootstrap using an existing node in the circle. To join existing known node <em>n</em>, joining node <em>n'</em> invokes <em>n.findSuccessor(n')</em>. Once <em>n'</em> finds its successor, <em>n"</em>, <em>n'</em> notifies <em>n"</em> which instructs <em>n"</em> to set its predecessor to <em>n'</em>. This is done in the <em>stabilize</em> routine. The joined is complete once the node immediately preceding <em>n'</em> recognizes that it is the predecessor of <em>n'</em>.
 
 h3. Stabilize and Notify, Fix Fingers and Check Predecessor
 
-With joining and leaving nodes, finger table entries, successors and predecessors must be periodically updated for all nodes. These operations are done at scheduled intervals with four of functions: _fixFingers_, _notify_, _stabilize_, and _checkPredecessor_.
+With joining and leaving nodes, finger table entries, successors and predecessors must be periodically updated for all nodes. These operations are done at scheduled intervals spanning three procedures: <em>fixFingers</em>, <em>stabilize</em>, and <em>checkPredecessor</em>.
 
-_stabilize_ verifies a node's immediate successor and then notifies that successor to set its predecessor correctly. Stabilize first makes a call to its successor asking for its predecessor. If the successor has a predecessor between the two nodes, the node corrects who its successor is. This can occur when a new node joins the ring and its key lies between the stabilizing node and it's immediate successor.
+<em>stabilize</em> verifies a node's immediate successor and then notifies that successor to set its predecessor correctly. <em>stabilize</em> first queries its successor for its predecessor. If the successor has a predecessor between the two nodes, the node corrects who its successor is. This can occur when a new node joins the ring and its key lies between the stabilizing node and it's immediate successor.
 
-Fix fingers sequentially updates the finger table by calling _findSuccessor_. Specifically, to update the i-th entry in the finger table, _findSuccessor_ is called on the key k + 2^i, where k is the current node's key.
+<em>fixFingers</em> sequentially updates the finger table by invoking <em>findSuccessor</em>. Specifically, to update the <em>i<sup>th</sup></em> entry in the finger table, <em>findSuccessor</em> is called on the key <em>k</em> + 2<sup><em>i</em></sup>, where <em>k</em> is the current node's key.
 
-_checkPredecessor_ ensures that a node's predecessor is alive and well. A node periodically pings its predecessor. If the node does not respond, it is assumed dead and the node sets itself as the predecessor, awaiting notification from its new predecessor.
+<em>checkPredecessor</em> ensures that a node's predecessor is alive and well. A node periodically pings its predecessor. If the node does not respond, it is assumed dead and the node sets itself as the predecessor, awaiting notification from its new predecessor.
 
 h3. Leaves and Successor Lists
 
-As nodes leave the ring, usually due to system crashes or network errors, the ring stabilizes itself through _fixFingers_, _stabilize_ and _checkPredecessor_. Between these three functions the predecessor gets set by _notify_, invalidated by _checkPredecessor_, fingers get updated by _fixFingers_, and the successor gets updated by stabilize. However, when a node's successor fails it must be invalidated and set to a new successor in order for the ring to be correct. Unlike a node's predecessor a node will not be notified of a new, valid successor. Instead, a node keeps a list of r successors from which to remove the failed, old, successor and update the new successor. This is done with a "successor list". A successor list is the set of r successors to a node. This list is populated by handing a successor list backwards to a nodes predecessor. This is handled as part of the notify response by a node to its predecessor.
+As nodes leave the ring, usually due to system crashes or network errors, the ring stabilizes itself through <em>fixFingers</em>, <em>stabilize</em> and <em>checkPredecessor</em>. Between these three functions the predecessor gets set by <em>notify</em>, invalidated by <em>checkPredecessor</em>, fingers get updated by <em>fixFingers</em>, and the successor gets updated by <em>stabilize</em>. However, when a node's successor fails it must be invalidated and set to a new successor in order for the ring to be correct. Unlike a node's predecessor, a node will not be notified of a new, valid successor. For added robustness, a node keeps a list of <em>r</em> successors from which to remove the failed, old, successor and immediately update to the next successor. More formally, a successor list is the set of <em>r</em> successors to a node. The successor list is populated by the <em>notify</em> response from a node to its predecessor.
 
-By using a successor list to handle nodes leaving the ring, we can ensure the ring can recover from up to r - 1 concurrent node failures.
+By using a successor list to handle node leaves, Donut can ensure the overlay network is resilient from up to <em>r</em> - 1 concurrent node failures within a defined interval.
 

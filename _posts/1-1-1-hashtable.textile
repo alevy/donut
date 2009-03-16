@@ -6,33 +6,36 @@ permalink: /hashtable.html
 
 h3. Interface
 
-Donut implements two levels of hashtable interfaces: one between the end-user and the system, and another between the "request servers":RequestServer and "donut nodes":DonutNode. This separates the implementation details to be abstracted from the user while 
-maintaining flexibility to optimize the interface for system-internal operations.
+Donut implements two levels of hash table interfaces: one between the end-user and the system, and another between the "request servers":RequestServer and "donut nodes":DonutNode. This separates the implementation details to be abstracted from the user while maintaining flexibility to optimize the interface for system-internal operations.
 
 h4. End-user interface
 
-The external interface, exposed to the end-user is a traditional get/put/remove hash interface. _get_ takes a string (the key), and returns a stream of binary data (the value for that key), while _put_ takes a string (the key) and a stream of binary data (the value to be inserted for that key), and _remove_ takes a string (the key). The end-user is not exposed to details such as how the key is hashed, replication, or the separation between finding the responsible node:DonutNode and data transfer.
+The external interface, exposed to the end-user is a traditional get/put/remove hash interface. <em>get</em> takes a string (the key), and returns a stream of binary data (the value for that key). <em>put</em> takes a string (the key) and a stream of binary data (the value to be inserted for that key). <em>remove</em> takes a string (the key). The end-user is not exposed to details such as how the key is hashed, replication, or the separation between finding the responsible node:DonutNode and data transfer.
 
 h4. Internal interface
 
 "Request servers":RequestServer has a more fine grained interface with the "donut nodes":DonutNode than with the end-user clients.
-* A call _findSuccessor_ is exposed to the "request servers":RequestServer.
+* A call <em>findSuccessor</em> is exposed to the "request servers":RequestServer.
 
-* Each of the calls get, put, and remove have two fields for the key: a string and a 64 bit id (in practice the id is encapsulated in a KeyId object such that the key-space could be extended more easily to larger than 64 bits). This additional field allows the system to deal with collisions in the hash function.
+* The key used in the <em>get</em>, <em>put</em>, and <em>remove</em> routines have two fields: a string and a 64-bit id (in practice the id is encapsulated in such that the key-space could be arbitrary extended). Keeping a copy of the original key (the string) allows the system to deal with collisions.
 
-Internally, finding the node responsible for a key and propagating the data change are separate steps. On receiving a request from the end user, a "request server":RequestServer hashes the key into a 64 bit number. It then calls _findSuccessor_ to find the node responsible for the computed key, and finally calls _get_, _put_, or _remove_ on that node.
+Internally, finding the node responsible for a key and propagating the data are separate tasks. On receiving a request from the end user, a "request server":RequestServer hashes the key into a 64-bit number. It then calls <em>findSuccessor</em> to find the node responsible for the key and invokes the applicable hash table procedure on that node.
 
 h3. Replication
 
-Replication is also done on two levels. Internally nodes in the ring replicate data to their successors. The is done to guarantee availability of data when nodes leave the ring. A second level is implemented by the "client":RequestServer. On this level data is replicated to different keys across the ring. This level of replication can guarantee that stale reads can be detected.
+Replication is done on two levels. Internally, nodes in the ring replicate data to their successor to guarantee availability of data when nodes leave the ring. A second level or replication is implemented by the "client":RequestServer. On this level data is replicated to different keys across the ring. This level of replication can guarantee that stale reads can be detected.
 
 h4. Chord level
 
-A "donut node":DonutNode replicates every write request (both _put_s and _remove_s) to the next N successor nodes. This guarantees that when a node leaves the ring, it's successor - which becomes responsible for it's data - maintains a consistent view of that section of the data. Replication is done in a way that guarantees that all successors have the data change before a write is considered finished. Specifically, a __replicatePut__ or __replicateRemove__ is sent recursively to the N successor nodes. The actual commit (so update or removal of data) happens on the way back. The originating node will not receive a response unless all nodes replicated successfully. The goal is not to guarantee that stale reads will not occur, or that the client can in all cases ascertain whether the write was successful or not. Rather, the goal is to guarantee that if a particular write was not successful the client will know. This means there are scenarios in which all nodes replicating a key have the updated data, but the client would be notified that the write was not successful.
+A "donut node":DonutNode replicates every write request (both <em>put</em>s and <em>remove</em>s) to the next <em>R</em> successor nodes. This guarantees that when a node leaves the ring, it's successor - which becomes responsible for it's data - maintains a consistent view of that section of the data. 
+
+Replication is implemented in a way that guarantees that all successors have the data change before a write is considered finished. Specifically, a <em>replicatePut</em> or <em>replicateRemove</em> is sent recursively to the <em>R</em> successor nodes. The actual commit (update or removal of data) happens on the way back up the call stack. The originating node will not receive a response unless all nodes replicated successfully. The goal is not to guarantee that stale reads will not occur, or that the client can in all cases ascertain whether the write was successful. Rather, the goal is to guarantee that if a particular write was not successful the client will know. This means there are scenarios in which all nodes replicating a key have the updated data, but the client would be notified that the write was not successful.
 
 h4. Client level
 
-There is another level of replication that is done on a higher level, by the "request servers":RequestServer. The method used is based on a design in "Dearle, Kirby, Norcross":References. There is a global constant R which specifies the number of times to replicate data.
-For a key-space K given key __k__, R more keys are computed to replicate the data on such that k(i)  = k~0~ + i * K / R, where i is the i-th replica. Given a reasonably distributed set of nodes, the the successors for these keys will be a set of R unique nodes. If the chosen R is such that the total number of replicas is odd, this method can be extended to ensure that stale reads are identified.
-Each write is done to all R of the keys. All subsequent reads of that key are also done on all R keys. If there is a consensus (a majority of the replicas hold the same value) than the read is correct and up to date. Otherwise this is a stale read. Several scenarios could bring to a stale read. For a discussion of some of these scenarios, as well as some suggestions for possible ways to recover from stale reads, see "Further Work":FurtherWork.
+There is another level of replication that is done on a higher level, by the "request servers":RequestServer. The method used is based on a design in "Dearle, Kirby, Norcross":References. There is a global constant <em>R</em> which specifies the total number of replicas (including the master).
+
+For a given key <em>k</em>, <em>R</em> - 1 additional keys are computed to replicate the data on such that <em>k(i)</em> = <em>k<sub>0</sub></em> + <em>i</em> * <em>K</em> / <em>R</em>, where <em>i</em> is the <em>i<sup>th</sup></em> replica. Given a reasonably distributed set of nodes, the successors for these keys will be a set of <em>R</em> unique nodes. If the chosen <em>R</em> is such that the total number of replicas is odd, this method can be extended to ensure that stale reads are identified.
+
+Each write is done to all <em>R</em> keys. All subsequent reads of that key are also done on all <em>R</em> keys. If there is a consensus (a majority of the replicas hold the same value) than the read is correct and up to date. Otherwise the read is stale. Several scenarios can produce the stale read state. For a discussion of some of these scenarios, as well as some suggestions for possible ways to recover from stale reads, see "Further Work":FurtherWork.
 

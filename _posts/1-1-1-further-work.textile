@@ -4,3 +4,19 @@ title: Further Work
 permalink: /further.html
 ---
 
+h3. Handling Stale Reads
+
+Currently, Donut can detect stale reads but has no mechanism for alleviating stale reads. Several concurrent writes to the same key can leave that key in an inconsistent state between replicas.
+
+For example, suppose that <em>R</em> = 3  (keeping three replicas at the service level). Two or more concurrent writes may begin but can fail before writing to all <em>R</em> replicas or the writes can interleave. Both cases potentially could leave the <em>R</em> replicas in three different states, <em>v</em> (data before the writes), <em>v'</em> (data from one writer) and <em>v''</em> (data from another writer). In this case, a consensus about the current value does not exist, preventing Donut from providing future successful reads of the value.
+
+One solution to interleaving writes is utilizing a deterministic ordering of writes to the replicas. For example, write to the hashed key <em>k</em>, then <em>k</em> + <em>i</em> * <em>K</em> / <em>R</em> ... <em>k</em> + <em>(R - 1)</em> * <em>K</em> / <em>R</em>, where <em>i</em> is the <em>i<sup>th</sup></em> replica. Ordering writes allows Donut to guess at the most recently agreed upon consensus. The middle key in the order of writes will be the last key to have successfully written to over half of the <em>R</em> nodes. In a stale state when <em>R</em> = 3, the first node is the most recently written, the second is the most recently written with a consensus, and the third is the only write that completed writing to all nodes.
+
+Ordering client level replication requires the <em>put</em>s to be completed serially, effectively tripling the time to write.
+
+Once a stale read is detected, it can be correct by the request handler retrying the write request. Even with the proposed write order above, the procedure to get for a conflicted key should return a notification identifying that corrective action must be taken to bring the key into a stable, non-stale state.
+
+h3. Byzantine Fault Tolerance
+
+In researching the direction the Donut, we began to address the problem of byzantine fault tolerance and transient inconsistencies of finger tables (or dynamism). Chord inherently relies on the predecessor of a key to correctly return the final successor. In several of the papers we perused, the common fix is to implement a routing mechanism that ensures multiple paths to reach each node. Therefore, to implement byzantine fault tolerance Donut would most likely need to switch its overlay network from Chord to a more robust solution such as Kademlia or Inverse de Bruijn overlay network[8].
+
