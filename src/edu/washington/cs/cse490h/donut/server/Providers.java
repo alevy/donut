@@ -13,7 +13,6 @@ import edu.washington.cs.cse490h.donut.service.KeyLocator;
 
 /**
  * @author alevy
- *
  */
 public class Providers {
 
@@ -44,7 +43,7 @@ public class Providers {
             return new KeyLocator.Processor(iface);
         }
     }
-    
+
     protected static class TRequestServerProcessorProvider implements Provider<TProcessor> {
         private final HashService.Iface iface;
 

@@ -10,7 +10,6 @@ import com.google.inject.AbstractModule;
 
 /**
  * @author alevy
- *
  */
 public class RequestModule extends AbstractModule {
 
@@ -19,7 +18,7 @@ public class RequestModule extends AbstractModule {
     public RequestModule(DonutModule donutModule) {
         this.donutModule = donutModule;
     }
-    
+
     @Override
     protected void configure() {
         binder().install(donutModule);

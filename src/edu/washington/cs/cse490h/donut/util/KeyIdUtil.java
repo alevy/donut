@@ -41,7 +41,8 @@ public class KeyIdUtil {
      * Generates a {@link KeyId} from the given String by SHA1 hashing it and concatenating into 64
      * bits.
      * 
-     * @param key a {@link String} to use for generating the {@link KeyId} 
+     * @param key
+     *            a {@link String} to use for generating the {@link KeyId}
      * @return a {@link KeyId} which is a hash of the {@code key}
      */
     public static KeyId generateKeyId(String key) {

@@ -66,7 +66,7 @@ public class KeyIdUtilTest {
         assertTrue(KeyIdUtil.isAfterXButBeforeOrEqualY(-11, 4, -8));
         assertFalse(KeyIdUtil.isAfterXButBeforeOrEqualY(-4, 11, -8));
     }
-    
+
     @Test
     public void testGenerateKeyId() throws Exception {
         KeyId expected = new KeyId(-7136519034228736278L);

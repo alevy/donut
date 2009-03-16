@@ -13,7 +13,7 @@ import edu.washington.cs.cse490h.donut.util.KeyIdUtil;
  */
 public class DonutHashRequestService implements HashService.Iface {
 
-    private final KeyLocator.Iface keyLocator;
+    private final KeyLocator.Iface     keyLocator;
     private final LocatorClientFactory clientFactory;
 
     @Inject
@@ -25,7 +25,7 @@ public class DonutHashRequestService implements HashService.Iface {
     public byte[] get(String key) throws DataNotFoundException, TException {
         EntryKey entryKey = new EntryKey(KeyIdUtil.generateKeyId(key), key);
         TNode successor = keyLocator.findSuccessor(entryKey.getId());
-        
+
         try {
             KeyLocator.Iface hashClient = clientFactory.get(successor);
             return hashClient.get(entryKey);
@@ -39,7 +39,7 @@ public class DonutHashRequestService implements HashService.Iface {
     public void put(String key, byte[] value) throws TException {
         EntryKey entryKey = new EntryKey(KeyIdUtil.generateKeyId(key), key);
         TNode successor = keyLocator.findSuccessor(entryKey.getId());
-        
+
         try {
             KeyLocator.Iface hashClient = clientFactory.get(successor);
             hashClient.put(entryKey, value);
@@ -55,7 +55,7 @@ public class DonutHashRequestService implements HashService.Iface {
     public void remove(String key) throws TException {
         EntryKey entryKey = new EntryKey(KeyIdUtil.generateKeyId(key), key);
         TNode successor = keyLocator.findSuccessor(entryKey.getId());
-        
+
         try {
             KeyLocator.Iface hashClient = clientFactory.get(successor);
             hashClient.remove(entryKey);

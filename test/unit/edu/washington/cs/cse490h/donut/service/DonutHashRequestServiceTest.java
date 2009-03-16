@@ -45,14 +45,14 @@ public class DonutHashRequestServiceTest {
         String keyStr = "hello world";
         KeyId keyId = KeyIdUtil.generateKeyId(keyStr);
         byte[] value = "value".getBytes();
-        
+
         TNode successor = new TNode("successor", 8080, new KeyId(1));
         expect(curLocatorMock.findSuccessor(keyId)).andReturn(successor);
         expect(clientFactoryMock.get(successor)).andReturn(nextLocatorMock);
         expect(nextLocatorMock.get(new EntryKey(keyId, keyStr))).andReturn(value);
         clientFactoryMock.release(successor);
         replay(clientFactoryMock, nextLocatorMock, curLocatorMock);
-        
+
         assertArrayEquals(value, requestService.get(keyStr));
     }
 
@@ -63,14 +63,14 @@ public class DonutHashRequestServiceTest {
         String keyStr = "hello world";
         KeyId keyId = KeyIdUtil.generateKeyId(keyStr);
         byte[] value = "value".getBytes();
-        
+
         TNode successor = new TNode("successor", 8080, new KeyId(1));
         expect(curLocatorMock.findSuccessor(keyId)).andReturn(successor);
         expect(clientFactoryMock.get(successor)).andReturn(nextLocatorMock);
         nextLocatorMock.put(new EntryKey(keyId, keyStr), value);
         clientFactoryMock.release(successor);
         replay(clientFactoryMock, nextLocatorMock, curLocatorMock);
-        
+
         requestService.put(keyStr, value);
     }
 
@@ -80,14 +80,14 @@ public class DonutHashRequestServiceTest {
                 clientFactoryMock);
         String keyStr = "hello world";
         KeyId keyId = KeyIdUtil.generateKeyId(keyStr);
-        
+
         TNode successor = new TNode("successor", 8080, new KeyId(1));
         expect(curLocatorMock.findSuccessor(keyId)).andReturn(successor);
         expect(clientFactoryMock.get(successor)).andReturn(nextLocatorMock);
         nextLocatorMock.remove(new EntryKey(keyId, keyStr));
         clientFactoryMock.release(successor);
         replay(clientFactoryMock, nextLocatorMock, curLocatorMock);
-        
+
         requestService.remove(keyStr);
     }
 

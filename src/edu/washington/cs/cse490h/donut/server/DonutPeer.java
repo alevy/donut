@@ -12,12 +12,12 @@ import edu.washington.cs.cse490h.donut.business.TNode;
  */
 public class DonutPeer {
 
-    public static final String DONUT_NODE = "DonutNode";
+    public static final String DONUT_NODE           = "DonutNode";
     public static final String DONUT_REQUEST_SERVER = "DonutRequestServer";
-    
-    private final DonutServer server;
-    private final DonutClient client;
-    private final DonutServer requestThread;
+
+    private final DonutServer  server;
+    private final DonutClient  client;
+    private final DonutServer  requestThread;
 
     @Inject
     public DonutPeer(@Named(value = DONUT_NODE) DonutServer serverThread, DonutClient client,

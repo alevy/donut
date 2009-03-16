@@ -16,7 +16,7 @@ public class Donut {
     public static void main(String[] args) throws Exception {
         DonutModule donutModule = new DonutModule();
         donutModule.parseArgs(args);
-        
+
         ServerModule donutServerModule = new ServerModule(donutModule);
         RequestModule requestModule = new RequestModule(donutModule);
         Injector serverModuleInjector = Guice.createInjector(donutServerModule);

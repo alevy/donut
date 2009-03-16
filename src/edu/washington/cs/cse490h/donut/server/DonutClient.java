@@ -196,7 +196,7 @@ public class DonutClient extends Thread {
 
         try {
             List<TNode> successorList = successorClient.notify(node.getTNode());
-            
+
             // Set successor *MUST* be called after notify for replication
             // to be guaranteed
             node.updateSuccessorList(successorList);
