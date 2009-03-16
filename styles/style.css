@@ -144,3 +144,5 @@ div.sidebar form#commentform p,div.sidebar ul li p{margin:0.5em 0 1em;}
 div.comments h3 span,div.sidebar ul li#simplr-recent-entries span.entry-date,div.sidebar ul li#simplr-recent-entries span.entry-comments,div.sidebar ul li#simplr-recent-comments span.comment-entry{font-size:0.8em;}
 div.comments ol.commentlist li div.comment-author span.fn,div.sidebar ul li#simplr-recent-entries span.entry-title,div.sidebar ul li#simplr-recent-comments span.comment-author span.fn{font-style:normal;font-weight:700;}
 div.form-input,div.form-textarea,div.form-submit,div.form-input input,div.form-textarea textarea{width:90%;}
+h3 { border-top: 1px solid #ccc;  }
+hr { color: #ccc; }

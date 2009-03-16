@@ -16,12 +16,15 @@ Chord works by arranging keys in a ring, such that when we reach the highest val
 h3. Successor
 
 A node n is called the successor of a key k, if and only if n is the closest node after or equal to k on the ring.
+
 h4. Predecessor
 
 A node n is called the predecessor of a key k if and only n is the closest node before k in the ring.
+
 h4. Finger
 
 Nodes maintain a set of other nodes, called _fingers_, at different points on the ring.
+
 h4. Variables
 
 |_. Variable |_. definition |
