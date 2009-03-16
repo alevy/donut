@@ -5,13 +5,15 @@
 	<property name="src" value="src" />
 	<property name="src.tests.unit" value="test/unit" />
 	<property name="src.tests.integration" value="test/integration" />
-	<property name="build" value="bin" />
+        <property name="build" value="bin" />
+        <property name="dist" value="dist" />
 	<property name="lib" value="lib" />
 	<property name="thrift-rb" value="gen-rb" />
 	<property name="thrift-py" value="gen-py" />
 	<property name="thrift-java" value="gen-javabean" />
 	<property name="reports.test" value="test_reports" />
 	<property name="jar-file" value="donut.jar" />
+	<property name="zip-file" value="donut-src.zip" />
 	<property environment="env" />
 
 	<path id="project.class.path">
@@ -21,61 +23,74 @@
 		</fileset>
 	</path>
 
-	<target name="gen-thrift">
-		<echo message="Generating thrift sources" />
-		<exec executable="thrift" failonerror="true">
-			<arg line="-r -v -gen rb -gen java:beans,hashcode" />
-			<arg file="thrift/key_locator.thrift" />
-		</exec>
-		<exec executable="thrift" failonerror="true">
-			<arg line="-r -v -gen rb -gen py -gen java:beans,hashcode" />
-			<arg file="thrift/hash_service.thrift" />
-		</exec>
-		<exec executable="thrift" failonerror="true">
-			<arg line="-r -v -gen rb -gen py -gen java:beans,hashcode" />
-			<arg file="thrift/exceptions.thrift" />
-		</exec>
+        <target name="thrift">
+            <tstamp />
+            <echo message="Generating thrift sources" />
+	    <exec executable="thrift" failonerror="true">
+	        <arg line="-r -v -gen rb -gen java:beans,hashcode" />
+                <arg file="thrift/key_locator.thrift" />
+	    </exec>
+	    <exec executable="thrift" failonerror="true">
+		<arg line="-r -v -gen rb -gen py -gen java:beans,hashcode" />
+		<arg file="thrift/hash_service.thrift" />
+	    </exec>
+	    <exec executable="thrift" failonerror="true">
+		<arg line="-r -v -gen rb -gen py -gen java:beans,hashcode" />
+		<arg file="thrift/exceptions.thrift" />
+	    </exec>
 	</target>
 
 	<target name="init">
 		<tstamp />
-		<mkdir dir="${build}" />
+                <mkdir dir="${build}" />
 	</target>
 
-	<target name="create_jar" depends="gen-thrift,init">
-		<jar destfile="${jar-file}" filesetmanifest="mergewithoutmain">
-			<manifest>
-				<attribute name="Built-By" value="${user.name}" />
-				<attribute name="Main-Class" value="edu.washington.cs.cse490h.donut.Donut" />
-				<attribute name="Class-Path" value="." />
-			</manifest>
-			<fileset dir="${build}" />
-			<zipfileset excludes="META-INF/*.SF" src="${lib}/libthrift.jar" />
-			<zipfileset excludes="META-INF/*.SF" src="${lib}/junit-4.1.jar" />
-			<zipfileset excludes="META-INF/*.SF" src="${lib}/guice-1.0.jar" />
-			<zipfileset excludes="META-INF/*.SF" src="${lib}/easymock.jar" />
-			<zipfileset excludes="META-INF/*.SF" src="${lib}/commons-lang-2.4.jar" />
-			<zipfileset excludes="META-INF/*.SF" src="${lib}/args4j-2.0.11.jar" />
-		</jar>
-	</target>
+        <target name="jar" depends="build">
+            <mkdir dir="${dist}"/>
+            <jar destfile="${dist}/${jar-file}" filesetmanifest="mergewithoutmain">
+                <manifest>
+                    <attribute name="Built-By" value="${user.name}" />
+		    <attribute name="Main-Class" value="edu.washington.cs.cse490h.donut.Donut" />
+		    <attribute name="Class-Path" value="." />
+		</manifest>
+		<fileset dir="${build}" />
+		<zipfileset excludes="META-INF/*.SF" src="${lib}/libthrift.jar" />
+		<zipfileset excludes="META-INF/*.SF" src="${lib}/junit-4.1.jar" />
+		<zipfileset excludes="META-INF/*.SF" src="${lib}/guice-1.0.jar" />
+		<zipfileset excludes="META-INF/*.SF" src="${lib}/easymock.jar" />
+		<zipfileset excludes="META-INF/*.SF" src="${lib}/commons-lang-2.4.jar" />
+		<zipfileset excludes="META-INF/*.SF" src="${lib}/args4j-2.0.11.jar" />
+            </jar>
+        </target>
 
-	<target name="build" depends="gen-thrift,init">
-		<javac destdir="${build}" classpathref="project.class.path" source="1.5" failonerror="true">
-			<src path="${src}" />
-			<src path="${thrift-java}" />
-			<src path="${src.tests.unit}" />
-			<src path="${src.tests.integration}" />
-		</javac>
+        <target name="src" depends="clean">
+            <mkdir dir="${dist}"/>
+            <zip destfile="${dist}/${zip-file}" update="true">
+                <fileset dir="." />
+            </zip>
+        </target>
+
+        <target name="dist" depends="clean, src, jar"/>
+
+	<target name="build" depends="thrift,init">
+	    <javac destdir="${build}" classpathref="project.class.path" source="1.5" failonerror="true">
+		<src path="${src}" />
+		<src path="${thrift-java}" />
+		<src path="${src.tests.unit}" />
+		<src path="${src.tests.integration}" />
+	    </javac>
 	</target>
 
 	<target name="clean">
-		<delete includeemptydirs="true" quiet="true">
-			<fileset dir="${thrift-java}" />
-			<fileset dir="${thrift-rb}" />
-			<fileset dir="${thrift-py}" />
-			<fileset dir="${build}" />
-			<fileset file="${jar-file}" />
-		</delete>
+	    <delete includeemptydirs="true" quiet="true">
+		<fileset dir="${thrift-java}" />
+		<fileset dir="${thrift-rb}" />
+		<fileset dir="${thrift-py}" />
+                <fileset dir="${build}" />
+                <fileset dir="${dist}" />
+                <fileset dir="${reports.test}" />
+		<fileset file="${jar-file}" />
+	    </delete>
 	</target>
 
 	<target name="unit-tests" depends="build">
