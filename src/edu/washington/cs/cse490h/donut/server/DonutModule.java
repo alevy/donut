@@ -46,11 +46,11 @@ public class DonutModule implements Module {
     @Option(name = "--hostname", usage = "the hostname to use for this Node")
     private String hostname          = InetAddress.getLocalHost().getCanonicalHostName();
 
-    @Option(name = "--port", usage = "the port on which to bind this Node's Server (default: 8080)")
-    private int    port              = 8080;
+    @Option(name = "--locator-port", usage = "the port on which to bind the Node's Locator Server (default: 8081)")
+    private int    locatorPort              = 8081;
 
-    @Option(name = "--request-offset", usage = "the port on which to bind this Node's Server (default: 8080)")
-    private int    requestPortOffset = -80;
+    @Option(name = "--request-port", usage = "the port on which to bind this Node Hashtable Server (default: 8080)")
+    private int    requestPort = 8080;
 
     private long   key               = UUID.randomUUID().getMostSignificantBits();
 
@@ -62,8 +62,8 @@ public class DonutModule implements Module {
     @Option(name = "--known-host", usage = "the hostname of a known node (default: none)")
     private String knownHostname = null;
 
-    @Option(name = "--known-port", usage = "the port of a known node (default: 8080)")
-    private int    knownPort     = 8080;
+    @Option(name = "--known-port", usage = "the port of a known node (default: 8081)")
+    private int    knownPort     = 8081;
 
     public DonutModule() throws Exception {
     }
@@ -103,11 +103,11 @@ public class DonutModule implements Module {
     }
 
     public void setPort(int port) {
-        this.port = port;
+        this.locatorPort = port;
     }
 
     public int getPort() {
-        return port;
+        return locatorPort;
     }
 
     public void setKey(long key) {
@@ -135,7 +135,7 @@ public class DonutModule implements Module {
     }
 
     public int getRequestPort() {
-        return port + requestPortOffset;
+        return requestPort;
     }
 
 }
