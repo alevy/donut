@@ -16,8 +16,8 @@ java -jar dist/donut.jar
 
 Donut options (all optional):
 --hostname VAL     : the hostname to use for this Node
---port N           : the port on which to bind the nodeLocator Server (default: 8080)
---request-port N   : the port on which to bind the hashClient Server (default: 8081)
+--locator-port N   : the port on which to bind the nodeLocator Server (default: 8081)
+--request-port N   : the port on which to bind the hashTable Server (default: 8080)
 --key VAL          : the 64-bit key for this Node (default: random)
 --known-host VAL   : the hostname of a known node
 --known-port N     : the port of a known node
