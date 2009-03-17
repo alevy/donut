@@ -21,7 +21,9 @@ import org.apache.thrift.TException;
 import com.google.inject.Inject;
 
 import edu.washington.cs.cse490h.donut.business.EntryKey;
+import edu.washington.cs.cse490h.donut.business.Node;
 import edu.washington.cs.cse490h.donut.business.TNode;
+import edu.washington.cs.cse490h.donut.service.KeyLocator.Iface;
 import edu.washington.cs.cse490h.donut.util.KeyIdUtil;
 
 /**
@@ -29,20 +31,20 @@ import edu.washington.cs.cse490h.donut.util.KeyIdUtil;
  */
 public class DonutHashRequestService implements HashService.Iface {
 
-    private final KeyLocator.Iface     keyLocator;
     private final LocatorClientFactory clientFactory;
+    private final Node                 node;
 
     @Inject
-    public DonutHashRequestService(KeyLocator.Iface keyLocator, LocatorClientFactory clientFactory) {
-        this.keyLocator = keyLocator;
+    public DonutHashRequestService(Node node, LocatorClientFactory clientFactory) {
+        this.node = node;
         this.clientFactory = clientFactory;
     }
 
     public byte[] get(String key) throws DataNotFoundException, TException {
         EntryKey entryKey = new EntryKey(KeyIdUtil.generateKeyId(key), key);
-        TNode successor = keyLocator.findSuccessor(entryKey.getId());
-
+        TNode successor = null;
         try {
+            successor = findSuccessor(entryKey);
             KeyLocator.Iface hashClient = clientFactory.get(successor);
             return hashClient.get(entryKey);
         } catch (RetryFailedException e) {
@@ -54,9 +56,10 @@ public class DonutHashRequestService implements HashService.Iface {
 
     public void put(String key, byte[] value) throws TException {
         EntryKey entryKey = new EntryKey(KeyIdUtil.generateKeyId(key), key);
-        TNode successor = keyLocator.findSuccessor(entryKey.getId());
 
+        TNode successor = null;
         try {
+            successor = findSuccessor(entryKey);
             KeyLocator.Iface hashClient = clientFactory.get(successor);
             hashClient.put(entryKey, value);
         } catch (RetryFailedException e) {
@@ -68,11 +71,22 @@ public class DonutHashRequestService implements HashService.Iface {
         }
     }
 
+    private TNode findSuccessor(EntryKey entryKey) throws TException, RetryFailedException {
+        try {
+            Iface local = clientFactory.get(node.getTNode());
+            TNode successor = local.findSuccessor(entryKey.getId());
+            return successor;
+        } finally {
+            clientFactory.release(node.getTNode());
+        }
+    }
+
     public void remove(String key) throws TException {
         EntryKey entryKey = new EntryKey(KeyIdUtil.generateKeyId(key), key);
-        TNode successor = keyLocator.findSuccessor(entryKey.getId());
 
+        TNode successor = null;
         try {
+            successor = findSuccessor(entryKey);
             KeyLocator.Iface hashClient = clientFactory.get(successor);
             hashClient.remove(entryKey);
         } catch (RetryFailedException e) {

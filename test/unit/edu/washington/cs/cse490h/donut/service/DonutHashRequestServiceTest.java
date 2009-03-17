@@ -28,6 +28,7 @@ import org.junit.Test;
 
 import edu.washington.cs.cse490h.donut.business.EntryKey;
 import edu.washington.cs.cse490h.donut.business.KeyId;
+import edu.washington.cs.cse490h.donut.business.Node;
 import edu.washington.cs.cse490h.donut.business.TNode;
 import edu.washington.cs.cse490h.donut.util.KeyIdUtil;
 
@@ -37,6 +38,7 @@ import edu.washington.cs.cse490h.donut.util.KeyIdUtil;
 public class DonutHashRequestServiceTest {
 
     private LocatorClientFactory clientFactoryMock;
+    private Node                 node;
     private KeyLocator.Iface     curLocatorMock;
     private KeyLocator.Iface     nextLocatorMock;
 
@@ -44,6 +46,7 @@ public class DonutHashRequestServiceTest {
     public void setUp() throws Exception {
         clientFactoryMock = createMock(LocatorClientFactory.class);
         curLocatorMock = createMock(KeyLocator.Iface.class);
+        node = new Node("localhost", 8080, null);
         nextLocatorMock = createMock(KeyLocator.Iface.class);
     }
 
@@ -56,14 +59,16 @@ public class DonutHashRequestServiceTest {
 
     @Test
     public void testGet() throws Exception {
-        DonutHashRequestService requestService = new DonutHashRequestService(curLocatorMock,
+        DonutHashRequestService requestService = new DonutHashRequestService(node,
                 clientFactoryMock);
         String keyStr = "hello world";
         KeyId keyId = KeyIdUtil.generateKeyId(keyStr);
         byte[] value = "value".getBytes();
 
         TNode successor = new TNode("successor", 8080, new KeyId(1));
+        expect(clientFactoryMock.get(node.getTNode())).andReturn(curLocatorMock);
         expect(curLocatorMock.findSuccessor(keyId)).andReturn(successor);
+        clientFactoryMock.release(node.getTNode());
         expect(clientFactoryMock.get(successor)).andReturn(nextLocatorMock);
         expect(nextLocatorMock.get(new EntryKey(keyId, keyStr))).andReturn(value);
         clientFactoryMock.release(successor);
@@ -74,14 +79,16 @@ public class DonutHashRequestServiceTest {
 
     @Test
     public void testPut() throws Exception {
-        DonutHashRequestService requestService = new DonutHashRequestService(curLocatorMock,
+        DonutHashRequestService requestService = new DonutHashRequestService(node,
                 clientFactoryMock);
         String keyStr = "hello world";
         KeyId keyId = KeyIdUtil.generateKeyId(keyStr);
         byte[] value = "value".getBytes();
 
         TNode successor = new TNode("successor", 8080, new KeyId(1));
+        expect(clientFactoryMock.get(node.getTNode())).andReturn(curLocatorMock);
         expect(curLocatorMock.findSuccessor(keyId)).andReturn(successor);
+        clientFactoryMock.release(node.getTNode());
         expect(clientFactoryMock.get(successor)).andReturn(nextLocatorMock);
         nextLocatorMock.put(new EntryKey(keyId, keyStr), value);
         clientFactoryMock.release(successor);
@@ -92,13 +99,15 @@ public class DonutHashRequestServiceTest {
 
     @Test
     public void testRemove() throws Exception {
-        DonutHashRequestService requestService = new DonutHashRequestService(curLocatorMock,
+        DonutHashRequestService requestService = new DonutHashRequestService(node,
                 clientFactoryMock);
         String keyStr = "hello world";
         KeyId keyId = KeyIdUtil.generateKeyId(keyStr);
 
         TNode successor = new TNode("successor", 8080, new KeyId(1));
+        expect(clientFactoryMock.get(node.getTNode())).andReturn(curLocatorMock);
         expect(curLocatorMock.findSuccessor(keyId)).andReturn(successor);
+        clientFactoryMock.release(node.getTNode());
         expect(clientFactoryMock.get(successor)).andReturn(nextLocatorMock);
         nextLocatorMock.remove(new EntryKey(keyId, keyStr));
         clientFactoryMock.release(successor);
