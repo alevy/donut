@@ -1,0 +1,23 @@
+Donut: A Robust Distributed Hash Table based on Chord
+Find out more about Donut at: http://alevy.github.com/donut/
+
+Installing Donut:
+Download the source, binary, and/or git repo from: http://github.com/alevy/donut/
+
+Prerequisites:
+Thrift compiler (language runtime libs are not needed)
+Get Thrift here: http://incubator.apache.org/thrift/
+
+Running Donut:
+1) Build the sources to a distributable:
+ant jar
+2) Start the service:
+java -jar dist/donut.jar
+
+Donut options (all optional):
+--hostname VAL     : the hostname to use for this Node
+--port N           : the port on which to bind the nodeLocator Server (default: 8080)
+--request-port N   : the port on which to bind the hashClient Server (default: 8081)
+--key VAL          : the 64-bit key for this Node (default: random)
+--known-host VAL   : the hostname of a known node
+--known-port N     : the port of a known node
