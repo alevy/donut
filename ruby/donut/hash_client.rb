@@ -42,7 +42,11 @@ module Donut
       if not @socket.open?
         @socket.open
       end
-      return @client.get(key)
+      begin
+        return @client.get(key)
+      rescue
+        return nil
+      end
     end
 
     def put(key, data)
