@@ -93,12 +93,12 @@ public class NodeLocator implements Iface {
             throw new NotResponsibleForId(key.getId());
         }
         LOGGER.info("Put \"" + data + "\" into entity with id \"" + key.toString() + "\".");
-        service.put(key, data, Constants.SUCCESSOR_LIST_SIZE);
+        service.put(key, data, Constants.NUM_REPLICAS);
         TNode successor = node.getSuccessor();
         if (!successor.equals(node.getTNode())) {
             try {
                 clientFactory.get(successor).replicatePut(key, data,
-                        Constants.SUCCESSOR_LIST_SIZE - 1);
+                        Constants.NUM_REPLICAS - 1);
                 clientFactory.release(successor);
             } catch (RetryFailedException e) {
                 throw new TException(e);
@@ -118,7 +118,7 @@ public class NodeLocator implements Iface {
         if (!node.getSuccessor().equals(node.getTNode())) {
             try {
                 clientFactory.get(successor)
-                        .replicateRemove(key, Constants.SUCCESSOR_LIST_SIZE - 1);
+                        .replicateRemove(key, Constants.NUM_REPLICAS - 1);
                 clientFactory.release(successor);
             } catch (RetryFailedException e) {
                 throw new TException(e);
@@ -211,7 +211,7 @@ public class NodeLocator implements Iface {
             for (EntryKey key : keySet) {
                 byte[] data;
                 data = client.get(key);
-                service.put(key, data, Constants.SUCCESSOR_LIST_SIZE);
+                service.put(key, data, Constants.NUM_REPLICAS);
             }
         } catch (DataNotFoundException e) {
             // We were lied to! Die gracefully
